@@ -18,3 +18,22 @@ export const isEmail = (email:string): string | undefined => {
         ? undefined
         : 'El correo no es válido';
 }
+
+
+export const isSocialUsername = ( username: string ): string | undefined => {
+
+    if(username[0] !== '@'){
+        return 'Nombre de usuario no válido'
+    }
+
+    if( !username[1] ){
+        return 'Nombre de usuario no válido'
+    }
+
+    if(username[1] && username[1].trim() === ''){
+        return 'Nombre de usuario no válido'
+    }
+
+    return  undefined
+    
+}

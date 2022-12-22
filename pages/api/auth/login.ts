@@ -32,7 +32,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
             return loginUser(req, res)
 
         default:
-            return res.status(400).json({ message: 'Endpoint no existe' })
+            return res.status(400).json({ message: 'Bad request' })
     }
 }
 

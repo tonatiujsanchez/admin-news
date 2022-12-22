@@ -1,2 +1,2 @@
-export * as emailValidator from './emailValidator'
+export * as validations from './validations'
 export * as jwt from './jwt'

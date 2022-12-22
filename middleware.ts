@@ -19,10 +19,7 @@ export async function middleware( req: NextRequest ) {
         if( !token ){
             return NextResponse.redirect(`${protocol}//${host}/iniciar-sesion`)
         }
-
-        console.log(token);
         
-
         try {
             
             await jose.jwtVerify(String(token.value), new TextEncoder().encode(process.env.JWT_SECRET_SEED))   

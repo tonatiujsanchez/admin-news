@@ -28,6 +28,22 @@ body.fixed-body {
     overflow:hidden
 }
 
+
+
+.fill {
+  object-fit: fill;
+}
+
+.contain {
+  object-fit: contain;
+}
+
+.cover {
+  object-fit: cover;
+}
+
+
+
 .bg-admin {
     background-color: rgb(250, 250, 255);
 }
