@@ -168,6 +168,34 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const deleteAuthor = async( idAuthor:string ):Promise<{ hasError: boolean }> => {
+    
+        try {
+            
+            const { data } = await axios.delete('/api/admin/authors',{
+                data: {
+                    idAuthor
+                }
+            })
+
+            dispatch({ type: '[DATA] - Delete Author', payload: data.message })
+            notifySuccess('Autor eliminado')
+            return { hasError: false }
+
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+
+    }
+
     
 
     return (
@@ -179,7 +207,8 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
             // Authors
             refreshAuthors,
-            addNewAuthor
+            addNewAuthor,
+            deleteAuthor
         }}>
             {children}
         </DataContext.Provider>

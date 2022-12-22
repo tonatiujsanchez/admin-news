@@ -1,10 +1,12 @@
-import Image from 'next/image'
-import NextLink from 'next/link'
 import { useState, FC } from 'react';
 
+import Image from 'next/image'
+import NextLink from 'next/link'
 
+import { ModalContent, ModalDelete } from '../ui';
 import { useData } from '../../../hooks/useData'
-import { IAuthor } from '../../../interfaces/IAuthor';
+
+import { IAuthor } from '../../../interfaces';
 
 
 interface Props {
@@ -15,24 +17,38 @@ export const AuthorCard:FC<Props> = ({ author }) => {
 
 
     const [modalDelete, setModalDelete] = useState(false)
+    const [loading, setLoading] = useState(false)
 
-    // const { deleteAuthor } = useData()
+    const { deleteAuthor } = useData()
 
-    // const showModalDelete = () => {
-    //     const body = document.querySelector('body')
-    //     body.classList.add('fixed-body')
-    //     setModalDelete(true)
-    // }
+    const showModalDelete = () => {
+        const body = document.querySelector('body')
+        body!.classList.add('fixed-body')
+        setModalDelete(true)
+    }
 
-    // const hiddenModalDelete = () => {
-    //     const body = document.querySelector('body')
-    //     body.classList.remove('fixed-body')
-    //     setModalDelete(false)
-    // }
+    const hiddenModalDelete = () => {
+        const body = document.querySelector('body')
+        body!.classList.remove('fixed-body')
+        setModalDelete(false)
+    }
 
-    const onDeleteAuthor = () => {
-        // deleteAuthor(author.slug)
-        // hiddenModalDelete()
+    const onDeleteAuthor = async( result: () => Promise<{ confirm: boolean }> ) => {
+
+        const { confirm } = await result()
+
+        if(!confirm){
+            hiddenModalDelete()
+            return
+        }
+
+        setLoading(true)
+        const { hasError } = await deleteAuthor(author._id!)
+        setLoading(false)
+
+        if(hasError){ return }
+
+        hiddenModalDelete()
     }
 
     return (
@@ -43,15 +59,24 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                         href={`/admin/autores/${author.slug}`} 
                         className="block w-[100px] min-w-[100px] relative h-[100px] rounded-lg overflow-hidden group border-white border-8 shadow-lg"
                     >
-                        <div className='relative w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 h-80 lg:aspect-none'>
-                            <Image
-                                priority
-                                width={100}
-                                height={100}
-                                src={author.photo || '/assets/admin/imgs/no-image-author.png'}
-                                alt={author.name}
-                            />
-                        </div>
+                        {
+                            author.photo 
+                            ?(
+                                <Image
+                                    priority
+                                    fill
+                                    sizes="(max-width: 125px) 125px"
+                                    src={author.photo}
+                                    alt={author.name}
+                                    className='cover bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'
+                                />
+                            ):(
+                                <div className='w-full h-full flex justify-center items-center bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'>
+                                    <p className="font-bold text-4xl text-slate-800 uppercase">{author.name.slice(0, 1)}</p>
+                                </div>
+                            )
+                        }
+
                     </NextLink>
                     <div>
                         <NextLink 
@@ -82,7 +107,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                         className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.instagram ? '' : 'pointer-events-none opacity-40'}`}>
                         <i className='bx bxl-instagram-alt' ></i>
                     </a>
-                    <a href={`${author.web}`}
+                    <a href={author.web}
                         rel="noopener noreferrer"
                         target="_blank"
                         className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.web ? '' : 'pointer-events-none opacity-40'}`}>
@@ -100,13 +125,13 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                 <div className='mt-10 flex justify-between gap-5'>
                     <div className='flex gap-5'>
                         <button
-                            // onClick={showModalDelete}
-                            className="flex items-center text-red-600 hover:text-white bg-red-100 hover:bg-red-500 font-bold text-3xl py-2 px-3 rounded-md">
+                            onClick={showModalDelete}
+                            className="flex items-center text-red-600 hover:text-white bg-red-100 hover:bg-red-500 font-bold text-2xl py-2 px-4 rounded-md">
                             <i className='bx bx-trash'></i>
                         </button>
                         <NextLink 
                             href={`/admin/autores/${author.slug}/editar`}
-                            className="flex items-center text-sky-600 hover:text-white bg-sky-100 hover:bg-sky-500 font-bold text-3xl py-2 px-3 rounded-md"
+                            className="flex items-center text-sky-600 hover:text-white bg-sky-100 hover:bg-sky-500 font-bold text-2xl py-2 px-4 rounded-md"
                         >
                             <i className='bx bx-edit-alt' ></i>
                         </NextLink>
@@ -114,40 +139,24 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                     <div>
                         <NextLink 
                             href={`/admin/autores/${author.slug}`} 
-                            className="flex gap-1 text-emerald-600 hover:text-white bg-emerald-100 hover:bg-emerald-500 py-2 px-5 rounded-md"
+                            className="flex items-center gap-1 text-emerald-600 hover:text-white bg-emerald-100 hover:bg-emerald-500 py-2 px-5 rounded-md"
                         >
-                            <i className='bx bx-show text-4xl'></i> <span className='font-semibold'>Ver</span>
+                            <i className='bx bx-show text-2xl mt-1'></i> <span className='font-medium text-2xl'>Ver</span>
                         </NextLink>
                     </div>
                 </div>
             </div>
 
-            {/* <Modal
-                isOpen={modalDelete}
-                style={customStyles}>
-                <div className="p-5">
-                    <header className="text-center">
-                        <div className='text-center text-7xl mb-2 text-red-600'>
-                            <i className='bx bx-trash'></i>
-                        </div>
-                        <h3 className='font-bold text-4xl mb-5'>Eliminar autor</h3>
-                        <p className="text-center text-2xl mb-2">{`Desea eliminar a: ${author.name}`}</p>
-                    </header>
-                    <div className='flex items-center justify-center gap-2 mt-10'>
-                        <button
-                            onClick={hiddenModalDelete}
-                            className="py-3 px-5 uppercase w-full rounded-md cursor-pointer transition-colors">
-                            Cancelar
-                        </button>
-                        <button
-                            onClick={onDeleteAuthor}
-                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 uppercase w-full rounded-md cursor-pointer transition-colors">
-                            Eliminar
-                        </button>
-                    </div>
-                </div>
-            </Modal> */}
-
+            { modalDelete &&
+                <ModalContent>
+                    <ModalDelete
+                        processing={ loading } 
+                        title={'Eliminar autor'} 
+                        subtitle={<>¿Desdea eliminar el autor <span className='font-semibold italic'>"{ author.name }"</span>?</>} 
+                        onResult={ onDeleteAuthor }
+                    />
+                </ModalContent>
+            }
         </>
     )
 }

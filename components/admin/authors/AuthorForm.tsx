@@ -235,10 +235,11 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                 <input
                                     type="text"
                                     id="facebook"
+                                    disabled={loadingSubmit}
                                     placeholder="@usuario"
-                                    className="bg-admin rounded-md border p-3 flex-1"
+                                    className={`bg-admin rounded-md border p-3 flex-1 ${ !!errors.facebook && getValues('facebook') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
                                     {...register('facebook',{
-                                        validate: ( value ) => value && validations.isSocialUsername( value )
+                                        validate: ( value ) => value ? validations.isSocialUsername( value ) : undefined
                                     })} 
                                 />
                             </div>
@@ -253,10 +254,11 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                 <input
                                     type="text"
                                     id="twitter"
+                                    disabled={loadingSubmit}
                                     placeholder="@usuario"
-                                    className="bg-admin rounded-md flex-1 border p-3" 
+                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.twitter && getValues('twitter') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800'}`} 
                                     {...register('twitter',{
-                                        validate: ( value ) => value && validations.isSocialUsername( value )
+                                        validate: ( value ) => value ? validations.isSocialUsername( value ) : undefined
                                     })} 
                                 />
                             </div>
@@ -271,10 +273,11 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                 <input
                                     type="text"
                                     id="instagram"
+                                    disabled={loadingSubmit}
                                     placeholder="@usuario"
-                                    className="bg-admin rounded-md flex-1 border p-3"
+                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.instagram && getValues('instagram') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
                                     {...register('instagram', {
-                                        validate: ( value ) => value && validations.isSocialUsername( value )
+                                        validate: ( value ) => value ? validations.isSocialUsername( value ) : undefined
                                     })} 
                                 />
                             </div>
@@ -289,12 +292,11 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                 <input
                                     type="text"
                                     id="web"
+                                    disabled={loadingSubmit}
                                     placeholder="https://sitio-web.com/"
-                                    className="bg-admin rounded-md flex-1 border p-3"
+                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.web && getValues('web') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
                                     {...register('web', {
-                                        validate: ( value ) => value 
-                                            && !value.includes('https://') && !value.includes('http://') || value!.trim().includes(' ') 
-                                            ? 'La url no es válida' : undefined,
+                                        validate: ( value ) => value ? validations.isURLWebSite( value ) : undefined,
                                     })} 
                                 />
                             </div>
@@ -321,13 +323,18 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             <input
                                 type="text"
                                 id="name"
-                                className="bg-admin rounded-md flex-1 border p-5" 
+                                disabled={loadingSubmit}
+                                className={`bg-admin rounded-md flex-1 border p-5 ${ !!errors.name ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`} 
                                 { ...register("name", { 
                                         required: 'El nombre es requerido',
                                         validate: (value)=> value.trim() === '' ? 'El nombre es requerido' : undefined
                                     })
                                 }
                             />
+                            {
+                                !errors.name &&
+                                <p className="text-lg text-transparent block">Nombre completo</p>
+                            }
                             {
                                 !!errors.name &&
                                 <p className="text-lg text-red-600 block">{errors.name.message}</p>
@@ -338,22 +345,23 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             <input
                                 type="text"
                                 id="email"
-                                className="bg-admin rounded-md flex-1 border p-5"
+                                disabled={loadingSubmit}
+                                className={`bg-admin rounded-md flex-1 border p-5 ${ !!errors.email && getValues('email') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }` }
                                 {...register('email', {
-                                    validate: (value)=> value && validations.isEmail(value) 
+                                    validate: (value)=> value ? validations.isEmail(value) : undefined
                                 })}
                             />
-                            {
-                                !!errors.email &&
-                                <p className="text-lg text-red-600 block">{errors.email.message}</p>
-                            }
+    
+                            <p className={`text-lg block ${!!errors.email && getValues('email') ? 'text-red-600':'text-transparent'}`}>Correo no válido</p>
+                            
                         </div>
                         <div className="flex flex-col gap-2 mb-4 w-full lg:w-[48%]">
                             <label htmlFor="phone">Telefono</label>
                             <input
                                 type="text"
                                 id="phone"
-                                className="bg-admin rounded-md flex-1 border p-5" 
+                                disabled={loadingSubmit}
+                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800" 
                                 {...register('phone')}
                             />
                         </div>
@@ -362,7 +370,8 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             <input
                                 type="text"
                                 id="occupation"
-                                className="bg-admin rounded-md flex-1 border p-5"
+                                disabled={loadingSubmit}
+                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800"
                                 {...register('occupation')} 
                             />
                         </div>
@@ -370,27 +379,28 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             <label htmlFor="description">Descripción</label>
                             <textarea
                                 id="description"
+                                disabled={loadingSubmit}
                                 cols={30}
                                 rows={10}
-                                className="bg-admin rounded-md flex-1 border p-5"
+                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800"
                                 {...register('description')} 
                             >
                             </textarea>
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-2 mt-5">
+                    <div className="flex items-center justify-end gap-4 mt-5">
                         <button
                             type="button"
                             onClick={onCalcel}
                             disabled={loadingSubmit}
-                            className="py-3 px-5 uppercase w-full sm:w-auto rounded-md cursor-pointer transition-colors">
+                            className="py-3 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95">
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={loadingSubmit}
-                            className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-8 uppercase w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300">
+                            className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300">
                             {
                                 loadingSubmit
                                 ? <LoadingCircle />

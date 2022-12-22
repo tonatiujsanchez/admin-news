@@ -8,6 +8,7 @@ type DataActionType =
     
     | { type: '[DATA] - Refresh Authors', payload: IAuthor[] }
     | { type: '[DATA] - Add New Author', payload: IAuthor }
+    | { type: '[DATA] - Delete Author', payload: string }
 
 export const dataReducer = (state: DataState, action: DataActionType): DataState => {
 
@@ -39,8 +40,13 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
                 ...state,
                 authors: [...state.authors, action.payload]
             }
-
-            
+        
+        case '[DATA] - Delete Author':
+            return {
+                ...state,
+                authors: state.authors.filter( author => author._id !== action.payload )
+            }
+        
         default:
             return state
     }

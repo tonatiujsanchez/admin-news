@@ -22,6 +22,7 @@ export const isEmail = (email:string): string | undefined => {
 
 export const isSocialUsername = ( username: string ): string | undefined => {
 
+
     if(username[0] !== '@'){
         return 'Nombre de usuario no válido'
     }
@@ -36,4 +37,13 @@ export const isSocialUsername = ( username: string ): string | undefined => {
 
     return  undefined
     
+}
+
+export const isURLWebSite = ( url:string ): string | undefined => {
+
+    if( !url.includes('https://') && !url.includes('http://') ){
+        return 'La url no es válida'
+    }
+
+    return undefined
 }
