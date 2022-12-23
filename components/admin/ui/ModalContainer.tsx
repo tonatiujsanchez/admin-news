@@ -4,10 +4,10 @@ import { FC, ReactNode, useEffect } from 'react';
 
 interface Props {
     children: ReactNode
-    maxWidth?: string
+    maxWidthPx?: string
 }
 
-export const ModalContainer:FC<Props> = ({ children, maxWidth = 'max-w-4xl' }) => {
+export const ModalContainer:FC<Props> = ({ children, maxWidthPx = 'max-w-[600px]' }) => {
 
     useEffect(() => {
         const body = document.querySelector('body')
@@ -17,6 +17,8 @@ export const ModalContainer:FC<Props> = ({ children, maxWidth = 'max-w-4xl' }) =
         body!.classList.remove('fixed-body')
       }
     }, [])
+
+    const maxWith = `sm:${maxWidthPx}`
     
 
     return (
@@ -24,7 +26,7 @@ export const ModalContainer:FC<Props> = ({ children, maxWidth = 'max-w-4xl' }) =
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
                 <div className="fixed inset-0 z-10 overflow-y-auto">
                     <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-                        <div className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full sm:${maxWidth}`}>
+                        <div className={`relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 w-full ${maxWith}`}>
                             { children }
                         </div>
                     </div>

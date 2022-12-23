@@ -82,25 +82,25 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                     <a href={`https://www.facebook.com/${ author.facebook?.slice(1) }`}
                         rel="noopener noreferrer"
                         target="_blank"
-                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.facebook? '' : 'pointer-events-none opacity-40'}`}>
+                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.facebook? '' : 'pointer-events-none opacity-30'}`}>
                         <i className='bx bxl-facebook-circle' ></i>
                     </a>
                     <a href={`https://www.twitter.com/${ author.twitter?.slice(1) }`}
                         rel="noopener noreferrer"
                         target="_blank"
-                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.twitter? '' : 'pointer-events-none opacity-40'}`}>
+                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.twitter? '' : 'pointer-events-none opacity-30'}`}>
                         <i className='bx bxl-twitter' ></i>
                     </a>
                     <a href={`https://www.instagram.com/${ author.instagram?.slice(1) }`}
                         rel="noopener noreferrer"
                         target="_blank"
-                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.instagram ? '' : 'pointer-events-none opacity-40'}`}>
+                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.instagram ? '' : 'pointer-events-none opacity-30'}`}>
                         <i className='bx bxl-instagram-alt' ></i>
                     </a>
                     <a href={author.web}
                         rel="noopener noreferrer"
                         target="_blank"
-                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.web ? '' : 'pointer-events-none opacity-40'}`}>
+                        className={`flex items-end gap-1 mb-4 text-4xl text-gray-800 p-2 hover:bg-slate-200 rounded-full ${author.web ? '' : 'pointer-events-none opacity-30'}`}>
                         <i className='bx bx-globe' ></i>
                     </a>
                 </div>
@@ -120,7 +120,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                             <i className='bx bx-trash'></i>
                         </button>
                         <NextLink 
-                            href={`/admin/autores/${author.slug}/editar`}
+                            href={`/admin/autores/editar/${author._id}`}
                             className="flex items-center text-sky-600 hover:text-white bg-sky-100 hover:bg-sky-500 font-bold text-2xl py-2 px-4 rounded-md"
                         >
                             <i className='bx bx-edit-alt' ></i>

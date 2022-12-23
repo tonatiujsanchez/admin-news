@@ -168,6 +168,29 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const updateAuthor = async ( author:IAuthor ):Promise<{ hasError: boolean }> => {
+
+        try {
+            
+            const { data } = await axios.put('/api/admin/authors', author)
+            dispatch({ type: '[DATA] - Update Author', payload: data })
+            
+            notifySuccess('Autor actualizado')
+            return { hasError: false }
+
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+
+    }
+
     const deleteAuthor = async( idAuthor:string ):Promise<{ hasError: boolean }> => {
     
         try {
@@ -208,6 +231,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Authors
             refreshAuthors,
             addNewAuthor,
+            updateAuthor,
             deleteAuthor
         }}>
             {children}

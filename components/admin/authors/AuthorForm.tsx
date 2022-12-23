@@ -36,7 +36,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
 
     const { showSideMenu } = useUI()
 
-    const { addNewImage, addNewAuthor } = useData()
+    const { addNewImage, addNewAuthor, updateAuthor } = useData()
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset } = useForm<IAuthor>({
         defaultValues: {
@@ -126,7 +126,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
 
 
     const onCalcel = () => {
-        router.back()
+        router.replace('/admin/autores')
     }
 
     
@@ -170,11 +170,11 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
 
         
         if (authorEdit) {
-            // const { hasError } = await updateAuthor(newAuthor)
-            // if(hasError){
-            //     setLoadingSubmit(false)
-            //     return
-            // }
+            const { hasError } = await updateAuthor(newAuthor)
+            if(hasError){
+                setLoadingSubmit(false)
+                return
+            }
         } else {
 
             const { hasError } = await addNewAuthor(newAuthor)
@@ -394,7 +394,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             type="button"
                             onClick={onCalcel}
                             disabled={loadingSubmit}
-                            className="py-3 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95">
+                            className="py-3 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed">
                             Cancelar
                         </button>
                         <button

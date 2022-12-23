@@ -8,6 +8,7 @@ type DataActionType =
     
     | { type: '[DATA] - Refresh Authors', payload: IAuthor[] }
     | { type: '[DATA] - Add New Author', payload: IAuthor }
+    | { type: '[DATA] - Update Author', payload: IAuthor }
     | { type: '[DATA] - Delete Author', payload: string }
 
 export const dataReducer = (state: DataState, action: DataActionType): DataState => {
@@ -39,6 +40,12 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
             return {
                 ...state,
                 authors: [...state.authors, action.payload]
+            }
+
+        case '[DATA] - Update Author':
+            return {
+                ...state,
+                authors: state.authors.map( author => author._id === action.payload._id ? action.payload : author )
             }
         
         case '[DATA] - Delete Author':

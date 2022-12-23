@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import slugify from "slugify"
 
 import { db } from '../../../../database'
-import { Author } from '../../../../models'
+import { Author, Image } from '../../../../models'
 import { IAuthor } from '../../../../interfaces'
 
 import { v2 as cloudinary } from 'cloudinary'
@@ -51,7 +51,7 @@ const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
     } = req.body  
 
     if([name.trim()].includes('')){
-        return res.status(400).json({ message: 'La propiedad name es requeridas' })
+        return res.status(400).json({ message: 'La propiedad nombre es requeridas' })
     }
 
     const slug = slugify(name, { replacement: '-', lower: true })
@@ -86,8 +86,73 @@ const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
     }
 }
 
+
 const updateAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
-        return res.status(200).json({ message: 'Llegamos a updateAuthor Endpoint' })
+
+    const { 
+        _id, 
+        name='', 
+        facebook = '',
+        twitter = '',
+        instagram = '',
+        email = '',
+        phone = '',
+        web = '',
+        occupation = '',
+        description = '', 
+        photo = null
+    } = req.body
+
+    if( !isValidObjectId( _id ) ){
+        return res.status(400).json({ message: 'ID de Autor no válido' })
+    }
+
+    if([name.trim()].includes('')){
+        return res.status(400).json({ message: 'La propiedad nombre es requeridas' })
+    }
+
+    try {
+        await db.connect()
+        const authorToUpdate = await Author.findById(_id)
+    
+        if(!authorToUpdate){
+            return res.status(400).json({ message: 'Autor no encontrado' })
+        }
+
+        if(authorToUpdate.name !== name){
+            authorToUpdate.slug = slugify(name, { replacement: '-', lower: true })
+        }
+
+        if( authorToUpdate.photo && authorToUpdate.photo !== photo ){
+            const [ fileId, extencion ] = (authorToUpdate.photo).substring( (authorToUpdate.photo).lastIndexOf('/') + 1 ).split('.')
+            await Promise.all([
+                await Image.deleteOne({ name:  fileId}),
+                await cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+            ])
+
+        }
+
+        authorToUpdate.name = name
+        authorToUpdate.email = email
+        authorToUpdate.occupation = occupation
+        authorToUpdate.phone = phone
+        authorToUpdate.description = description
+        authorToUpdate.photo = photo
+        authorToUpdate.facebook = facebook
+        authorToUpdate.twitter = twitter
+        authorToUpdate.instagram = instagram
+        authorToUpdate.web = web
+
+        await authorToUpdate.save()
+        await db.disconnect()
+        return res.status(200).json(authorToUpdate)
+    
+    } catch (error) {
+        await db.disconnect()
+        console.log( error )
+        return res.status(400).json({ message: 'Algo salio mal, revisar la consola del servidor' })
+    }
+
 }
 
 
@@ -112,7 +177,10 @@ const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
 
         if( author.photo ){
             const [ fileId, extencion ] = (author.photo).substring( (author.photo).lastIndexOf('/') + 1 ).split('.')
-            await cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+            await Promise.all([
+                await Image.deleteOne({ name:  fileId}),
+                await cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+            ])
         }
 
         await author.deleteOne()
@@ -126,7 +194,5 @@ const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
         console.log( error )
         return res.status(400).json({ message: 'Algo salio mal, revisar la consola del servidor' })
     }
-
-
-
+    
 }

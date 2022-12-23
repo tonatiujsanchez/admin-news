@@ -29,6 +29,7 @@ interface ContextProps {
 
     refreshAuthors: () => Promise<{ hasError: boolean; authors: IAuthor[]; }>
     addNewAuthor: (author: IAuthor) => Promise<{ hasError: boolean; }>
+    updateAuthor: (author: IAuthor) => Promise<{ hasError: boolean; }>
     deleteAuthor: (idAuthor: string) => Promise<{ hasError: boolean; }>
 }
 
