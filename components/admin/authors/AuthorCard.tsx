@@ -3,8 +3,9 @@ import { useState, FC } from 'react';
 import Image from 'next/image'
 import NextLink from 'next/link'
 
-import { ModalContent, ModalDelete } from '../ui';
 import { useData } from '../../../hooks/useData'
+
+import { ModalContainer, ModalDelete } from '../ui';
 
 import { IAuthor } from '../../../interfaces';
 
@@ -21,24 +22,13 @@ export const AuthorCard:FC<Props> = ({ author }) => {
 
     const { deleteAuthor } = useData()
 
-    const showModalDelete = () => {
-        const body = document.querySelector('body')
-        body!.classList.add('fixed-body')
-        setModalDelete(true)
-    }
-
-    const hiddenModalDelete = () => {
-        const body = document.querySelector('body')
-        body!.classList.remove('fixed-body')
-        setModalDelete(false)
-    }
 
     const onDeleteAuthor = async( result: () => Promise<{ confirm: boolean }> ) => {
 
         const { confirm } = await result()
 
         if(!confirm){
-            hiddenModalDelete()
+            setModalDelete(false)
             return
         }
 
@@ -48,7 +38,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
 
         if(hasError){ return }
 
-        hiddenModalDelete()
+        setModalDelete(false)
     }
 
     return (
@@ -56,7 +46,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
             <div className="w-full sm:w-[290px] bg-white shadow-md px-10 py-12 rounded-xl">
                 <div className='flex gap-5 mb-5'>
                     <NextLink 
-                        href={`/admin/autores/${author.slug}`} 
+                        href={`/admin/autores/${author._id}`} 
                         className="block w-[100px] min-w-[100px] relative h-[100px] rounded-lg overflow-hidden group border-white border-8 shadow-lg"
                     >
                         {
@@ -80,7 +70,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                     </NextLink>
                     <div>
                         <NextLink 
-                            href={`/admin/autores/${author.slug}`}
+                            href={`/admin/autores/${author._id}`}
                             className="block font-bold mb-2 mt-1"
                         >
                             { author.name }
@@ -125,7 +115,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                 <div className='mt-10 flex justify-between gap-5'>
                     <div className='flex gap-5'>
                         <button
-                            onClick={showModalDelete}
+                            onClick={ ()=> setModalDelete(true) }
                             className="flex items-center text-red-600 hover:text-white bg-red-100 hover:bg-red-500 font-bold text-2xl py-2 px-4 rounded-md">
                             <i className='bx bx-trash'></i>
                         </button>
@@ -138,7 +128,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                     </div>
                     <div>
                         <NextLink 
-                            href={`/admin/autores/${author.slug}`} 
+                            href={`/admin/autores/${author._id}`} 
                             className="flex items-center gap-1 text-emerald-600 hover:text-white bg-emerald-100 hover:bg-emerald-500 py-2 px-5 rounded-md"
                         >
                             <i className='bx bx-show text-2xl mt-1'></i> <span className='font-medium text-2xl'>Ver</span>
@@ -148,14 +138,14 @@ export const AuthorCard:FC<Props> = ({ author }) => {
             </div>
 
             { modalDelete &&
-                <ModalContent>
+                <ModalContainer>
                     <ModalDelete
                         processing={ loading } 
                         title={'Eliminar autor'} 
                         subtitle={<>¿Desdea eliminar el autor <span className='font-semibold italic'>"{ author.name }"</span>?</>} 
                         onResult={ onDeleteAuthor }
                     />
-                </ModalContent>
+                </ModalContainer>
             }
         </>
     )

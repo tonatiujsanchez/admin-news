@@ -90,9 +90,10 @@ export const SideMenu = () => {
 
 
 
-const SidebarConatiner = styled.div`
+export const SidebarConatiner = styled.div`
 
     @media screen and (max-width: 767px) {
+
         .nav__logo,
         .nav__toggle,
         .nav__name {

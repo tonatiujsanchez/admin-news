@@ -9,9 +9,11 @@ import { LoadingLetters } from "../admin/utilities"
 interface Props {
     children: ReactNode
     title: string
+    isMain?: boolean
+
 }
 
-export const LayoutAdmin:FC<Props> = ({ children, title='' }) => {
+export const LayoutAdmin:FC<Props> = ({ children, title='', isMain=false }) => {
 
     const { showSideMenu } = useUI()
     const { user } = useAuth()
@@ -22,8 +24,10 @@ export const LayoutAdmin:FC<Props> = ({ children, title='' }) => {
             <Head>
                 <title>{`Admin ${title}`}</title>
             </Head>
-            <AdminLayoutContainer className='bg-admin min-h-screen'>
-                <SideMenu />
+            <AdminLayoutContainer className={`bg-admin min-h-screen ${ isMain ? 'pb-36' : 'pb-4' }`}>
+                <div className={`${isMain ? 'block' : 'hidden'} sm:block`}>
+                    <SideMenu />
+                </div>
                 <ProfileBar />
                 <main className={`container-admin section ${showSideMenu ? 'container-show-sidemenu' : ''}`}>
                 { !user
@@ -45,8 +49,7 @@ export const LayoutAdmin:FC<Props> = ({ children, title='' }) => {
 const AdminLayoutContainer = styled.div`
     position: relative;
     background-color: rgb(250, 250, 255);
-    padding-bottom: 12rem;
-
+    
     .container-admin {
         margin-left: 1rem;
         margin-right: 1rem;

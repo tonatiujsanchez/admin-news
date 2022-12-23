@@ -1,14 +1,15 @@
+import { NextPage } from 'next';
 import { LayoutAdmin } from '../../../components/layouts';
 
 
 
 
-const CategoriasPage = () => {
+const CategoriasPage:NextPage = () => {
 
 
     
     return (
-        <LayoutAdmin title={'- Categorías'}>
+        <LayoutAdmin title={'- Categorías'} isMain={true}>
             <h2>Categorias</h2>
         </LayoutAdmin>
     )

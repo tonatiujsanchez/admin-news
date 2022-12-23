@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react"
+import { FC, ReactNode, useEffect } from 'react';
 
 
 
@@ -7,7 +7,18 @@ interface Props {
     maxWidth?: string
 }
 
-export const ModalContent:FC<Props> = ({ children, maxWidth = 'max-w-4xl' }) => {
+export const ModalContainer:FC<Props> = ({ children, maxWidth = 'max-w-4xl' }) => {
+
+    useEffect(() => {
+        const body = document.querySelector('body')
+        body!.classList.add('fixed-body')
+    
+      return () => {
+        body!.classList.remove('fixed-body')
+      }
+    }, [])
+    
+
     return (
         <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
