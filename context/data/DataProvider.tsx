@@ -1,12 +1,13 @@
 import { FC, useReducer } from 'react'
 
 import axios from 'axios'
-import { toast } from 'react-toastify'
 
 import { DataContext, dataReducer } from './'
 
-import { IAuthor, IImage } from '../../interfaces'
 import { useAuth } from '../../hooks'
+
+import { IAuthor, ICategory, IImage } from '../../interfaces'
+import { notifyError, notifySuccess } from '../../utils/frontend'
 
 
 interface Props {
@@ -31,6 +32,7 @@ export interface DataState {
             data: IImage[],
         }
     },
+    categories: ICategory[],
     authors: IAuthor[];
 
 }
@@ -53,6 +55,7 @@ const DATA_INITIAL_STATE: DataState = {
             data: [],
         }
     },
+    categories: [],
     authors: [],
 }
 
@@ -64,14 +67,20 @@ export const DataProvider: FC<Props> = ({ children }) => {
     const [state, dispatch] = useReducer(dataReducer, DATA_INITIAL_STATE)
 
 
-    const notifySuccess = ( msg:string ) => toast.success(msg, {
-        theme: "colored",
-        autoClose: 1000
-    })
-    const notifyError = ( msg:string ) => toast.error(msg, {
-        theme: "colored",
-        autoClose: 3000
-    })
+    const resetCategories = async( categories: ICategory[] ):Promise< ICategory[] > => {
+
+        const categoriesMemo = categories.filter( category => {
+            category.subcategories = categories.filter(
+                subc => (subc.type === 'subcategory' && subc.category === category._id)
+            )
+            if (category.type === 'category') {
+                return category
+            }
+        })
+        dispatch({ type: '[DATA] - Refresh Categories', payload: categoriesMemo })
+        
+        return categoriesMemo
+    }
 
 
     // ===== ===== ===== ===== Images ===== ===== ===== =====
@@ -106,6 +115,82 @@ export const DataProvider: FC<Props> = ({ children }) => {
             }
         }
     }
+
+
+    // ===== ===== ===== ===== Categories ===== ===== ===== =====
+    // ===== ===== ===== ===== ========== ===== ===== ===== =====
+    const refreshCategories = async(): Promise<{ hasError: boolean; categories:ICategory[] }> => {
+
+        try {
+
+            const { data } = await axios.get(`/api/public/categories`)
+            const categories = await resetCategories(data)
+            dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
+
+            return {
+                hasError: false,
+                categories: categories
+            }  
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+
+                notifyError(message)
+                return {
+                    hasError: true,
+                    categories: []
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return {
+                hasError: true,
+                categories: []
+            }    
+
+        }
+    }
+
+    const addNewCategory = async(category:ICategory):Promise<{ hasError: boolean }> => {
+        try {
+            
+            const { data } = await axios.post('/api/admin/categories', category)
+
+
+            if ( data.type === 'category' ){
+
+                dispatch({ type: '[DATA] - Refresh Categories', payload: [ ...state.categories, data ] })
+
+            } else {
+
+                const categories = state.categories.map( cat => {
+                    if( cat._id === data.category ){
+                        cat.subcategories?.push( data )
+                    }
+                    return cat
+                })
+                dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
+
+            }
+
+            notifySuccess('Categorías creada')
+
+            return { hasError: false }
+
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
+
 
 
     // ===== ===== ===== ===== Authors ===== ===== ===== =====
@@ -228,6 +313,9 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Images
             addNewImage,
 
+            // Categories
+            refreshCategories,
+            addNewCategory,
             // Authors
             refreshAuthors,
             addNewAuthor,

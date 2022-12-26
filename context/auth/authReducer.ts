@@ -14,6 +14,7 @@ export const authReducer = (state: AuthState, action: AuthActionType): AuthState
         case '[Auth] - Login':
             return {
                 ...state,
+                isLoggedIn: true,
                 user: action.payload
             }
         default:

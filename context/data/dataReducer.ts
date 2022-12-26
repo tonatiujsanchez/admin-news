@@ -1,11 +1,13 @@
 import { DataState } from './';
 import { IAuthor } from '../../interfaces/IAuthor';
-import { IImage } from '../../interfaces';
+import { ICategory, IImage } from '../../interfaces';
 
 
 type DataActionType =
     | { type: '[DATA] - Add New Image', payload: IImage }
     
+    | { type: '[DATA] - Refresh Categories', payload: ICategory[] }
+
     | { type: '[DATA] - Refresh Authors', payload: IAuthor[] }
     | { type: '[DATA] - Add New Author', payload: IAuthor }
     | { type: '[DATA] - Update Author', payload: IAuthor }
@@ -28,8 +30,14 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
                 }
             }
 
+        // Categories
+        case '[DATA] - Refresh Categories':
+            return {
+                ...state,
+                categories: [...action.payload]
+            }
 
-         // Authors
+        // Authors
         case '[DATA] - Refresh Authors':
             return {
                 ...state,

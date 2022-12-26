@@ -142,7 +142,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                     <ModalDelete
                         processing={ loading } 
                         title={'Eliminar autor'} 
-                        subtitle={<>¿Desdea eliminar el autor <span className='font-semibold italic'>"{ author.name }"</span>?</>} 
+                        subtitle={<p className="text-2xl text-gray-500">¿Desdea eliminar el autor <span className='font-semibold italic'>{`"${author.name}"`}</span>?</p>} 
                         onResult={ onDeleteAuthor }
                     />
                 </ModalContainer>

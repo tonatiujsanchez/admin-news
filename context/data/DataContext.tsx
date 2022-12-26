@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { IAuthor, IImage } from '../../interfaces';
+import { IAuthor, ICategory, IImage } from '../../interfaces';
 
 
 interface ContextProps {
@@ -21,11 +21,15 @@ interface ContextProps {
             data: IImage[],
         }
     },
-    authors: IAuthor[]
+    categories: ICategory[],
+    authors: IAuthor[],
 
 
     // Methods
     addNewImage: (formData: any) => Promise<{ hasError: boolean; urlImage: string; }>
+
+    refreshCategories: () => Promise<{ hasError: boolean; categories: ICategory[]; }>
+    addNewCategory: (category: ICategory) => Promise<{ hasError: boolean; }>
 
     refreshAuthors: () => Promise<{ hasError: boolean; authors: IAuthor[]; }>
     addNewAuthor: (author: IAuthor) => Promise<{ hasError: boolean; }>

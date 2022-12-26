@@ -1,21 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { db } from '../../../../database'
-import { Author } from '../../../../models'
-import { IAuthor } from '../../../../interfaces'
-
+import { Category } from '../../../../models'
+import { ICategory } from '../../../../interfaces'
 
 type Data = 
     | { message: string }
-    | IAuthor[]
-    
+    | ICategory[]
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     switch (req.method) {
 
         case 'GET':
-            return getAuthors(res)
+            return getCategories(res)
 
         default:
             return res.status(400).json({ message: 'Bad request' })
@@ -23,15 +21,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 }
 
-const getAuthors = async (res:NextApiResponse<Data>) => {
+const getCategories = async (res:NextApiResponse<Data>) => {
 
     try {
-        
+
         await db.connect()
-        const authors = await Author.find().sort({ createdAt: 'ascending' }).lean()        
+        const categories = await Category.find().sort({ position: 'ascending' })
         await db.disconnect()
-    
-        return res.status(200).json( authors )
+
+        return res.status(200).json( categories )
+
     } catch (error) {
 
         await db.disconnect()

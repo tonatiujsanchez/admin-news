@@ -3,7 +3,6 @@ import { FC, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { useRouter } from 'next/router'
 
-import { toast } from 'react-toastify'
 import { useForm } from "react-hook-form"
 
 import { useUI } from "../../../hooks/useUI"
@@ -12,6 +11,7 @@ import { useData } from "../../../hooks/useData"
 import { LoadingCircle } from "../utilities"
 import { IAuthor } from "../../../interfaces"
 import { validations } from "../../../utils/shared"
+import { notifyError } from "../../../utils/frontend"
 
 
 const imageMimeType = /image\/(png|jpg|jpeg|gif|webp)/i;
@@ -38,7 +38,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
 
     const { addNewImage, addNewAuthor, updateAuthor } = useData()
 
-    const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset } = useForm<IAuthor>({
+    const { register, handleSubmit, formState:{ errors }, getValues, reset } = useForm<IAuthor>({
         defaultValues: {
             name: '',
             facebook: '',
@@ -68,7 +68,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
             })
             setPhoto( authorEdit.photo )
         }
-    }, [authorEdit])
+    }, [authorEdit, reset])
 
 
     // Photo
@@ -81,10 +81,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
         const fileSelected = e.target.files[0]
 
         if (!fileSelected.type.match(imageMimeType)) {
-            toast.error('Formato no válido', {
-                theme: "colored",
-                autoClose: 1000
-            })
+            notifyError('Formato no válido')
             return
         }
         
@@ -228,7 +225,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             )
                     }
                     <div>
-                        <h3 className="mb-5 font-semibold text-3xl">Redes Sociales</h3>
+                        <h3 className="mb-5 font-bold text-slate-800">Redes Sociales</h3>
                         <div className="mb-4">
                             <div className="flex items-center gap-2">
                                 <i className='bx bxl-facebook text-4xl'></i>
@@ -237,7 +234,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                     id="facebook"
                                     disabled={loadingSubmit}
                                     placeholder="@usuario"
-                                    className={`bg-admin rounded-md border p-3 flex-1 ${ !!errors.facebook && getValues('facebook') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                                    className={`bg-admin rounded-md border p-3 flex-1 ${ !!errors.facebook && getValues('facebook') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' }`}
                                     {...register('facebook',{
                                         validate: ( value ) => value ? validations.isSocialUsername( value ) : undefined
                                     })} 
@@ -256,7 +253,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                     id="twitter"
                                     disabled={loadingSubmit}
                                     placeholder="@usuario"
-                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.twitter && getValues('twitter') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800'}`} 
+                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.twitter && getValues('twitter') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200'}`} 
                                     {...register('twitter',{
                                         validate: ( value ) => value ? validations.isSocialUsername( value ) : undefined
                                     })} 
@@ -275,7 +272,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                     id="instagram"
                                     disabled={loadingSubmit}
                                     placeholder="@usuario"
-                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.instagram && getValues('instagram') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.instagram && getValues('instagram') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' }`}
                                     {...register('instagram', {
                                         validate: ( value ) => value ? validations.isSocialUsername( value ) : undefined
                                     })} 
@@ -294,7 +291,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                                     id="web"
                                     disabled={loadingSubmit}
                                     placeholder="https://sitio-web.com/"
-                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.web && getValues('web') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                                    className={`bg-admin rounded-md flex-1 border p-3 ${ !!errors.web && getValues('web') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' }`}
                                     {...register('web', {
                                         validate: ( value ) => value ? validations.isURLWebSite( value ) : undefined,
                                     })} 
@@ -316,15 +313,14 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                     />
                 </section>
                 <section className="bg-white p-5 sm:p-10 rounded-md sm:order-1 flex-1">
-                    <h2 className="mb-10 font-semibold text-4xl">Datos:</h2>
                     <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between">
                         <div className="flex flex-col gap-2 mb-4 w-full lg:w-[48%]">
-                            <label htmlFor="name">Nombre</label>
+                            <label htmlFor="name" className="font-bold text-slate-800">Nombre <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 id="name"
                                 disabled={loadingSubmit}
-                                className={`bg-admin rounded-md flex-1 border p-5 ${ !!errors.name ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`} 
+                                className={`bg-admin rounded-md flex-1 border p-5 ${ !!errors.name ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' }`} 
                                 { ...register("name", { 
                                         required: 'El nombre es requerido',
                                         validate: (value)=> value.trim() === '' ? 'El nombre es requerido' : undefined
@@ -341,12 +337,12 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             }
                         </div>
                         <div className="flex flex-col gap-2 mb-4 w-full lg:w-[48%]">
-                            <label htmlFor="email">Correo</label>
+                            <label htmlFor="email" className="font-bold text-slate-800">Correo</label>
                             <input
                                 type="text"
                                 id="email"
                                 disabled={loadingSubmit}
-                                className={`bg-admin rounded-md flex-1 border p-5 ${ !!errors.email && getValues('email') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }` }
+                                className={`bg-admin rounded-md flex-1 border p-5 ${ !!errors.email && getValues('email') ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' }` }
                                 {...register('email', {
                                     validate: (value)=> value ? validations.isEmail(value) : undefined
                                 })}
@@ -356,51 +352,51 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             
                         </div>
                         <div className="flex flex-col gap-2 mb-4 w-full lg:w-[48%]">
-                            <label htmlFor="phone">Telefono</label>
+                            <label htmlFor="phone" className="font-bold text-slate-800">Telefono</label>
                             <input
                                 type="text"
                                 id="phone"
                                 disabled={loadingSubmit}
-                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800" 
+                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800 disabled:border-slate-200" 
                                 {...register('phone')}
                             />
                         </div>
                         <div className="flex flex-col gap-2 mb-4 w-full lg:w-[48%]">
-                            <label htmlFor="occupation">Ocupación/Profesión</label>
+                            <label htmlFor="occupation" className="font-bold text-slate-800">Ocupación/Profesión</label>
                             <input
                                 type="text"
                                 id="occupation"
                                 disabled={loadingSubmit}
-                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800"
+                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800 disabled:border-slate-200"
                                 {...register('occupation')} 
                             />
                         </div>
                         <div className="flex flex-col gap-2 mb-4 w-full">
-                            <label htmlFor="description">Descripción</label>
+                            <label htmlFor="description" className="font-bold text-slate-800">Descripción</label>
                             <textarea
                                 id="description"
                                 disabled={loadingSubmit}
                                 cols={30}
                                 rows={10}
-                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800"
+                                className="bg-admin rounded-md flex-1 border p-5 hover:border-slate-800 disabled:border-slate-200"
                                 {...register('description')} 
                             >
                             </textarea>
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-end gap-4 mt-5">
+                    <div className="flex flex-col items-center justify-end gap-4 mt-5 sm:flex sm:flex-row">
                         <button
                             type="button"
                             onClick={onCalcel}
                             disabled={loadingSubmit}
-                            className="py-3 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed">
+                            className="py-4 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-white">
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={loadingSubmit}
-                            className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-3 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300">
+                            className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
                             {
                                 loadingSubmit
                                 ? <LoadingCircle />

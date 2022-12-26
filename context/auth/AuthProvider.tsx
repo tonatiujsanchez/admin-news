@@ -52,8 +52,6 @@ export const AuthProvider: FC<Props> = ({ children }) => {
 
             Cookies.remove(cookieAuthKey)
         }
-
-
     }
 
     const loginUser = async ( email:string, password:string ):Promise<boolean> => {

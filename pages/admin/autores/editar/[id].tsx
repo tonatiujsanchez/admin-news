@@ -69,9 +69,11 @@ const EditarAutorPage: NextPage = () => {
     }
 
     useEffect(() => {
+
         if(!id){ return }
         getAuthorById()
-    }, [id])
+
+    }, [id, getAuthorById])
 
 
 

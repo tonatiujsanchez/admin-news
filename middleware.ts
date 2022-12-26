@@ -11,9 +11,38 @@ export async function middleware( req: NextRequest ) {
     const token = req.cookies.get(cookieAuthKey)
     const { protocol, host } = req.nextUrl 
 
-
+    
     
     // ===== ===== ===== Frontend ===== ===== =====
+
+    if (
+        req.nextUrl.pathname.startsWith('/admin/autores') || 
+        req.nextUrl.pathname.startsWith('/admin/categorias') ||
+        req.nextUrl.pathname.startsWith('/admin/usuarios')
+    ) {
+
+        if (!token) {            
+            return NextResponse.redirect(`${protocol}//${host}/iniciar-sesion`)
+        }
+        
+        try {
+            const { payload } = await jose.jwtVerify(String(token.value), new TextEncoder().encode(process.env.JWT_SECRET_SEED))
+            
+            
+            if(payload.role !== 'admin'){
+                return NextResponse.redirect(`${protocol}//${host}/admin`)
+            } 
+    
+            return NextResponse.next()
+            
+        } catch (error) {
+            console.log(error)
+            return NextResponse.redirect(`${protocol}//${host}/iniciar-sesion`)
+        }
+        
+    }
+
+
     if( req.nextUrl.pathname.startsWith('/admin') ){
 
         if( !token ){
@@ -51,6 +80,31 @@ export async function middleware( req: NextRequest ) {
         }
     }
 
+    // ===== ===== ===== API ===== ===== =====
+
+    if (req.nextUrl.pathname.startsWith('/api/admin')) {
+
+        if (!token) {            
+            return NextResponse.redirect(new URL('/api/unauthorized', req.url))
+        }
+
+        try {
+            
+            const { payload } = await jose.jwtVerify(String(token.value), new TextEncoder().encode(process.env.JWT_SECRET_SEED))
+            
+            if(payload.role !== 'admin'){
+                return NextResponse.redirect(new URL('/api/unauthorized', req.url))
+            }
+
+            return NextResponse.next()
+
+        } catch (error) {
+
+            return NextResponse.redirect(new URL('/api/unauthorized', req.url))
+        }
+    }
+
+
 
 }
 
@@ -58,6 +112,13 @@ export async function middleware( req: NextRequest ) {
 export const config = {
     matcher: [
         '/admin/:path*',
+        '/admin/autores/:path*',
+        '/admin/categorias/:path*',
+        '/admin/usuarios/:path*',
+
         '/iniciar-sesion',
+
+        // Api
+        '/api/admin/:path*',
     ]
 }

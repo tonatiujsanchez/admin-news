@@ -16,8 +16,16 @@ interface Props {
 export const LayoutAdmin:FC<Props> = ({ children, title='', isMain=false }) => {
 
     const { showSideMenu } = useUI()
-    const { user } = useAuth()
+    const { user, isLoggedIn } = useAuth()
 
+    // if(!isLoggedIn){
+    //     return(
+    //         <div className="h-screen w-full flex justify-center items-center">
+    //             <LoadingLetters />
+    //             <p className="ml-3">Cargando...</p>
+    //         </div>
+    //     )
+    // }
 
     return (
         <>
@@ -32,7 +40,7 @@ export const LayoutAdmin:FC<Props> = ({ children, title='', isMain=false }) => {
                 <main className={`container-admin section ${showSideMenu ? 'container-show-sidemenu' : ''}`}>
                 { !user
                         ? (
-                            <div className="flex justify-center mt-64">
+                            <div className="flex justify-center mt-96">
                                 <LoadingLetters />
                             </div>
                         ):(

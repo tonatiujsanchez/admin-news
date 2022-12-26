@@ -11,12 +11,12 @@ import { LoadingAdmin } from '../../../components/admin/utilities';
 
 
 
-
 const AutoresPage:NextPage = () => {
 
     const [loading, setLoading] = useState(false)
 
-    const { refreshAuthors, authors } = useData()
+    const { refreshAuthors, authors } = useData()    
+
 
     const loadAuthors = async () => {
         setLoading(true)
@@ -25,9 +25,11 @@ const AutoresPage:NextPage = () => {
     }
 
     useEffect(() => {
+
         if (authors.length <= 0) {
             loadAuthors()
         }
+
     }, [loadAuthors])
 
 

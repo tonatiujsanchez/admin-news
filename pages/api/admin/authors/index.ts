@@ -36,7 +36,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 }
 
 
-const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
+const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
     const {
         name = '',
         facebook = '',
@@ -87,7 +87,7 @@ const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
 }
 
 
-const updateAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
+const updateAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 
     const { 
         _id, 
@@ -156,7 +156,7 @@ const updateAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
 }
 
 
-const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse) => {
+const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 
     const { idAuthor } = req.body
 

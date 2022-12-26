@@ -28,12 +28,12 @@ export const ModalDelete:FC<Props> = ({ processing = false, title, subtitle, onR
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                         <h3 className="text-3xl font-medium leading-6 text-gray-900" id="modal-title">{ title }</h3>
                         <div className="mt-4">
-                            <p className="text-2xl text-gray-500">{ subtitle }</p>
+                            { subtitle }
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="bg-gray-50 px-4 py-6 sm:flex sm:flex-row-reverse sm:px-6">
+            <div className="px-4 py-6 sm:flex sm:flex-row-reverse sm:px-6">
                 <button 
                     type="button" 
                     disabled={processing}
