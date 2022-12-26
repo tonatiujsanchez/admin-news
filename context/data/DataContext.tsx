@@ -22,14 +22,17 @@ interface ContextProps {
         }
     },
     categories: ICategory[],
+    categoriesList: ICategory[],
     authors: IAuthor[],
 
 
     // Methods
+    refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; }>
     addNewImage: (formData: any) => Promise<{ hasError: boolean; urlImage: string; }>
 
     refreshCategories: () => Promise<{ hasError: boolean; categories: ICategory[]; }>
     addNewCategory: (category: ICategory) => Promise<{ hasError: boolean; }>
+    updateCategory: (category: ICategory) => Promise<{ hasError: boolean; }>
     deleteCategory: (idCategory: string) => Promise<{ hasError: boolean; }>
 
     refreshAuthors: () => Promise<{ hasError: boolean; authors: IAuthor[]; }>

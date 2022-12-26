@@ -11,7 +11,6 @@ import { CategoryForm, CategoryItem } from '../../../components/admin/categories
 
 
 
-
 const CategoriasPage:NextPage = () => {
 
     const [loading, setLoading] = useState(false)
@@ -32,21 +31,7 @@ const CategoriasPage:NextPage = () => {
         }
     }, [loadCategories])
 
-    // const categoriesMemo = useMemo(() => {
-    //     return (
-    //         categories.filter(category => {
-
-    //             category.subcategories = categories.filter(
-    //                 subc => (subc.type === 'subcategory' && subc.category === category._id)
-    //             )
-    //             if (category.type === 'category') {
-    //                 return category
-    //             }
-    //         })
-    //     )
-    // }, [categories])
-
-
+    
     
     return (
         <LayoutAdmin title={'- Categorías'} isMain={true}>

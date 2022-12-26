@@ -1,4 +1,4 @@
-import { FC, useReducer } from 'react'
+import { FC, useReducer, useEffect, useMemo } from 'react';
 
 import axios from 'axios'
 
@@ -6,7 +6,7 @@ import { DataContext, dataReducer } from './'
 
 import { useAuth } from '../../hooks'
 
-import { IAuthor, ICategory, IImage } from '../../interfaces'
+import { IAuthor, ICategory, IImage, ImageStateData } from '../../interfaces'
 import { notifyError, notifySuccess } from '../../utils/frontend'
 
 
@@ -14,27 +14,15 @@ interface Props {
     children: JSX.Element
 }
 
+
 export interface DataState {
     images: {
-        articles: {
-            pageCount: number,
-            length: number,
-            data: IImage[],
-        },
-        authors: {
-            pageCount: number,
-            length: number,
-            data: IImage[],
-        },
-        users: {
-            pageCount: number,
-            length: number,
-            data: IImage[],
-        }
+        articles: ImageStateData,
+        authors: ImageStateData,
+        users: ImageStateData
     },
-    categories: ICategory[],
+    categoriesList: ICategory[]
     authors: IAuthor[];
-
 }
 
 const DATA_INITIAL_STATE: DataState = {
@@ -55,9 +43,11 @@ const DATA_INITIAL_STATE: DataState = {
             data: [],
         }
     },
-    categories: [],
+    categoriesList: [],
     authors: [],
 }
+
+const section_active_storage = 'images_section_active_ed4c1de1770480153a06fa2349f501f0'
 
 
 export const DataProvider: FC<Props> = ({ children }) => {
@@ -67,24 +57,68 @@ export const DataProvider: FC<Props> = ({ children }) => {
     const [state, dispatch] = useReducer(dataReducer, DATA_INITIAL_STATE)
 
 
-    const resetCategories = async( categories: ICategory[] ):Promise< ICategory[] > => {
-
-        const categoriesMemo = categories.filter( category => {
-            category.subcategories = categories.filter(
-                subc => (subc.type === 'subcategory' && subc.category === category._id)
-            )
-            if (category.type === 'category') {
-                return category
-            }
-        })
-        dispatch({ type: '[DATA] - Refresh Categories', payload: categoriesMemo })
-        
-        return categoriesMemo
+    const updateSectionAndPageInStorage = (section:string, page:number) => {
+        localStorage.setItem(section_active_storage, section)
+        localStorage.setItem(`section_page_storage_${section}_ed4c1de1770480153a06fa2349f501f0`, String( page ) )
     }
+
+    const categories:ICategory[] = useMemo(() => {
+        return (
+            state.categoriesList.filter(category => {
+
+                category.subcategories = state.categoriesList.filter(
+                    subc => (subc.type === 'subcategory' && subc.category === category._id)
+                )
+                if (category.type === 'category') {
+                    return category
+                }
+            })
+        )
+    }, [state.categoriesList])
+
 
 
     // ===== ===== ===== ===== Images ===== ===== ===== =====
-    // ===== ===== ===== ===== ===== ===== ===== ===== =====
+    // ===== ===== ===== ===== ===== ===== ===== ===== ======
+    const refreshImages = async( section:string,  page = 0 ):Promise<{ hasError: boolean }> => {        
+
+        try {
+
+            const skipStart = page * 10
+
+            const { data } = await axios.get(`/api/shared/images`, { params: { section, skipStart } })
+
+            if(data.images.length === 0){
+                return { hasError: false }
+            }
+
+            dispatch({ type: '[DATA] - Refresh Images', payload: {
+                section,
+                data: {
+                    data: data.images,
+                    length: data.length,
+                    pageCount: data.totalOfPages,
+                }
+            } })
+
+            updateSectionAndPageInStorage(section, page)
+
+            return { hasError: false }
+
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+
+    }
+
+
     const addNewImage = async( formData:any ):Promise<{ hasError:boolean; urlImage: string }> => {
 
         formData.append('user', user!._id)
@@ -124,12 +158,11 @@ export const DataProvider: FC<Props> = ({ children }) => {
         try {
 
             const { data } = await axios.get(`/api/public/categories`)
-            const categories = await resetCategories(data)
-            dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
+            dispatch({ type: '[DATA] - Refresh Categories List', payload: data })
 
             return {
                 hasError: false,
-                categories: categories
+                categories: data
             }  
         } catch (error) {
 
@@ -153,28 +186,13 @@ export const DataProvider: FC<Props> = ({ children }) => {
     }
 
     const addNewCategory = async(category:ICategory):Promise<{ hasError: boolean }> => {
+
         try {
             
             const { data } = await axios.post('/api/admin/categories', category)
+            dispatch({ type: '[DATA] - Add New Category To List', payload: data })
 
-
-            if ( data.type === 'category' ){
-
-                dispatch({ type: '[DATA] - Refresh Categories', payload: [ ...state.categories, data ] })
-
-            } else {
-
-                const categories = state.categories.map( cat => {
-                    if( cat._id === data.category ){
-                        cat.subcategories?.push( data )
-                    }
-                    return cat
-                })
-                dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
-
-            }
-
-            notifySuccess('Categorías creada')
+            notifySuccess('Categoría creada')
             return { hasError: false }
 
         } catch (error) {
@@ -189,30 +207,41 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const updateCategory = async(category:ICategory) => {
+
+        try {
+
+            const { data } = await axios.put('/api/admin/categories', category)
+            dispatch({ type: '[DATA] - Update Category From List', payload: data })
+
+            notifySuccess('Categoría actualizada')
+            return { hasError: false }
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+
+    }
     
     const deleteCategory = async( idCategory:string ):Promise<{ hasError: boolean }> => {
+
         try {
             const { data } = await axios.delete('/api/admin/categories', { 
                 data: {
                     idCategory
                 }
-            })           
-
-            if( data.type === 'category' ){
-
-                const categories = state.categories.filter( category => category._id !== data._id )
-                dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
-            } else {
-
-                const categories = state.categories.map( category => {
-                    if( category._id === data.category ){
-                        category.subcategories = category.subcategories?.filter( subcategory => subcategory._id !== data._id )
-                    }
-                    return category
-                })
-                dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
-            }
+            })
             
+            dispatch({ type: '[DATA] - Delete Category From List', payload: data.message })
+
+            notifySuccess('Categoría eliminada')
             return { hasError: false }
 
         } catch (error) {
@@ -347,13 +376,15 @@ export const DataProvider: FC<Props> = ({ children }) => {
     return (
         <DataContext.Provider value={{
             ...state,
-
+            categories,
             // Images
+            refreshImages,
             addNewImage,
 
             // Categories
             refreshCategories,
             addNewCategory,
+            updateCategory,
             deleteCategory,
             // Authors
             refreshAuthors,

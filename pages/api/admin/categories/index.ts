@@ -12,12 +12,16 @@ type Data =
     | { message: string }
     | ICategory
 
+
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     switch (req.method) {
 
         case 'POST':
             return addNewCategory(req, res)
+
+        case 'PUT':
+            return updateCategory(req, res)
 
         case 'DELETE':
             return deleteCategory(req, res)
@@ -27,6 +31,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
     }
 
 }
+
 
 const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 
@@ -78,6 +83,61 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
 
 }
 
+
+const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
+    const { _id = '', } = req.body
+
+    if( !isValidObjectId( _id ) ){
+        return res.status(400).json({ message: 'ID de Categoría no válido' })
+    }
+
+    try {
+        await db.connect()
+        const categoryToUpdate = await Category.findById(_id)
+
+        if (!categoryToUpdate) {
+            await db.disconnect()
+            return res.status(400).json({ message: 'No hay ninguna categoria con ese ID' })
+        }
+    
+        const {
+            title = categoryToUpdate.title,
+            tag = categoryToUpdate.tag,
+            position = categoryToUpdate.position,
+            type = categoryToUpdate.type,
+            category = categoryToUpdate.category,
+        } = req.body
+
+        if (title !== categoryToUpdate.title) {
+            categoryToUpdate.slug = slugify(title, { replacement: '-', lower: true })
+        }
+
+        if (type === 'subcategory') {
+            categoryToUpdate.category = category
+        } else {
+            categoryToUpdate.category = null
+        }
+
+        categoryToUpdate.title = title
+        categoryToUpdate.tag = tag
+        categoryToUpdate.position = position
+        categoryToUpdate.type = type
+        
+        await categoryToUpdate.save()
+        await db.disconnect()
+
+        return res.status(200).json(categoryToUpdate)
+    
+    } catch (error) {
+
+        await db.disconnect()
+        console.log(error)
+        return res.status(500).json({ message: 'Algo salio mal, revisar la consola del servidor' })
+    }
+
+}
+
+
 const deleteCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 
     const { idCategory } = req.body
@@ -99,7 +159,7 @@ const deleteCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         await category.deleteOne()
         await db.disconnect()
 
-        return res.status(200).json(category)
+        return res.status(200).json({ message: idCategory })
 
     } catch (error) {
 

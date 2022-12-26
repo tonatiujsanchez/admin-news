@@ -19,7 +19,7 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
     const [loading, setLoading] = useState(false)
 
-    const { addNewCategory, categories } = useData()
+    const { categories, addNewCategory, updateCategory } = useData()
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset } = useForm<ICategory>({
         defaultValues: {
@@ -71,18 +71,20 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
         if(categoryEdit) {
 
+            const { hasError } = await updateCategory({ _id:categoryEdit._id, type, category, title, tag })
+            setLoading(false)
             
-            // TODO: Editar categoría
-
+            if(hasError){ return }
+            setShowCategoryForm(false)
 
         } else {
+
             position = categories.length + 1
+
             const { hasError } = await addNewCategory({ type, category, title, tag, position  })
-            
             setLoading(false)
 
             if(hasError){ return }
-            
             setShowCategoryForm(false)
         }
         

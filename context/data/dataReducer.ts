@@ -1,12 +1,17 @@
 import { DataState } from './';
 import { IAuthor } from '../../interfaces/IAuthor';
-import { ICategory, IImage } from '../../interfaces';
+import { ICategory, IImage, ImageState } from '../../interfaces';
 
 
 type DataActionType =
+
+    | { type: '[DATA] - Refresh Images', payload: ImageState }
     | { type: '[DATA] - Add New Image', payload: IImage }
     
-    | { type: '[DATA] - Refresh Categories', payload: ICategory[] }
+    | { type: '[DATA] - Refresh Categories List', payload: ICategory[] }
+    | { type: '[DATA] - Add New Category To List', payload: ICategory }
+    | { type: '[DATA] - Update Category From List', payload: ICategory }
+    | { type: '[DATA] - Delete Category From List', payload: string }
 
     | { type: '[DATA] - Refresh Authors', payload: IAuthor[] }
     | { type: '[DATA] - Add New Author', payload: IAuthor }
@@ -18,6 +23,17 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
     switch (action.type) {
 
         // Images
+        case '[DATA] - Refresh Images':
+            return {
+                ...state,
+                images: {
+                    ...state.images,
+                    [action.payload.section]: {
+                        ...action.payload.data
+                    }
+                }
+            }
+
         case '[DATA] - Add New Image':
             return {
                 ...state,
@@ -30,12 +46,30 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
                 }
             }
 
-        // Categories
-        case '[DATA] - Refresh Categories':
+        // Categories List
+        case '[DATA] - Refresh Categories List':
             return {
                 ...state,
-                categories: [...action.payload]
+                categoriesList: [...action.payload]
             }
+
+        case '[DATA] - Add New Category To List':
+            return {
+                ...state,
+                categoriesList: [...state.categoriesList, action.payload]
+            }
+
+        case '[DATA] - Update Category From List':
+            return {
+                ...state,
+                categoriesList: state.categoriesList.map( category => category._id === action.payload._id ? action.payload : category )
+            }
+        
+        case '[DATA] - Delete Category From List':
+            return {
+                ...state,
+                categoriesList: state.categoriesList.filter( category => category._id !== action.payload )
+            }        
 
         // Authors
         case '[DATA] - Refresh Authors':

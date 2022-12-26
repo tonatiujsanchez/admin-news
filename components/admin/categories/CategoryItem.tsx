@@ -4,6 +4,7 @@ import { FC, useState } from 'react'
 import { useData } from '../../../hooks/useData'
 import { ICategory } from '../../../interfaces'
 import { ModalContainer, ModalDelete } from '../ui'
+import { CategoryForm } from './CategoryForm'
 
 
 interface Props {
@@ -13,14 +14,22 @@ interface Props {
 export const CategoryItem:FC<Props> = ({ category }) => {
 
     const [showModalDelete, setShowModalDelete] = useState(false)
+    const [showModalUpdate, setShowModalUpdate] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const [openSubcategories, setOpenSubcategories] = useState(false)
     
+    const [categoryToUpdate, setCategoryToUpdate] = useState<ICategory>()
     const [categoryDelete, setCategoryDelete] = useState<ICategory>()
+
 
     const { deleteCategory } = useData()
 
+    
+    const onShowModalEditCategory = (categorySelected: ICategory) => {
+        setCategoryToUpdate(categorySelected)
+        setShowModalUpdate(true)
+    }
 
     const onShowModalDelete = ( categorySelected: ICategory ) => {
         setCategoryDelete(categorySelected)
@@ -67,7 +76,7 @@ export const CategoryItem:FC<Props> = ({ category }) => {
                     <div className="flex gap-5">
                         <button
                             className='flex items-center text-sky-600 hover:text-white bg-sky-100 hover:bg-sky-500 font-bold text-3xl py-2 px-3 rounded-md'
-                            // onClick={() => onEditCategory(category)}
+                            onClick={() => onShowModalEditCategory(category)}
                         >
                             <i className='bx bx-edit'></i>
                         </button>
@@ -91,7 +100,7 @@ export const CategoryItem:FC<Props> = ({ category }) => {
                                             <div className="flex gap-5">
                                                 <button
                                                     className='text-sky-700 hover:text-sky-800'
-                                                    // onClick={() => onEditCategory(subc)}
+                                                    onClick={() => onShowModalEditCategory(subcategory)}
                                                 >
                                                     <i className='bx bx-edit'></i>
                                                 </button>
@@ -122,6 +131,16 @@ export const CategoryItem:FC<Props> = ({ category }) => {
                                 </p>
                             } 
                             onResult={ onDeleteCategory } 
+                        />
+                    </ModalContainer>
+                )
+            }
+            {
+                showModalUpdate && categoryToUpdate && (
+                    <ModalContainer heightFull={true}>
+                        <CategoryForm 
+                            setShowCategoryForm={ setShowModalUpdate }
+                            categoryEdit={ categoryToUpdate }
                         />
                     </ModalContainer>
                 )
