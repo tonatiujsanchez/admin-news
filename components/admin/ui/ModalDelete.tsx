@@ -5,7 +5,7 @@ interface Props {
     processing?: boolean
     title: string
     subtitle: ReactNode
-    onResult: ( method: () => Promise<{ confirm: boolean }> ) => void
+    onResult: ( result: () => Promise<{ confirm: boolean }> ) => void
 }
 
 export const ModalDelete:FC<Props> = ({ processing = false, title, subtitle, onResult }) => {

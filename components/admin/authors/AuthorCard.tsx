@@ -17,7 +17,7 @@ interface Props {
 export const AuthorCard:FC<Props> = ({ author }) => {
 
 
-    const [modalDelete, setModalDelete] = useState(false)
+    const [showModalDelete, setShowModalDelete] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const { deleteAuthor } = useData()
@@ -28,7 +28,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
         const { confirm } = await result()
 
         if(!confirm){
-            setModalDelete(false)
+            setShowModalDelete(false)
             return
         }
 
@@ -38,7 +38,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
 
         if(hasError){ return }
 
-        setModalDelete(false)
+        setShowModalDelete(false)
     }
 
     return (
@@ -115,7 +115,7 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                 <div className='mt-10 flex justify-between gap-5'>
                     <div className='flex gap-5'>
                         <button
-                            onClick={ ()=> setModalDelete(true) }
+                            onClick={ ()=> setShowModalDelete(true) }
                             className="flex items-center text-red-600 hover:text-white bg-red-100 hover:bg-red-500 font-bold text-2xl py-2 px-4 rounded-md">
                             <i className='bx bx-trash'></i>
                         </button>
@@ -137,15 +137,17 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                 </div>
             </div>
 
-            { modalDelete &&
-                <ModalContainer>
-                    <ModalDelete
-                        processing={ loading } 
-                        title={'Eliminar autor'} 
-                        subtitle={<p className="text-2xl text-gray-500">¿Desdea eliminar el autor <span className='font-semibold italic'>{`"${author.name}"`}</span>?</p>} 
-                        onResult={ onDeleteAuthor }
-                    />
-                </ModalContainer>
+            { 
+                showModalDelete && (
+                    <ModalContainer>
+                        <ModalDelete
+                            processing={ loading } 
+                            title={'Eliminar autor'} 
+                            subtitle={<p className="text-2xl text-gray-500">¿Desdea eliminar el autor <span className='font-semibold italic'>{`"${author.name}"`}</span>?</p>} 
+                            onResult={ onDeleteAuthor }
+                        />
+                    </ModalContainer>
+                )
             }
         </>
     )

@@ -30,6 +30,7 @@ interface ContextProps {
 
     refreshCategories: () => Promise<{ hasError: boolean; categories: ICategory[]; }>
     addNewCategory: (category: ICategory) => Promise<{ hasError: boolean; }>
+    deleteCategory: (idCategory: string) => Promise<{ hasError: boolean; }>
 
     refreshAuthors: () => Promise<{ hasError: boolean; authors: IAuthor[]; }>
     addNewAuthor: (author: IAuthor) => Promise<{ hasError: boolean; }>

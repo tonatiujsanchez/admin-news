@@ -1,3 +1,4 @@
+import { isValidObjectId } from 'mongoose'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import slugify from "slugify"
@@ -17,6 +18,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
         case 'POST':
             return addNewCategory(req, res)
+
+        case 'DELETE':
+            return deleteCategory(req, res)
 
         default:
             return res.status(400).json({ message: 'Endpoint NO existente' })
@@ -73,3 +77,35 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
     }
 
 }
+
+const deleteCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
+
+    const { idCategory } = req.body
+
+    if( !isValidObjectId( idCategory ) ){
+        return res.status(400).json({ message: 'ID de Categoría no válido' })
+    }
+
+    try {
+
+        await db.connect()
+        const category = await Category.findById(idCategory)
+
+        if (!category) {
+            await db.disconnect()
+            return res.status(400).json({ message: 'Categoría NO encontrada' })
+        }
+
+        await category.deleteOne()
+        await db.disconnect()
+
+        return res.status(200).json(category)
+
+    } catch (error) {
+
+        await db.disconnect()
+        console.log(error)
+        return res.status(500).json({ message: 'Algo salio mal, revisar la consola del servidor' })
+    }
+
+} 

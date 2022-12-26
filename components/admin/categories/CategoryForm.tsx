@@ -71,6 +71,9 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
         if(categoryEdit) {
 
+            
+            // TODO: Editar categoría
+
 
         } else {
             position = categories.length + 1

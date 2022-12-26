@@ -175,7 +175,6 @@ export const DataProvider: FC<Props> = ({ children }) => {
             }
 
             notifySuccess('Categorías creada')
-
             return { hasError: false }
 
         } catch (error) {
@@ -189,6 +188,45 @@ export const DataProvider: FC<Props> = ({ children }) => {
             return { hasError: true }
         }
     }
+
+    
+    const deleteCategory = async( idCategory:string ):Promise<{ hasError: boolean }> => {
+        try {
+            const { data } = await axios.delete('/api/admin/categories', { 
+                data: {
+                    idCategory
+                }
+            })           
+
+            if( data.type === 'category' ){
+
+                const categories = state.categories.filter( category => category._id !== data._id )
+                dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
+            } else {
+
+                const categories = state.categories.map( category => {
+                    if( category._id === data.category ){
+                        category.subcategories = category.subcategories?.filter( subcategory => subcategory._id !== data._id )
+                    }
+                    return category
+                })
+                dispatch({ type: '[DATA] - Refresh Categories', payload: categories })
+            }
+            
+            return { hasError: false }
+
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
 
 
 
@@ -316,6 +354,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Categories
             refreshCategories,
             addNewCategory,
+            deleteCategory,
             // Authors
             refreshAuthors,
             addNewAuthor,
