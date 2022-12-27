@@ -11,6 +11,8 @@ export interface ICategory{
     category: string | null
     subcategories?: ISubcategory[]
 
+    active?   : boolean
+    
     createdAt?: string
     updatedAt?: string
 }
@@ -27,9 +29,12 @@ export interface ISubcategory{
 
     category: string | null
     subcategories?: any[]
+    
+    active?   : boolean
 
     createdAt?: string
     updatedAt?: string
+
 }
 
 export type ITypeCategory = 'category'|'subcategory';

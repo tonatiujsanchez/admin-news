@@ -27,7 +27,7 @@ interface ContextProps {
 
 
     // Methods
-    refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; }>
+    refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; imagesResp: IImage[]; }>
     addNewImage: (formData: any) => Promise<{ hasError: boolean; urlImage: string; }>
 
     refreshCategories: () => Promise<{ hasError: boolean; categories: ICategory[]; }>

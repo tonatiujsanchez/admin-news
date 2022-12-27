@@ -26,7 +26,7 @@ const getCategories = async (res:NextApiResponse<Data>) => {
     try {
 
         await db.connect()
-        const categories = await Category.find().sort({ position: 'ascending' })
+        const categories = await Category.find({ active: true }).sort({ position: 'ascending' })
         await db.disconnect()
 
         return res.status(200).json( categories )

@@ -40,7 +40,8 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         tag = '',
         position = null,
         type = '',
-        category = null
+        category = null,
+        active = true
     } = req.body
 
     if ([title.trim(), tag.trim(), type.trim()].includes('')) {
@@ -63,7 +64,8 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         position,
         slug,
         type,
-        category
+        category,
+        active
     })
 
     try {
@@ -85,6 +87,7 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
 
 
 const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
+    
     const { _id = '', } = req.body
 
     if( !isValidObjectId( _id ) ){
@@ -106,6 +109,7 @@ const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
             position = categoryToUpdate.position,
             type = categoryToUpdate.type,
             category = categoryToUpdate.category,
+            active = categoryToUpdate.active,
         } = req.body
 
         if (title !== categoryToUpdate.title) {
@@ -122,6 +126,7 @@ const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         categoryToUpdate.tag = tag
         categoryToUpdate.position = position
         categoryToUpdate.type = type
+        categoryToUpdate.active = active
         
         await categoryToUpdate.save()
         await db.disconnect()

@@ -11,3 +11,9 @@ export const notifyError = ( msg:string ) => toast.error(msg, {
     theme: "colored",
     autoClose: 3000
 })
+
+export const notifyDark = ( msg:string ) => toast.dark(msg, {
+    theme: "dark",
+    hideProgressBar: true,
+    autoClose: 300
+})

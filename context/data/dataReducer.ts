@@ -1,11 +1,11 @@
 import { DataState } from './';
 import { IAuthor } from '../../interfaces/IAuthor';
-import { ICategory, IImage, ImageState } from '../../interfaces';
+import { ICategory, IImage, IImageState } from '../../interfaces';
 
 
 type DataActionType =
 
-    | { type: '[DATA] - Refresh Images', payload: ImageState }
+    | { type: '[DATA] - Refresh Images', payload: IImageState }
     | { type: '[DATA] - Add New Image', payload: IImage }
     
     | { type: '[DATA] - Refresh Categories List', payload: ICategory[] }

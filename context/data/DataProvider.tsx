@@ -6,7 +6,7 @@ import { DataContext, dataReducer } from './'
 
 import { useAuth } from '../../hooks'
 
-import { IAuthor, ICategory, IImage, ImageStateData } from '../../interfaces'
+import { IAuthor, ICategory, IImage, IImages } from '../../interfaces'
 import { notifyError, notifySuccess } from '../../utils/frontend'
 
 
@@ -16,11 +16,7 @@ interface Props {
 
 
 export interface DataState {
-    images: {
-        articles: ImageStateData,
-        authors: ImageStateData,
-        users: ImageStateData
-    },
+    images: IImages,
     categoriesList: ICategory[]
     authors: IAuthor[];
 }
@@ -80,16 +76,19 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
     // ===== ===== ===== ===== Images ===== ===== ===== =====
     // ===== ===== ===== ===== ===== ===== ===== ===== ======
-    const refreshImages = async( section:string,  page = 0 ):Promise<{ hasError: boolean }> => {        
+    const refreshImages = async( section:string,  page = 0 ):Promise<{ hasError: boolean, imagesResp: IImage[] }> => {        
 
         try {
 
             const skipStart = page * 10
-
+            
             const { data } = await axios.get(`/api/shared/images`, { params: { section, skipStart } })
 
             if(data.images.length === 0){
-                return { hasError: false }
+                return { 
+                    hasError: false,
+                    imagesResp: data  
+                }
             }
 
             dispatch({ type: '[DATA] - Refresh Images', payload: {
@@ -103,17 +102,26 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
             updateSectionAndPageInStorage(section, page)
 
-            return { hasError: false }
+            return { 
+                hasError: false,
+                imagesResp:[]
+            }
 
         } catch (error) {
             if(axios.isAxiosError(error)){
                 const { message } = error.response?.data as { message: string }
                 notifyError(message)
-                return { hasError: true }
+                return {
+                    hasError: true,
+                    imagesResp:[]
+                }
             }
 
             notifyError('Hubo un error inesperado')
-            return { hasError: true }
+            return {
+                hasError: true,
+                imagesResp:[]
+            }
         }
 
     }

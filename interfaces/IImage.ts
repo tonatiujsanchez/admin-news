@@ -1,3 +1,6 @@
+
+export type ISectionImage = 'articles'|'authors'|'users';
+
 export interface IImage {
     _id?   : string
 
@@ -12,16 +15,20 @@ export interface IImage {
     updatedAt?: string
 }
 
-export type ISectionImage = 'articles'|'authors'|'users';
-
-
-export interface ImageState{
-    section: string,
-    data: ImageStateData
-}
-
-export interface ImageStateData {
+export interface IImageStateData {
     pageCount: number,
     length: number,
     data: IImage[],
+}
+
+// 
+export interface IImages {
+    articles: IImageStateData,
+    authors: IImageStateData,
+    users: IImageStateData,
+}
+
+export interface IImageState{
+    section: string,
+    data: IImageStateData
 }

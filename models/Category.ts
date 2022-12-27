@@ -29,7 +29,8 @@ export const categorySchema = new Schema({
     category: {
         type: mongoose.Types.ObjectId,
         default: null
-    }
+    },
+    active  : { type: Boolean, default: true }
 },{
     timestamps: true,
 })
