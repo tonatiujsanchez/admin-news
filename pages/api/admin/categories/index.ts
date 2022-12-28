@@ -27,7 +27,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
             return deleteCategory(req, res)
 
         default:
-            return res.status(400).json({ message: 'Endpoint NO existente' })
+            return res.status(400).json({ message: 'Bad request' })
     }
 
 }

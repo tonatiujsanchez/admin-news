@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { isValidObjectId } from 'mongoose'
 import slugify from "slugify"
 
 import { db } from '../../../../database'
@@ -7,7 +8,6 @@ import { Author, Image } from '../../../../models'
 import { IAuthor } from '../../../../interfaces'
 
 import { v2 as cloudinary } from 'cloudinary'
-import { isValidObjectId } from 'mongoose'
 cloudinary.config( process.env.CLOUDINARY_URL || '' )
 
 
@@ -30,7 +30,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
             return deleteAuthor(req, res)
 
         default:
-            return res.status(400).json({ message: 'Endpoint NO existente' })
+            return res.status(400).json({ message: 'Bad request' })
     }
 
 }
@@ -126,8 +126,8 @@ const updateAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         if( authorToUpdate.photo && authorToUpdate.photo !== photo ){
             const [ fileId, extencion ] = (authorToUpdate.photo).substring( (authorToUpdate.photo).lastIndexOf('/') + 1 ).split('.')
             await Promise.all([
-                await Image.deleteOne({ name:  fileId}),
-                await cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+                Image.deleteOne({ name:  fileId}),
+                cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
             ])
 
         }
@@ -178,8 +178,8 @@ const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         if( author.photo ){
             const [ fileId, extencion ] = (author.photo).substring( (author.photo).lastIndexOf('/') + 1 ).split('.')
             await Promise.all([
-                await Image.deleteOne({ name:  fileId}),
-                await cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+                Image.deleteOne({ name:  fileId}),
+                cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
             ])
         }
 

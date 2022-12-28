@@ -7,6 +7,7 @@ type DataActionType =
 
     | { type: '[DATA] - Refresh Images', payload: IImageState }
     | { type: '[DATA] - Add New Image', payload: IImage }
+    | { type: '[DATA] - Delete Image', payload: IImage }
     
     | { type: '[DATA] - Refresh Categories List', payload: ICategory[] }
     | { type: '[DATA] - Add New Category To List', payload: ICategory }
@@ -45,6 +46,19 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
                     }
                 }
             }
+            
+        case '[DATA] - Delete Image':
+            return {
+                ...state,
+                images: {
+                    ...state.images,
+                    [action.payload.section]: {
+                        ...state.images[action.payload.section],
+                        data: state.images[action.payload.section].data.filter( image => ( image._id !== action.payload._id ) )
+                    }
+                }
+            }
+    
 
         // Categories List
         case '[DATA] - Refresh Categories List':

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, Fragment, useEffect, useRef, useState } from 'react'
 import { NextPage } from 'next'
 
 import { useAuth, useData } from '../../../hooks'
@@ -9,6 +9,7 @@ import { TitlePage } from '../../../components/admin/ui'
 import { LoadingAdmin, LoadingCircle } from '../../../components/admin/utilities'
 
 import { IImage, ISectionImage } from '../../../interfaces'
+import { notifyError, notifySuccess } from '../../../utils/frontend'
 
 
 
@@ -43,8 +44,8 @@ const ImagenesPage: NextPage = () => {
     const [actualPage, setActualPage] = useState<number>(0)
     const [imagesList, setImagesList] = useState<IImage[]>([])
 
-    const [files, setFiles] = useState([])
-    const fileInputRef = useRef(null)
+    const [files, setFiles] = useState<FileList | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const { user } = useAuth()
     const { refreshImages, addNewImage, images } = useData()
@@ -53,7 +54,7 @@ const ImagenesPage: NextPage = () => {
     // Load images
     const loadImages = async () => {
 
-        setFiles([])
+        setFiles(null)
 
         setLoading(true)
         const { hasError, imagesResp } = await refreshImages(sectionActive as string, actualPage)
@@ -70,8 +71,6 @@ const ImagenesPage: NextPage = () => {
     useEffect(()=>{
         const imagesSectionActive = localStorage.getItem(section_active_storage) || buttonsNav[0].id
         const imagesPageActive = Number(localStorage.getItem(`section_page_storage_${imagesSectionActive}_ed4c1de1770480153a06fa2349f501f0`)) || 0
-
-        console.log( imagesSectionActive, user );
 
         if(imagesSectionActive === 'authors' && user?.role !== 'admin'){
             setSectionActive(buttonsNav[0].id)
@@ -105,6 +104,55 @@ const ImagenesPage: NextPage = () => {
 
 
     // TODO: Upload images
+    const handleFilesChange = ({ target }:ChangeEvent<HTMLInputElement>) => {
+
+        if (!target.files || target.files.length === 0) {
+            setFiles(null)
+            return
+        }
+
+        setFiles(target.files as FileList)
+    }
+
+
+    const uploadImages = async () => {
+
+        if (!files) {
+            return notifyError('No hay archivos seleccionados para subir')
+        }
+
+        setLoadingUploadImages(true)
+
+        const imagesFormData = Array.from(files)
+
+        // TODO:
+        const imagesFormDataFns = imagesFormData.map( file => {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('section', sectionActive as ISectionImage)
+
+            return addNewImage(formData)
+        })
+        
+        setLoadingUploadImages(false)
+        // try {
+        //     await Promise.all(imagesFormData)
+        //     setFiles(null)
+        //     setLoadingUploadImages(false)
+        //     fileInputRef.current!.value = ''
+        //     notifySuccess('Imagenes subidas correctamente')
+
+        // } catch (error) {
+
+        //     setFiles(null)
+        //     setLoadingUploadImages(false)
+        //     fileInputRef.current!.value = ''
+        //     notifyError('Hubo un error al intentar subir la imagen')
+        // }
+
+    }
+
+
 
 
     return (
@@ -129,19 +177,19 @@ const ImagenesPage: NextPage = () => {
                         <div className="mb-5">
                             <input
                                 type="file"
-                                // disabled={loadingUploadImages}
+                                disabled={loadingUploadImages}
                                 ref={fileInputRef}
                                 accept="image/png, image/jpg, image/jpeg, image/gif, image/webp"
                                 multiple
-                                // onChange={handleFilesChange}
+                                onChange={handleFilesChange}
                             />
                         </div>
                         <div className="w-full mb-5 flex flex-col gap-5 sm:flex-row sm:justify-between">
                             <div>
                                 <button
                                     className={`bg-sky-500 hover:bg-sky-600 px-8 py-5 font-semibold rounded-md color-admin w-full sm:w-auto ml-auto flex justify-center min-w-[200px] gap-1 ${ loadingUploadImages ? 'disabled:bg-sky-400' : 'disabled:bg-sky-200' }`}
-                                    // onClick={uploadImages}
-                                    disabled={files.length === 0 || loadingUploadImages}
+                                    onClick={uploadImages}
+                                    disabled={!files || loadingUploadImages}
                                 >
                                     {
                                         loadingUploadImages

@@ -81,7 +81,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
         try {
 
             const skipStart = page * 10
-            
+
             const { data } = await axios.get(`/api/shared/images`, { params: { section, skipStart } })
 
             if(data.images.length === 0){
@@ -127,12 +127,12 @@ export const DataProvider: FC<Props> = ({ children }) => {
     }
 
 
-    const addNewImage = async( formData:any ):Promise<{ hasError:boolean; urlImage: string }> => {
+    const addNewImage = async( formData:FormData ):Promise<{ hasError:boolean; urlImage: string }> => {
 
-        formData.append('user', user!._id)
+        formData.append('user', user!._id as string)
 
         try {
-            const { data } = await axios.post('/api/shared/images', formData)
+            const { data } = await axios.post('/api/shared/images/upload', formData)
             dispatch({ type: '[DATA] - Add New Image', payload: data })
 
             return { 
@@ -157,6 +157,37 @@ export const DataProvider: FC<Props> = ({ children }) => {
             }
         }
     }
+
+    const deleteImage = async( image: IImage ):Promise<{ hasError: boolean }> => {
+
+        try {            
+
+            const { data } = await axios.delete('/api/shared/images', { 
+                data: {
+                    idImage: image._id 
+                }
+            })
+
+            dispatch({ type: '[DATA] - Delete Image', payload: image })
+
+            notifySuccess('Imagen eliminada')
+            return { hasError: false }
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            console.log(error);
+            return { hasError: true }
+        }
+    }
+
+
+
 
 
     // ===== ===== ===== ===== Categories ===== ===== ===== =====
@@ -388,6 +419,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Images
             refreshImages,
             addNewImage,
+            deleteImage,
 
             // Categories
             refreshCategories,

@@ -20,7 +20,7 @@ export const ModalDelete:FC<Props> = ({ processing = false, title, subtitle, onR
 
     return (
         <>
-            <div className="bg-white px-4 pt-8 pb-6 sm:py-10 sm:px-8 ">
+            <div className="bg-white px-4 pt-8 pb-6 sm:py-10 sm:px-8 sm:w-[600px]">
                 <div className="sm:flex sm:items-start sm:gap-2">
                     <div className="mx-auto flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0">
                         <i className='bx bx-trash text-red-600 text-3xl'></i>
