@@ -40,7 +40,6 @@ export const ImageItem:FC<Props> = ({ image }) => {
     const { deleteImage } = useData()
 
 
-
     const onDeleteImage = async ( result: () => Promise<{ confirm: boolean }> ) => {
 
         const { confirm } = await result()
@@ -62,13 +61,6 @@ export const ImageItem:FC<Props> = ({ image }) => {
         notifyDark('Se copio URL de la image')
     }, [])
 
-
-    // const placeholders = await Promise.all(
-    //     imageUrls.map(async (url) => {
-    //       const { base64 } = await getPlaiceholder(url);
-    //       return base64;
-    //     })
-    //   );
 
     return (
         <>

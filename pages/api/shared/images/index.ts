@@ -124,10 +124,7 @@ const getImages = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
 
 const deleteImage = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 
-
     const { idImage } = req.body
-
-    console.log( req.body );
     
 
     if (!isValidObjectId(idImage)) {

@@ -30,6 +30,7 @@
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.41.0",
+    "react-paginate": "^8.1.4",
     "react-toastify": "^9.1.1",
     "slugify": "^1.6.5",
     "typescript": "4.9.4"

@@ -1,6 +1,8 @@
 import { ChangeEvent, Fragment, useEffect, useRef, useState } from 'react'
 import { NextPage } from 'next'
 
+import ReactPaginate from 'react-paginate'
+
 import { useAuth, useData } from '../../../hooks'
 
 import { LayoutAdmin } from '../../../components/layouts'
@@ -95,7 +97,7 @@ const ImagenesPage: NextPage = () => {
     }, [sectionActive, images])
 
 
-    // Change images
+    // Change section images
     const updateSection = ( section:ISectionImage ) => {
         setSectionActive(section)
         const imagesPageActive = Number(localStorage.getItem(`section_page_storage_${section}_ed4c1de1770480153a06fa2349f501f0`)) || 0
@@ -103,7 +105,7 @@ const ImagenesPage: NextPage = () => {
     }
 
 
-    // TODO: Upload images
+    //Upload images
     const handleFilesChange = ({ target }:ChangeEvent<HTMLInputElement>) => {
 
         if (!target.files || target.files.length === 0) {
@@ -123,35 +125,34 @@ const ImagenesPage: NextPage = () => {
 
         setLoadingUploadImages(true)
 
-        const imagesFormData = Array.from(files)
+        const filesArr = Array.from(files)
 
-        // TODO:
-        const imagesFormDataFns = imagesFormData.map( file => {
+        const imagesFormData = filesArr.map( file => {
             const formData = new FormData()
             formData.append('file', file)
             formData.append('section', sectionActive as ISectionImage)
-
-            return addNewImage(formData)
+            return formData
         })
-        
-        setLoadingUploadImages(false)
-        // try {
-        //     await Promise.all(imagesFormData)
-        //     setFiles(null)
-        //     setLoadingUploadImages(false)
-        //     fileInputRef.current!.value = ''
-        //     notifySuccess('Imagenes subidas correctamente')
 
-        // } catch (error) {
+        try {
+            await Promise.all( imagesFormData.map( imgFormData => addNewImage( imgFormData ) ))
+            setFiles(null)
+            setLoadingUploadImages(false)
+            fileInputRef.current!.value = ''
+            notifySuccess('Imagenes subidas correctamente')
 
-        //     setFiles(null)
-        //     setLoadingUploadImages(false)
-        //     fileInputRef.current!.value = ''
-        //     notifyError('Hubo un error al intentar subir la imagen')
-        // }
+        } catch (error) {
+            setLoadingUploadImages(false)
+            notifyError('Hubo un error al intentar subir la imagen')
+        }
 
     }
 
+    const handlePageClick = async(event: {selected: number}) => {    
+               
+        setActualPage(event.selected)
+        await refreshImages(sectionActive as string, event.selected)
+    }
 
 
 
@@ -228,7 +229,28 @@ const ImagenesPage: NextPage = () => {
                         </div>
 
                         <div className="py-10 relative">
-                            <ImageList images={imagesList} />
+                            <div>
+                                <ImageList images={imagesList} />
+                                {
+                                    sectionActive &&
+                                    <div className="flex justify-end mt-16">
+                                        {
+                                            images[sectionActive].pageCount > 1 &&
+                                            <ReactPaginate
+                                                previousLabel={ <i className={`bx bx-chevron-left text-4xl opacity-50 ${actualPage === 0 ?'':'hover:opacity-100' }`}></i> }
+                                                breakLabel="..."
+                                                nextLabel={ <i className={`bx bx-chevron-right text-4xl opacity-50 ${(actualPage + 1) === images[sectionActive].pageCount ?'':'hover:opacity-100' }`}></i> }
+                                                onPageChange={handlePageClick}
+                                                pageCount={ images[sectionActive].pageCount }
+                                                forcePage={actualPage}
+                                                className="flex justify-end gap-2"
+                                                pageLinkClassName="border-2 border-transparent opacity-50 px-5 hover:border-b-sky-500 hover:opacity-100 py-2 font-semibold"
+                                                activeLinkClassName="border-2 border-sky-500 opacity-100 py-2 rounded"
+                                            />
+                                        }
+                                    </div>
+                                }
+                            </div>
                             
                             {
                                 loadingUploadImages &&
