@@ -92,7 +92,7 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col sm:w-[600px]">
             <header className="py-10 px-8 sm:px-10">
                 <h3 className="text-center font-bold text-4xl">{categoryEdit ? `Editando: ${ categoryEdit.title }` : 'Nueva Categoría'}</h3>
             </header>

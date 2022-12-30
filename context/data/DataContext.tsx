@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { IAuthor, ICategory, IImage } from '../../interfaces';
+import { IAuthor, ICategory, IImage, IUser } from '../../interfaces';
 
 
 interface ContextProps {
@@ -24,7 +24,7 @@ interface ContextProps {
     categories: ICategory[],
     categoriesList: ICategory[],
     authors: IAuthor[],
-
+    users: IUser[],
 
     // Methods
     refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; imagesResp: IImage[]; }>
@@ -40,6 +40,9 @@ interface ContextProps {
     addNewAuthor: (author: IAuthor) => Promise<{ hasError: boolean; }>
     updateAuthor: (author: IAuthor) => Promise<{ hasError: boolean; }>
     deleteAuthor: (idAuthor: string) => Promise<{ hasError: boolean; }>
+
+    refreshUsers: () => Promise<{ hasError: boolean; users: IUser[]; }>
+    addNewUser: (user: IUser) => Promise<{ hasError: boolean; }>
 }
 
 

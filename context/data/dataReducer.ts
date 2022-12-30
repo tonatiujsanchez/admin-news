@@ -1,6 +1,6 @@
 import { DataState } from './';
 import { IAuthor } from '../../interfaces/IAuthor';
-import { ICategory, IImage, IImageState } from '../../interfaces';
+import { ICategory, IImage, IImageState, IUser } from '../../interfaces';
 
 
 type DataActionType =
@@ -18,6 +18,13 @@ type DataActionType =
     | { type: '[DATA] - Add New Author', payload: IAuthor }
     | { type: '[DATA] - Update Author', payload: IAuthor }
     | { type: '[DATA] - Delete Author', payload: string }
+    
+    | { type: '[DATA] - Refresh Users', payload: IUser[] }
+    | { type: '[DATA] - Add New User', payload: IUser }
+    | { type: '[DATA] - Update User', payload: IUser }
+    | { type: '[DATA] - Delete User', payload: string }
+
+
 
 export const dataReducer = (state: DataState, action: DataActionType): DataState => {
 
@@ -110,6 +117,30 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
                 authors: state.authors.filter( author => author._id !== action.payload )
             }
         
+        // Users
+        case '[DATA] - Refresh Users':
+            return {
+                ...state,
+                users: [...action.payload]
+            }
+
+        case '[DATA] - Add New User':
+            return {
+                ...state,
+                users: [ ...state.users, action.payload ]
+            }
+
+        case '[DATA] - Update User':
+            return {
+                ...state,
+                users: state.users.map( user => user._id === action.payload._id ? action.payload : user )
+            }
+
+        case '[DATA] - Delete User':
+            return {
+                ...state,
+                users: state.users.filter( user => ( user._id !== action.payload ) )
+            }
         default:
             return state
     }

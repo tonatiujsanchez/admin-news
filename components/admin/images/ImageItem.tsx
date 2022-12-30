@@ -1,30 +1,15 @@
 import { FC, useCallback, useState } from "react"
 import Image from "next/image"
 
-// import Modal from 'react-modal'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
 
-import { useData } from "../../../hooks/useData"
-import { LoadingCircle } from "../utilities"
-import { IImage } from "../../../interfaces"
-import { notifyDark, sizeFileFormatter } from "../../../utils/frontend"
+import { useData } from "../../../hooks"
+
 import { ModalContainer } from '../ui/ModalContainer';
 import { ModalDeleteImage } from '../ui/ModalDeleteImage';
+import { notifyDark, sizeFileFormatter } from "../../../utils/frontend"
 
-// const customStyles = {
-//     overlay: {
-//         backgroundColor: 'rgba(0, 0, 0, 0.8)'
-//     },
-//     content: {
-//         top: '50%',
-//         left: '50%',
-//         right: 'auto',
-//         bottom: 'auto',
-//         marginRight: '-50%',
-//         transform: 'translate(-50%, -50%)',
-//     },
-// }
-// Modal.setAppElement('#__next')
+import { IImage } from "../../../interfaces"
 
 
 interface Props {

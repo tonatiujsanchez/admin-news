@@ -4,7 +4,8 @@ export interface IUser{
     email   : string
     password: string
     role    : string
-    photo?:   string
+    photo?  :   string
+    active? :   boolean
 
     createdAt?: string;
     updatedAt?: string;

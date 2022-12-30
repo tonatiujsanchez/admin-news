@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../database'
-import { Category } from '../../models';
+import { Category, User } from '../../models';
 
 type Data = {
     message: string
@@ -15,7 +15,7 @@ export default async function handler( req: NextApiRequest, res: NextApiResponse
 
     // await db.connect()
 
-    // await Category.updateMany({}, { active: true })
+    // await User.updateMany({}, { active: true })
     
     // await db.disconnect()
 

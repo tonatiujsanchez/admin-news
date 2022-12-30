@@ -17,6 +17,8 @@ export const userSchema = new Schema({
         }
     },
     photo: { type: String },
+    
+    active  : { type: Boolean, default: true },
 },{
     timestamps: true,
 })

@@ -6,7 +6,7 @@ import { DataContext, dataReducer } from './'
 
 import { useAuth } from '../../hooks'
 
-import { IAuthor, ICategory, IImage, IImages } from '../../interfaces'
+import { IAuthor, ICategory, IImage, IImages, IUser } from '../../interfaces'
 import { notifyError, notifySuccess } from '../../utils/frontend'
 
 
@@ -19,6 +19,7 @@ export interface DataState {
     images: IImages,
     categoriesList: ICategory[]
     authors: IAuthor[];
+    users: IUser[];
 }
 
 const DATA_INITIAL_STATE: DataState = {
@@ -41,6 +42,7 @@ const DATA_INITIAL_STATE: DataState = {
     },
     categoriesList: [],
     authors: [],
+    users: [],
 }
 
 const section_active_storage = 'images_section_active_ed4c1de1770480153a06fa2349f501f0'
@@ -410,6 +412,64 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
     }
 
+
+    // ===== ===== ===== ===== users ===== ===== ===== ======
+    // ===== ===== ===== ===== ===== ===== ===== ===== ======
+    const refreshUsers = async(): Promise<{ hasError:boolean; users: IUser[] }> => {
+
+        try {
+
+            const { data } = await axios.get('/api/admin/users')
+            dispatch({ type: '[DATA] - Refresh Users', payload: data })
+
+            return { 
+                hasError: true,
+                users: data
+            }
+
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { 
+                    hasError: true,
+                    users: []
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { 
+                hasError: true,
+                users: []
+            }
+
+        }
+    }
+
+    const addNewUser = async( user: IUser  ):Promise<{ hasError: boolean }> => {
+
+        try {
+            const { data } = await axios.post(`/api/admin/users`, user )
+            dispatch({ type: '[DATA] - Add New User', payload: data })
+
+            notifySuccess('Usuario agregado')
+            return { hasError: false }
+            
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
+
     
 
     return (
@@ -430,7 +490,10 @@ export const DataProvider: FC<Props> = ({ children }) => {
             refreshAuthors,
             addNewAuthor,
             updateAuthor,
-            deleteAuthor
+            deleteAuthor,
+            // Users
+            refreshUsers,
+            addNewUser,
         }}>
             {children}
         </DataContext.Provider>
