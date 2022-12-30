@@ -3,6 +3,7 @@ import { useState } from "react"
 import NextLink from 'next/link'
 
 import { useAuth } from "../../../hooks"
+import Image from 'next/image';
 
 export const ProfileBar = () => {
 
@@ -29,12 +30,25 @@ export const ProfileBar = () => {
                             <div>
                                 <div
                                     onClick={() => setShowProfileOptions(!showProfileOptions)} 
-                                    className="w-14 h-14 rounded-full overflow-hidden relative cursor-pointer group border">
-                                    <img
-                                        src={ user.photo ? user.photo : '/assets/admin/imgs/no-image-author.png' }
-                                        alt={ user.name }
-                                        className="h-full w-full object-cover object-center lg:h-full lg:w-full bg-gray-200 aspect-w-1 aspect-h-1 group-hover:opacity-75 lg:aspect-none"
-                                    />
+                                    className="relative w-14 h-14 rounded-full overflow-hidden cursor-pointer group border bg-white">
+                                    {
+                                        user.photo 
+                                        ?(
+                                            <Image
+                                                priority
+                                                fill
+                                                sizes="(max-width: 125px) 125px"
+                                                src={user.photo}
+                                                alt={user.name}
+                                                className='cover rounded-full bg-gray-200 border-2 border-white aspect-w-1 aspect-h-1 overflow-hidden group-hover:opacity-75 lg:aspect-none'        
+                                            />
+                                        ):(
+                                            <div className="w-full h-full flex justify-center items-center rounded-full bg-gray-200 border-2 border-white">
+                                                <p className="font-bold text-3xl text-slate-800 uppercase">{user.name.slice(0, 1)}</p>
+                                            </div>
+                                        )
+                                    }
+                                    
                                 </div>
                                 {
                                     showProfileOptions &&

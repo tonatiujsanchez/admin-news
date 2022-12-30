@@ -351,7 +351,6 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                         disabled={loadingSubmit}
                         onClick={onCalcel}
                         className="py-4 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-white"
-
                     >
                         Cancelar
                     </button>

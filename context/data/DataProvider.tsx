@@ -518,9 +518,28 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const updatePassword = async( userId:string, password:string ):Promise<{ hasError: boolean }> => {       
 
+        try {
 
-    
+            const { data } = await axios.put('/api/admin/users/change-password',{ userId, password })
+
+            notifySuccess(data.message)
+            return { hasError: false }
+
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
 
     return (
         <DataContext.Provider value={{
@@ -546,6 +565,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             addNewUser,
             updateUser,
             deleteUser,
+            updatePassword,
         }}>
             {children}
         </DataContext.Provider>
