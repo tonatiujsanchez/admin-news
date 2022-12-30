@@ -1,17 +1,15 @@
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react"
-import NextLink from "next/link"
 import { useRouter } from "next/router"
+import Image from "next/image"
+import NextLink from "next/link"
 
 import { useForm } from "react-hook-form"
 import { toast } from 'react-toastify'
 
-
+import { useData } from "../../../hooks"
 import { validations } from "../../../utils/shared"
-import { useData } from "../../../hooks/useData"
 import { LoadingCircle } from "../utilities"
 import { IUser } from "../../../interfaces"
-import Image from "next/image"
-
 
 
 
@@ -57,10 +55,7 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
         }
     })
 
-    const { 
-        addNewUser, 
-        // updateUser, 
-        addNewImage } = useData()
+    const { addNewUser, updateUser, addNewImage } = useData()
 
     const password = useRef({})
     password.current = watch("password", "")
@@ -140,11 +135,10 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
 
 
     const onUserSubmit = async ({ role, name, email, password }:IUserForm) => {
-        setLoadingSubmit(true)
 
+        setLoadingSubmit(true)
         // Subir foto
         let newImageUrl =  null
-        
         if(file){
 
             const formData = new FormData()
@@ -164,18 +158,18 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
 
         if( userEdit ){
             // Editar
-            // const newUser = {
-            //     ...userEdit,
-            //     role,
-            //     name,
-            //     email,
-            //     photo : newImageUrl ? newImageUrl : photo
-            // }
-            // const { hasError } = await updateUser(newUser)
-            // if(hasError){
-            //     setLoadingSubmit(false)
-            //     return
-            // }
+            const newUser = {
+                ...userEdit,
+                role,
+                name,
+                email,
+                photo : newImageUrl ? newImageUrl : photo
+            }
+            const { hasError } = await updateUser(newUser)
+            if(hasError){
+                setLoadingSubmit(false)
+                return
+            }
 
         }else{
             // Nuevo            
@@ -302,8 +296,11 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 {
                  userEdit
                     ?<div className="text-2xl ml-2">
-                        <NextLink href={`/admin/usuarios/cambiar-password/${userEdit._id}`} passHref>
-                            <a className="text-blue-500 hover:text-blue-800">Cambiar contraseña</a>
+                        <NextLink 
+                            href={`/admin/usuarios/cambiar-password/${userEdit._id}`}
+                            className="text-blue-500 hover:text-blue-800"
+                        >
+                            Cambiar contraseña
                         </NextLink>
                     </div>    
                     :<>

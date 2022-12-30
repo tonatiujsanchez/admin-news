@@ -15,7 +15,7 @@ import { IAuthor } from '../../../../interfaces'
 
 
 
-const EditarAutorPage: NextPage = () => {
+const EditarAutorPage:NextPage = () => {
 
     const [author, setAuthor] = useState<IAuthor>()
     const [loading, setLoading] = useState(false)
@@ -27,7 +27,7 @@ const EditarAutorPage: NextPage = () => {
     const { authors, refreshAuthors } = useData()
 
 
-    const LoadAuthorsAndGetById = async() => {
+    const loadAuthorsAndGetById = async() => {
 
         const { hasError, authors: authorsResp  } = await refreshAuthors()
 
@@ -52,14 +52,14 @@ const EditarAutorPage: NextPage = () => {
 
         if( authors.length === 0 ){
 
-            await LoadAuthorsAndGetById()
+            await loadAuthorsAndGetById()
 
         } else {
 
             const authorView = authors.find( author => author._id === id )
 
             if( !authorView ){
-                router.replace('/admin/autores')
+                return router.replace('/admin/autores')
             }
 
             setAuthor(authorView)
@@ -78,10 +78,11 @@ const EditarAutorPage: NextPage = () => {
 
 
     return (
-        <LayoutAdmin title={'Editar autor'}>
+        <LayoutAdmin title="- Editar Autor">
             {
                 loading || !author 
-                ?(<div className="flex justify-center mt-96">
+                ?(
+                    <div className="flex justify-center mt-96">
                         <LoadingAdmin />
                     </div>
                 ):(

@@ -15,7 +15,7 @@ import { IAuthor } from '../../../interfaces';
 
 
 
-const DetallesAutorPage: NextPage = () => {
+const DetallesAutorPage:NextPage = () => {
 
     const [author, setAuthor] = useState<IAuthor>()
     const [loading, setLoading] = useState(false)
@@ -76,7 +76,7 @@ const DetallesAutorPage: NextPage = () => {
 
 
     return (
-        <LayoutAdmin title={`- ${author?.name}`} >
+        <LayoutAdmin title="- Autor" >
             {
                 loading || !author
                     ? <div className="flex justify-center mt-96">

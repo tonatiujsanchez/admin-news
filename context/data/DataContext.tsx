@@ -43,6 +43,8 @@ interface ContextProps {
 
     refreshUsers: () => Promise<{ hasError: boolean; users: IUser[]; }>
     addNewUser: (user: IUser) => Promise<{ hasError: boolean; }>
+    updateUser: (user: IUser) => Promise<{ hasError: boolean; }>
+    deleteUser: (idUser: string) => Promise<{ hasError: boolean; }>
 }
 
 

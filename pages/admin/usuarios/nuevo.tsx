@@ -10,7 +10,7 @@ const NuevoUsuarioPage:NextPage = () => {
     return (
         <LayoutAdmin title="- Nuevo Usuario" >
             <div className="mb-5 flex gap-2 items-center py-3">
-                <TitlePage title="Nuevo usuario" />
+                <TitlePage title="Nuevo Usuario" />
             </div>
             <UserForm />
         </LayoutAdmin>

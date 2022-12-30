@@ -423,7 +423,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             dispatch({ type: '[DATA] - Refresh Users', payload: data })
 
             return { 
-                hasError: true,
+                hasError: false,
                 users: data
             }
 
@@ -469,6 +469,56 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const updateUser = async (user: IUser):Promise<{ hasError: boolean }> => {
+        try {
+            
+            const { data } = await axios.put('/api/admin/users', user)
+            dispatch({ type: '[DATA] - Update User', payload: data })
+
+            notifySuccess('Usuario actualizado')
+            return { hasError: false }
+
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
+    const deleteUser = async( idUser:string ):Promise<{ hasError: boolean }> => {
+
+        try {
+            
+            const { data } = await axios.delete('/api/admin/users', {
+                data: {
+                    idUser
+                }
+            })
+            dispatch({ type: '[DATA] - Delete User', payload: data.message })
+
+            notifySuccess('Usuario eliminado')
+            return { hasError: false }
+
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
+
 
     
 
@@ -476,11 +526,11 @@ export const DataProvider: FC<Props> = ({ children }) => {
         <DataContext.Provider value={{
             ...state,
             categories,
+            
             // Images
             refreshImages,
             addNewImage,
             deleteImage,
-
             // Categories
             refreshCategories,
             addNewCategory,
@@ -494,6 +544,8 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Users
             refreshUsers,
             addNewUser,
+            updateUser,
+            deleteUser,
         }}>
             {children}
         </DataContext.Provider>

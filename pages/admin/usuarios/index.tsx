@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react"
-import { LinkPrimary, TitlePage } from "../../../components/admin/ui"
-import { UserItem } from "../../../components/admin/users"
-import { LoadingAdmin } from "../../../components/admin/utilities"
-import { LayoutAdmin } from "../../../components/layouts"
+import { NextPage } from 'next'
+
 import { useAuth, useData } from "../../../hooks"
 
+import { LayoutAdmin } from "../../../components/layouts"
+import { UserItem } from "../../../components/admin/users"
+import { LinkPrimary, TitlePage } from "../../../components/admin/ui"
+import { LoadingAdmin } from "../../../components/admin/utilities"
 
 
-const UsuariosPage = () => {
+
+const UsuariosPage:NextPage = () => {
 
     const [loading, setLoading] = useState(false)
 
@@ -30,7 +33,7 @@ const UsuariosPage = () => {
 
 
     return (
-        <LayoutAdmin title="- Usuarios" >
+        <LayoutAdmin title="- Usuarios" isMain={true}>
             <div className="mb-5 flex gap-2 items-center py-3">
                 <TitlePage title="Usuarios" />
                 <button

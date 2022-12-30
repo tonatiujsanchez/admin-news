@@ -6,6 +6,8 @@ import styled from "@emotion/styled"
 import { useData } from "../../../hooks/useData"
 import { IUser } from "../../../interfaces"
 import Image from "next/image"
+import { ModalContainer } from '../ui/ModalContainer';
+import { ModalDelete } from "../ui"
 
 
 interface Props {
@@ -15,34 +17,29 @@ interface Props {
 
 export const UserItem:FC<Props> = ({ user }) => {
 
-    const router = useRouter()
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [loadingDelete, setLoadingDelete] = useState(false)
 
-    // const { deleteUser } = useData()
+    const router = useRouter()
 
-    
-    const handleShowModalDelete = () => {
-        // const body = document.querySelector('body')
-        // body.classList.add('fixed-body')
-        setShowDeleteModal(true)
-    }
+    const { deleteUser } = useData()
 
-    const handleHiddenModalDelete = () => {
-        // const body = document.querySelector('body')
-        // body.classList.remove('fixed-body')
-        setShowDeleteModal(false)
-    }
 
-    const onDeleteAuthor = async() => {
+    const onDeleteUser = async( result: () => Promise<{ confirm: boolean; }> ) => {
+
+        const { confirm } = await result()
+
+        if( !confirm ){
+            return setShowDeleteModal(false)
+        }
+        
         setLoadingDelete(true)
-        // const { hasError } = await deleteUser(user._id)
+        const { hasError } = await deleteUser(user._id!)
+        setLoadingDelete(false)
 
-        // if(hasError){
-        //     setLoadingDelete(false)
-        //     return
-        // }
-        handleHiddenModalDelete()
+        if(hasError){ return }
+
+        setShowDeleteModal(false)
     }
 
     const onEditUser = () => {
@@ -91,43 +88,27 @@ export const UserItem:FC<Props> = ({ user }) => {
                     </button>
                     <button
                         className='flex items-center text-red-600 hover:text-white bg-red-100 hover:bg-red-500 font-bold text-3xl py-2 px-3 rounded-md'
-                        onClick={ handleShowModalDelete }>
+                        onClick={ ()=> setShowDeleteModal(true) }>
                         <i className='bx bx-trash' ></i>
                     </button>
                 </div>
             </div>
-            {/* <Modal
-                isOpen={showDeleteModal}
-                style={customStyles}>
-                <div className="p-5">
-                    <header className="text-center">
-                        <div className='text-center text-7xl mb-2 text-red-600'>
-                            <i className='bx bx-trash'></i>
-                        </div>
-                        <h3 className='font-bold text-4xl mb-5'>Eliminar usuario</h3>
-                        <p className="text-center text-2xl mb-2">{`Desea eliminar a: ${user.name}`}</p>
-                    </header>
-                    <div className='flex items-center justify-center gap-2 mt-10'>
-                        <button
-                            disabled={loadingDelete}
-                            onClick={handleHiddenModalDelete}
-                            className="py-3 px-5 uppercase w-full rounded-md cursor-pointer transition-colors">
-                            Cancelar
-                        </button>
-                        <button
-                            onClick={onDeleteAuthor}
-                            disabled={loadingDelete}
-                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 uppercase w-full rounded-md cursor-pointer transition-colors min-w-[110px] flex justify-center disabled:bg-red-300">
-                            { loadingDelete 
-                                ?<LoadingCircle />
-                                :<span>
-                                    Eliminar
-                                 </span>
-                            }
-                        </button>
-                    </div>
-                </div>
-            </Modal> */}
+            {
+                showDeleteModal && (
+                    <ModalContainer>
+                        <ModalDelete
+                            processing={loadingDelete} 
+                            title={"Eliminar usuario"} 
+                            subtitle={
+                                <p className="text-2xl text-gray-500">
+                                    ¿Desdea eliminar al usuario <span className='font-semibold italic'>{`"${user.name}"`}</span>?
+                                </p>
+                            } 
+                            onResult={onDeleteUser}
+                        />
+                    </ModalContainer>
+                )
+            }
         </>
     )
 }

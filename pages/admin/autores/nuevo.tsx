@@ -10,7 +10,7 @@ const AutorNuevoPage:NextPage = () => {
     return (
         <LayoutAdmin title="- Nuevo Autor" >
         <div className="mb-5 flex gap-2 items-center py-3">
-            <TitlePage title="Nuevo autor" />
+            <TitlePage title="Nuevo Autor" />
         </div>
         <div className='max-w-[1200px] mx-auto'>
             <AuthorForm />

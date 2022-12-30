@@ -1,12 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { isValidObjectId } from 'mongoose'
 import bcryptjs from 'bcryptjs'
 
 import { db } from '../../../../database'
-import { User } from '../../../../models'
+import { Image, User } from '../../../../models'
 import { validations } from '../../../../utils/shared'
-
 import { IUser } from '../../../../interfaces'
+
+import { v2 as cloudinary } from 'cloudinary'
+cloudinary.config( process.env.CLOUDINARY_URL || '' )
 
 
 type Data = 
@@ -129,9 +132,18 @@ const updateUser = async ( req:NextApiRequest, res:NextApiResponse<Data> ) => {
         role  = userUpdate.role, 
         name  = userUpdate.name, 
         email = userUpdate.email, 
-        photo = userUpdate.photo,
+        photo = null,
         active = userUpdate.active, 
     } = req.body
+
+    
+    if( userUpdate.photo && userUpdate.photo !== photo ){
+        const [ fileId, extencion ] = (userUpdate.photo).substring( (userUpdate.photo).lastIndexOf('/') + 1 ).split('.')
+        await Promise.all([
+            Image.deleteOne({ name: fileId }),
+            cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+        ])
+    }
 
     try {
         userUpdate.role = role
@@ -153,24 +165,35 @@ const updateUser = async ( req:NextApiRequest, res:NextApiResponse<Data> ) => {
 }
 
 
-
 const deleteUser = async ( req:NextApiRequest, res:NextApiResponse<Data> ) => {
 
-    const { _id } = req.body
+    const { idUser } = req.body
+
+    if( !isValidObjectId( idUser ) ){
+        return res.status(400).json({ message: 'ID de Autor no válido' })
+    }
 
     try {
 
         await db.connect()
-        const user = await User.findById(_id)
+        const user = await User.findById(idUser)
 
         if( !user ){
             return res.status(400).json({ message: 'No hay ningun usuario con ese ID' })
+        }
+
+        if( user.photo ){
+            const [ fileId, extencion ] = (user.photo).substring( (user.photo).lastIndexOf('/') + 1 ).split('.')
+            await Promise.all([
+                Image.deleteOne({ name:  fileId}),
+                cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
+            ])
         }
         
         await user.deleteOne()
         await db.disconnect()
 
-        return res.status(200).json({ message: 'Usuario eliminado correctamente' })
+        return res.status(200).json({ message: idUser })
 
     } catch (error) {
 

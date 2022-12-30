@@ -37,7 +37,7 @@ const buttonsNav:IButtonsNav[] = [
 
 const section_active_storage = 'images_section_active_ed4c1de1770480153a06fa2349f501f0'
 
-const ImagenesPage: NextPage = () => {
+const ImagenesPage:NextPage = () => {
 
     const [loading, setLoading] = useState(false)
     const [loadingUploadImages, setLoadingUploadImages] = useState(false)
@@ -157,7 +157,7 @@ const ImagenesPage: NextPage = () => {
 
 
     return (
-        <LayoutAdmin title={'- Categorías'} isMain={true}>
+        <LayoutAdmin title={'- Imagenes'} isMain={true}>
             <div className="mb-5 sm:mb-0 flex gap-2 items-center py-3">
                 <TitlePage title="Imagenes" />
                 <button

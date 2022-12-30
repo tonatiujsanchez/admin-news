@@ -159,7 +159,6 @@ const updateAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
 
     const { idAuthor } = req.body
-
     
     if( !isValidObjectId( idAuthor ) ){
         return res.status(400).json({ message: 'ID de Autor no válido' })
