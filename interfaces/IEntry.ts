@@ -12,7 +12,7 @@ export interface IEntry {
     inFrontPage : boolean
     slug?       : string
     category    : IEntryCategory
-    subcategory : IEntryCategory
+    subcategory : IEntryCategory | null
     author      : IEntryAuthor
     views       : number
     

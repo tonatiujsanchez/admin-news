@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
-import { IEntry } from '../../../interfaces';
+import { ICategory, IEntry, IEntryCategory, ISubcategory } from '../../../interfaces';
 import { SelectImage } from '../ui';
+import { SelectCategories } from './SelectCategories';
 
 
 
@@ -13,6 +14,18 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset  } = useForm<IEntry>()
+
+
+    const handleSetCategory = ( category:IEntryCategory, subcategory?:IEntryCategory ) => {
+
+        setValue('category', category, { shouldValidate: true })
+        
+        if( subcategory ){
+            setValue('subcategory', subcategory, { shouldValidate: true })
+        }else{
+            setValue('subcategory', null, { shouldValidate: true })
+        }
+    }
 
     const handleSetImageBanner = ( imageUrl?:string ) => {
         setValue('banner', imageUrl, { shouldValidate: true })
@@ -53,7 +66,11 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-20 sm:items-start mb-4 sm:mb-10">
                 <div className="flex-1 flex flex-col gap-4 mb-4 sm:order-2">
-                    <p>Category</p>
+                    <SelectCategories
+                        category={ getValues('category') }
+                        subcategory={ getValues('subcategory') }
+                        handleSelectCategory={handleSetCategory}
+                    />
                     <p>Author</p>
                     <p>Date</p>
                 </div>
