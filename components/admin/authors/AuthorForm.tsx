@@ -196,7 +196,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                     {
                         fileDataURL || photo
                             ? (
-                                <div className="relative group mb-5 flex justify-center w-[full] h-80 shadow mx-auto">
+                                <div className="relative group mb-5 flex justify-center w-full h-80 shadow mx-auto">
                                     <Image
                                         priority
                                         fill
