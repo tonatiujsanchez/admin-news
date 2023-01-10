@@ -1,8 +1,12 @@
-import { FC } from 'react';
-import { useForm } from 'react-hook-form';
-import { ICategory, IEntry, IEntryCategory, ISubcategory } from '../../../interfaces';
-import { SelectImage } from '../ui';
-import { SelectCategories } from './SelectCategories';
+import { FC } from 'react'
+
+import { useForm } from 'react-hook-form'
+
+import { SelectCategories } from './SelectCategories'
+import { SelectImage } from '../ui'
+import { IEntry, IEntryCategory } from '../../../interfaces'
+import { IEntryAuthor } from '../../../interfaces/IEntry';
+import { SelectAuthors } from './SelectAuthors'
 
 
 
@@ -27,6 +31,11 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         }
     }
 
+    const handleSetAuthor = ( author:IEntryAuthor ) => {
+        setValue('author', author, { shouldValidate: true })
+    }
+
+
     const handleSetImageBanner = ( imageUrl?:string ) => {
         setValue('banner', imageUrl, { shouldValidate: true })
     }
@@ -45,8 +54,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
     return (
         <form onSubmit={ handleSubmit(onEntrySubmit) } className="bg-white p-5 sm:p-10 rounded-xl">
             
-            <div className="flex flex-col gap-2 mb-4 sm:mb-10">
-                <label htmlFor="title" className="block font-bold text-slate-800">
+            <div className="flex flex-col mb-4 sm:mb-10">
+                <label htmlFor="title" className="mb-1 block font-bold text-slate-800">
                     Título <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -71,7 +80,10 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                         subcategory={ getValues('subcategory') }
                         handleSelectCategory={handleSetCategory}
                     />
-                    <p>Author</p>
+                    <SelectAuthors
+                        author={ getValues('author') }
+                        handleSelectAuthor = { handleSetAuthor }
+                    />
                     <p>Date</p>
                 </div>
                 <div className="flex-1 mb-4 sm:order-1">

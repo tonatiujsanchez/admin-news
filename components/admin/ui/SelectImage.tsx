@@ -49,7 +49,7 @@ export const SelectImage:FC<Props> = ({ image, heightContentImage='h-80', objetF
     return (
         <>
             <div className={`rounded-lg flex flex-col sm:flex-1 gap-2`} >
-                <p className="mb-1 font-medium">{ label }</p>
+                <p className="mb-1 block font-bold text-slate-800">{ label }</p>
                 {
                     photo ? (
                         <div className={`relative group mb-5 flex justify-center w-full ${heightContentImage} shadow mx-auto border`}>

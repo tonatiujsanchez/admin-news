@@ -31,10 +31,10 @@ export interface IEntryCategory {
 }
 
 export interface IEntryAuthor {
-    _id       : string
-    name      : string
-    slug      : string
-    photo     : string
-    occupation: string
+    _id        : string
+    name       : string
+    slug       : string
+    photo?     : string
+    occupation?: string
 }
 
