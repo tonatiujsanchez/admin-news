@@ -1,10 +1,11 @@
 import { FC, useEffect, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
+import slugify from 'slugify'
 
 import { SelectCategories } from './SelectCategories'
 import { SelectAuthors } from './SelectAuthors'
-import { DTPicker, QuillEditor, SelectImage } from '../ui'
+import { Checkbox, DTPicker, QuillEditor, SelectImage } from '../ui'
 import { IEntry, IEntryCategory, IEntryAuthor } from '../../../interfaces'
 
 
@@ -14,15 +15,17 @@ interface Props {
 
 export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
+
     const [contentEditor, setContentEditor] = useState<string>()
 
-
-    const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset  } = useForm<IEntry>({
+    const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset  } = useForm<IEntry>({
         defaultValues: {
-            publishedAt: String( new Date() )
+            title: '',
+            publishedAt: String( new Date() ),
+            inFrontPage: true
+            
         }
     })
-
     
     useEffect(()=>{
 
@@ -38,8 +41,21 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
         setValue('content', contentEditor, { shouldValidate: true })
 
-
     },[contentEditor])
+
+    useEffect(()=>{
+        const subscription = watch( ( value, { name, type } ) => {
+            if( name === 'title' && value.title){
+
+                const slug = slugify(value.title, { replacement: '-', lower: true })
+                setValue('slug', slug)
+            }
+        })
+
+        return () => {
+            subscription.unsubscribe()
+        }
+     },[watch, setValue])
 
 
 
@@ -58,7 +74,6 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         setValue('author', author, { shouldValidate: true })
     }
 
-
     const handleSetImageBanner = ( imageUrl?:string ) => {
         setValue('banner', imageUrl, { shouldValidate: true })
     }
@@ -68,18 +83,17 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
     }
 
     const handleSetPublishedAt = ( dateTime:Date ) => {
-        // setArticle({
-        //     ...article,
-        //     publishedAt: dateTime,
-        // })
-
         setValue('publishedAt', String(dateTime), { shouldValidate: true })
-
     }
 
     const onEditorChange = ( html:string ) => {
         setContentEditor(html)
     }
+
+    const handleSetInFrontPage = () => {
+        setValue('inFrontPage', !getValues('inFrontPage'), { shouldValidate: true })
+    }
+
 
 
 
@@ -151,6 +165,30 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     content={ getValues('content') }
                     label="Contenido del artículo"
                 />    
+            </div>
+
+            <div className="flex items-start gap-4">
+                <div className="flex-1 flex flex-col mb-4">
+                    <label htmlFor="slug" className="mb-1 block font-bold text-slate-800">Url</label>
+                    <input
+                        type="text"
+                        id="slug"
+                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md ${ !!errors.slug ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                        { ...register('slug', {
+                            required: 'Este campo es requerido',
+                            validate: (val) => val && val.trim().includes(' ') ? 'No puede tener espacios en blanco': undefined
+                        })}
+                    />
+                    {
+                        !!errors.slug &&
+                        <p className="text-xl text-red-600 mt-2">{errors.slug.message}</p>
+                    }
+                </div>
+                <Checkbox 
+                    value={ getValues('inFrontPage') } 
+                    onCheckChange={handleSetInFrontPage}
+                    label="Destacado"    
+                />
             </div>
 
                 <button>get</button>

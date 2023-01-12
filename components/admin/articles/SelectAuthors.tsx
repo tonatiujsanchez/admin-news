@@ -116,7 +116,7 @@ const ContenedorSelect = styled.div`
 	text-align: center;
 	display: flex;
 	align-items: center;
-	transition: .5s ease all;
+	transition: .3s ease all;
     /* z-index: 10; */
 	&:hover {
 		background-color: #E8EFF1;

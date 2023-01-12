@@ -14,3 +14,5 @@ export * from './ImagesSelectModalList'
 export * from './DTPicker'
 
 export * from './QuillEditor'
+
+export * from './Checkbox'
