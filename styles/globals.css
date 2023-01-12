@@ -56,6 +56,16 @@ body.fixed-body {
 }
 
 
+
+/* datetime-picker */
+.react-datetime-picker__calendar--open,
+.react-datetime-picker__calendar--closed,
+.react-datetime-picker__clock,
+.react-datetime-picker__clock--open {
+    position: absolute;
+}
+
+
 /* Custom scroll */
 .custom-scroll::-webkit-scrollbar {
     -webkit-appearance: none;
@@ -83,8 +93,6 @@ body.fixed-body {
     border-radius: 8px;  
   }
   
-
-
 
 
 @media screen and (min-width: 2048px) {

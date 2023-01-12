@@ -1,13 +1,11 @@
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 
 import { SelectCategories } from './SelectCategories'
-import { SelectImage } from '../ui'
-import { IEntry, IEntryCategory } from '../../../interfaces'
-import { IEntryAuthor } from '../../../interfaces/IEntry';
 import { SelectAuthors } from './SelectAuthors'
-
+import { DTPicker, QuillEditor, SelectImage } from '../ui'
+import { IEntry, IEntryCategory, IEntryAuthor } from '../../../interfaces'
 
 
 interface Props {
@@ -16,8 +14,33 @@ interface Props {
 
 export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
+    const [contentEditor, setContentEditor] = useState<string>()
 
-    const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset  } = useForm<IEntry>()
+
+    const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset  } = useForm<IEntry>({
+        defaultValues: {
+            publishedAt: String( new Date() )
+        }
+    })
+
+    
+    useEffect(()=>{
+
+        if( !contentEditor ){ return }
+
+        // const desc = contentEditor.split('<p><br></p>')
+
+        // setArticle({
+        //     ...article,
+        //     content: contentEditor,
+        //     description: desc[0] !== '' ? desc[0] : null
+        // })
+
+        setValue('content', contentEditor, { shouldValidate: true })
+
+
+    },[contentEditor])
+
 
 
     const handleSetCategory = ( category:IEntryCategory, subcategory?:IEntryCategory ) => {
@@ -43,6 +66,21 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
     const handleSetImageSocial = ( imageUrl?:string ) => {
         setValue('imageSocial', imageUrl, { shouldValidate: true })
     }
+
+    const handleSetPublishedAt = ( dateTime:Date ) => {
+        // setArticle({
+        //     ...article,
+        //     publishedAt: dateTime,
+        // })
+
+        setValue('publishedAt', String(dateTime), { shouldValidate: true })
+
+    }
+
+    const onEditorChange = ( html:string ) => {
+        setContentEditor(html)
+    }
+
 
 
 
@@ -84,7 +122,11 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                         author={ getValues('author') }
                         handleSelectAuthor = { handleSetAuthor }
                     />
-                    <p>Date</p>
+                    <DTPicker
+                        value={ new Date( getValues('publishedAt') ) }
+                        onChangePublishedAt={ handleSetPublishedAt }
+                        label="Fecha de publicación"
+                    />
                 </div>
                 <div className="flex-1 mb-4 sm:order-1">
                     <div className="flex justify-center flex-col lg:flex-row sm:gap-10">
@@ -102,6 +144,16 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                 </div>
             </div>
 
+            <div className="mb-4 sm:mb-10">
+                <QuillEditor
+                    placeholder={"Contenido del artículo"}
+                    onEditorChange={onEditorChange}
+                    content={ getValues('content') }
+                    label="Contenido del artículo"
+                />    
+            </div>
+
+                <button>get</button>
         </form>
     )
 }

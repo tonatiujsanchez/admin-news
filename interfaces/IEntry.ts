@@ -6,7 +6,7 @@ export interface IEntry {
     title       : string
     content     : string
     description?: string
-    publishedAt?: string
+    publishedAt : string
     banner?     : string
     imageSocial?: string
     inFrontPage : boolean

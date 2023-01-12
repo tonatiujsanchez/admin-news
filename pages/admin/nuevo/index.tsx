@@ -7,7 +7,7 @@ import { TitlePage } from "../../../components/admin/ui"
 
 const NuevoArticuloPage:NextPage = () => {
     return (
-        <LayoutAdmin title={'- Nuevo Artículo'} isMain={true}>
+        <LayoutAdmin title={'- Nuevo Artículo'}>
             <div className="mb-5 flex gap-2 items-center py-3">
                 <TitlePage title="Nuevo Artículo" />
             </div>

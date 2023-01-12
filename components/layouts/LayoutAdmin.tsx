@@ -33,10 +33,12 @@ export const LayoutAdmin:FC<Props> = ({ children, title='', isMain=false }) => {
                 <title>{`Admin ${title}`}</title>
             </Head>
             <AdminLayoutContainer className={`bg-admin min-h-screen ${ isMain ? 'pb-36' : 'pb-4' }`}>
-                <div className={`${isMain ? 'block' : 'hidden'} sm:block`}>
+                <div className={`z-50 ${isMain ? 'block' : 'hidden'} sm:block`}>
                     <SideMenu />
                 </div>
-                <ProfileBar />
+                <div className="sticky z-40 top-0 sm:static sm:-z-0">
+                    <ProfileBar />
+                </div>
                 <main className={`container-admin section ${showSideMenu ? 'container-show-sidemenu' : ''}`}>
                 { !user
                         ? (

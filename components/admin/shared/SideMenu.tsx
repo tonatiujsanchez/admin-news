@@ -102,7 +102,7 @@ export const SidebarConatiner = styled.div`
 
         .nav__list {
             position: fixed;
-            bottom: 3rem;
+            bottom: 2rem;
             box-shadow: 0 8px 24px hsla(228, 81%, 24%, 0.15);
             width: 90%;
             padding: 25px 40px;
