@@ -181,6 +181,10 @@ const EditorContent = styled.div`
     border-radius: 0.8rem;
     border: 1.5px solid rgba(229, 231, 235, 1);
 
+    &:hover {
+        border: 1.5px solid #333;
+	}
+
 
     .ql-toolbar {
         border-radius: 0.8rem;

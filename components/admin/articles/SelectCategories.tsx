@@ -156,7 +156,6 @@ const ContenedorSelect = styled.div`
 	transition: .3s ease all;
     /* z-index: 20; */
 	&:hover {
-		background-color: #E8EFF1;
         border: 1px solid #333;
 	}
 `;

@@ -27,7 +27,7 @@ export const DTPicker:FC<Props> = ({ value, onChangePublishedAt, label = "Fecha 
     return (
         <div>
             <p className="mb-2 block font-bold text-slate-800">{ label }</p>
-            <DateTimePickerContainer className='flex justify-between items-center rounded-md border py-4 px-4 w-full'>
+            <DateTimePickerContainer className='bg-admin flex justify-between items-center rounded-md border py-4 px-4 w-full'>
 
                 <DateTimePicker 
                     onChange={onChangeDateTime} 
@@ -59,7 +59,6 @@ const DateTimePickerContainer = styled.div`
 
     transition: .3s ease all;
     &:hover {
-		background-color: #E8EFF1;
         border: 1px solid #333;
 	}
 

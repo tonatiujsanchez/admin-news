@@ -1,24 +1,26 @@
-import { FC } from "react"
+import { FC } from 'react';
 
 
 interface Props {
     value: boolean
+    name : string
     onCheckChange: () => void
     label: string
 }
 
-export const Checkbox:FC<Props> = ( {value, onCheckChange, label} ) => {
-
-
+export const Checkbox:FC<Props> = ( {value, name, onCheckChange, label} ) => {
+    
+    
     return (
         <div className="flex flex-col items-start">
-            <span className="font-medium text-gray-900 dark:text-gray-300 mb-1">{ label }</span>
-            <div className="border p-2 rounded-lg flex items-center py-4 px-5 mt-2">
-                <label htmlFor="default-toggle" className="inline-flex relative items-center cursor-pointer">
+            <span className="mb-1 block font-bold text-slate-800">{ label }</span>
+            <div className="border p-2 rounded-lg flex items-center py-4 px-5 mt-2 hover:border-slate-800">
+                <label htmlFor={`default-toggle-${name}`} className="inline-flex relative items-center cursor-pointer">
                     <input
                         type="checkbox"
-                        id="default-toggle"
-                        onChange={onCheckChange}
+                        id={`default-toggle-${name}`}
+                        name={ name }
+                        onChange={ onCheckChange }
                         className="sr-only peer"
                         checked={value}
                     />

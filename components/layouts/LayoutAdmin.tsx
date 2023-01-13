@@ -58,7 +58,8 @@ export const LayoutAdmin:FC<Props> = ({ children, title='', isMain=false }) => {
 
 const AdminLayoutContainer = styled.div`
     position: relative;
-    background-color: rgb(250, 250, 255);
+    /* background-color: rgb(250, 250, 255); */
+    background-color: rgb(248, 248, 255);
     
     .container-admin {
         margin-left: 1rem;
