@@ -29,10 +29,12 @@ interface Props {
     placeholder: string,
     onEditorChange: (html: string) => void, 
     content: string, 
-    label: string
+    label  : string
+    error? : boolean
+    labelError?: string
 }
 
-export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, label="Contenido" }) => {
+export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, label="Contenido", error=false, labelError="Este campo es requerido" }) => {
 
     const [showImagesModal, setShowImagesModal] = useState(false)
     const [positionEditor, setPositionEditor] = useState<number>()
@@ -106,12 +108,17 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
         hiddenImagesModal()
     }
 
+    const handleCustomButton = () => {
+        console.log('Click custom buttom on editon');
+        
+    }
+
     // TODO: Insertar videos de facebook y otras redes sociales. 
 
     return (
         <>
             <p className="mb-2 block font-bold text-slate-800">{ label }</p>
-            <EditorContent className='pb-32 sm:pb-24'>
+            <EditorContent className={`pb-32 sm:pb-24 mb-3 ${ error ? 'outline outline-2 outline-red-500' : 'hover:border-slate-800' }`}>
                 <div id="toolbar">
                     <select className="ql-header" defaultValue={""} onChange={e => e.persist()}>
                         <option value="2" >Título 2</option>
@@ -128,7 +135,7 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
                         <option value="small">Pequeño</option>
                         <option value="">Normal</option>
                         <option value="large">Grande</option>
-                        <option value="huge">Extra grande</option>
+                        <option value="huge">Ext grande</option>
                     </select>
 
                     <select className="ql-color" defaultValue={"black"} onChange={e => e.persist()}>
@@ -174,13 +181,17 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
 
                     <button className="ql-clean bx bx-eraser text-3xl"></button>
                     
-                    {/* <button type='button' id="custom-button">
+                    <button type='button' id="custom-button" onClick={handleCustomButton}>
                         <i className='bx bxl-react'></i>
-                    </button> */}
+                    </button>
 
                 </div>
                 <div ref={quillRef} />
             </EditorContent>
+            {
+                error &&
+                <p className="text-xl text-red-600 mt-2">{labelError}</p>
+            }
 
             {
                 showImagesModal && (
@@ -203,10 +214,6 @@ const EditorContent = styled.div`
     height: 52rem;
     border-radius: 0.8rem;
     border: 1.5px solid rgba(229, 231, 235, 1);
-
-    &:hover {
-        border: 1.5px solid #333;
-	}
 
     .ql-toolbar {
         border-radius: 0.8rem;

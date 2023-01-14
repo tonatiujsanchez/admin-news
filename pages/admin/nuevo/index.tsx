@@ -11,7 +11,7 @@ const NuevoArticuloPage:NextPage = () => {
             <div className="mb-5 flex gap-2 items-center py-3">
                 <TitlePage title="Nuevo Artículo" />
             </div>
-            <div className="max-w-[1200px] mx-auto">
+            <div className="max-w-[1240px] mx-auto">
                 <ArticleForm />
             </div>
         </LayoutAdmin>

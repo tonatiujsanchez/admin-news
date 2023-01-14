@@ -20,12 +20,15 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
 
     const [contentEditor, setContentEditor] = useState<string>('')
+    const [errorContent, setErrorContent] = useState(false)
+
     const [contentEditorLite, setContentEditorLite] = useState<string>('')
+
     const [loadingSubmit, setLoadingSubmit] = useState(false)
 
     const router = useRouter()
 
-    const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset  } = useForm<IEntry>({
+    const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset, setError  } = useForm<IEntry>({
         defaultValues: {
             title: '',
             published: true,
@@ -50,10 +53,20 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     useEffect(()=>{
         const subscription = watch( ( value, { name, type } ) => {
+
             if( name === 'title' && value.title){
 
                 const slug = slugify(value.title, { replacement: '-', lower: true })
                 setValue('slug', slug)
+            }
+
+            if( name === 'content'){
+                
+                if(!value.content){
+                    setErrorContent(true)
+                }else {
+                    setErrorContent(false)
+                }
             }
         })
 
@@ -61,7 +74,6 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             subscription.unsubscribe()
         }
      },[watch, setValue])
-
 
 
      const handleSetPublished = () => {
@@ -117,14 +129,19 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     const onEntrySubmit = ( data: IEntry ) => {
 
+        if( getValues('content') === '' ){
+            return setErrorContent(true)
+        }
+
+        
         // TODO: Comprobar 'content' y otros campos
         console.log(data);
     }
 
 
     return (
-        <form onSubmit={ handleSubmit(onEntrySubmit) } className="bg-white p-5 sm:p-10 rounded-xl">
-            <div className="flex items-start gap-4 sm:mb-10">
+        <form onSubmit={ handleSubmit(onEntrySubmit) } className="bg-white p-5 sm:p-16 rounded-xl">
+            <div className="flex items-start gap-4 mb-4 sm:mb-10">
                 <div className="flex-1 flex flex-col mb-4">
                     <label htmlFor="title" className="mb-1 block font-bold text-slate-800">
                         Título <span className="text-red-500">*</span>
@@ -152,7 +169,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-20 sm:items-start mb-4 sm:mb-10">
-                <div className="flex-1 flex flex-col gap-4 mb-4 sm:order-2">
+                <div className="flex-1 flex flex-col gap-8 mb-4 sm:order-2">
                     <SelectCategories
                         category={ getValues('category') }
                         subcategory={ getValues('subcategory') }
@@ -197,6 +214,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     onEditorChange={onEditorChange}
                     content={ getValues('content') }
                     label="Contenido del artículo"
+                    error={errorContent}
+                    labelError={'El contenido del artículo es requerido'}
                 />    
             </div>
 
@@ -206,7 +225,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     <input
                         type="text"
                         id="slug"
-                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md ${ !!errors.slug ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md text-slate-400 focus:text-black ${ !!errors.slug ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
                         { ...register('slug', {
                             required: 'Este campo es requerido',
                             validate: (val) => val && val.trim().includes(' ') ? 'No puede tener espacios en blanco': undefined

@@ -24,10 +24,12 @@ interface Props {
     placeholder: string,
     onEditorChange: (html: string) => void, 
     content?: string, 
-    label: string
+    label   : string,
+    error?  : boolean
+    labelError?: string
 }
 
-export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content, label="Descripción" }) => {
+export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content, label="Descripción", error=false, labelError="Este campo es requerido" }) => {
 
     const { quill , quillRef } = useQuill({modules, formats, placeholder })
        
@@ -59,7 +61,7 @@ export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content
     return (
         <>
             <p className="mb-2 block font-bold text-slate-800">{ label }</p>
-            <EditorContent className='pb-32 sm:pb-24'>
+            <EditorContent className={`pb-32 sm:pb-24 ${ error ? 'outline outline-2 outline-red-500' : 'hover:border-slate-800' }`}>
                 <div id="toolbarLite">
                     <button className="ql-bold" />
                     <button className="ql-italic" />
@@ -103,6 +105,10 @@ export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content
                 </div>
                 <div ref={quillRef} />
             </EditorContent>
+            {
+                error &&
+                <p className="text-xl text-red-600 mt-2">{labelError}</p>
+            }
         </>
     )
 }
@@ -113,10 +119,6 @@ const EditorContent = styled.div`
     height: 28rem;
     border-radius: 0.8rem;
     border: 1.5px solid rgba(229, 231, 235, 1);
-
-    &:hover {
-        border: 1.5px solid #333;
-	}
 
     .ql-toolbar {
         border-radius: 0.8rem;
