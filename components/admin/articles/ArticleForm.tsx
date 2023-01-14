@@ -9,6 +9,7 @@ import { SelectAuthors } from './SelectAuthors'
 import { Checkbox, DTPicker, QuillEditor, SelectImage } from '../ui'
 import { LoadingCircle } from '../utilities'
 import { IEntry, IEntryCategory, IEntryAuthor } from '../../../interfaces'
+import { QuillEditorLite } from '../ui/QuillEditorLite'
 
 
 interface Props {
@@ -18,7 +19,8 @@ interface Props {
 export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
 
-    const [contentEditor, setContentEditor] = useState<string>()
+    const [contentEditor, setContentEditor] = useState<string>('')
+    const [contentEditorLite, setContentEditorLite] = useState<string>('')
     const [loadingSubmit, setLoadingSubmit] = useState(false)
 
     const router = useRouter()
@@ -28,26 +30,23 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             title: '',
             published: true,
             publishedAt: String( new Date() ),
-            inFrontPage: true
-            
+            inFrontPage: true 
         }
     })
     
     useEffect(()=>{
 
-        if( !contentEditor ){ return }
-
-        // const desc = contentEditor.split('<p><br></p>')
-
-        // setArticle({
-        //     ...article,
-        //     content: contentEditor,
-        //     description: desc[0] !== '' ? desc[0] : null
-        // })
-
         setValue('content', contentEditor, { shouldValidate: true })
 
     },[contentEditor])
+
+
+    useEffect(() => {
+
+        setValue('summary', contentEditorLite, { shouldValidate: true })
+
+    }, [contentEditorLite])
+    
 
     useEffect(()=>{
         const subscription = watch( ( value, { name, type } ) => {
@@ -97,27 +96,28 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         setValue('publishedAt', String(dateTime), { shouldValidate: true })
     }
 
-    const onEditorChange = ( html:string ) => {
-        setContentEditor(html)
-    }
-
     const handleSetInFrontPage = () => {
         setValue('inFrontPage', !getValues('inFrontPage'), { shouldValidate: true })
     }
 
 
+    const handleSetResumen = ( html:string ) => {
+        setContentEditorLite(html) 
+    }
+
+    const onEditorChange = ( html:string ) => {
+        setContentEditor(html)
+    } 
 
 
+    // 
     const onCalcel = () => {
         router.replace('/admin/articulos')
     }
 
-    const onOnlySave = () => {
-        
-    }
-
-
     const onEntrySubmit = ( data: IEntry ) => {
+
+        // TODO: Comprobar 'content' y otros campos
         console.log(data);
     }
 
@@ -183,14 +183,21 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     </div>
                 </div>
             </div>
-
-            <div className="mb-4 sm:mb-10">
-                {/* <QuillEditor
+            <div className='mb-16'>
+                <QuillEditorLite
+                    placeholder={"Resumen del artículo"}
+                    onEditorChange={handleSetResumen}
+                    content={ getValues('summary') }
+                    label='Resúmen'
+                />    
+            </div>
+            <div className="mb-10">
+                <QuillEditor
                     placeholder={"Contenido del artículo"}
                     onEditorChange={onEditorChange}
                     content={ getValues('content') }
                     label="Contenido del artículo"
-                />     */}
+                />    
             </div>
 
             <div className="flex items-start gap-4">
@@ -219,43 +226,31 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             </div>
 
             <div className="flex flex-col items-center justify-end gap-4 mt-12 sm:flex sm:flex-row">
-                        <button
-                            type="button"
-                            onClick={onCalcel}
-                            disabled={loadingSubmit}
-                            className="py-4 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-white">
-                            Cancelar
-                        </button>
-                        {/* <button
-                            type="button"
-                            onClick={onOnlySave}
-                            disabled={loadingSubmit}
-                            className="border border-sky-500 text-sky-600 hover:bg-sky-500 hover:text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
-                            {
-                                loadingSubmit
-                                ? <LoadingCircle />
-                                : <span>Guardar</span>
-                            }
-                            
-                        </button> */}
-                        <button
-                            type="submit"
-                            disabled={loadingSubmit}
-                            className="border border-sky-500 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
-                            {
-                                loadingSubmit
-                                ? <LoadingCircle />
-                                : (
-                                    articleEdit ? (
-                                        'Guardar cambios'
-                                    ):(
-                                        getValues('published') ? 'Publicar' : 'Guardar'
-                                    )
-                                )
-                            }
-                            
-                        </button>
-                    </div>
+                <button
+                    type="button"
+                    onClick={onCalcel}
+                    disabled={loadingSubmit}
+                    className="py-4 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-white">
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    disabled={loadingSubmit}
+                    className="border border-sky-500 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
+                    {
+                        loadingSubmit
+                        ? <LoadingCircle />
+                        : (
+                            articleEdit ? (
+                                'Guardar cambios'
+                            ):(
+                                getValues('published') ? 'Publicar' : 'Guardar'
+                            )
+                        )
+                    }
+                    
+                </button>
+            </div>
         </form>
     )
 }

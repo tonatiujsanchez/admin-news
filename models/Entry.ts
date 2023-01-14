@@ -15,7 +15,7 @@ const entrySchema = new Schema({
         type: String, 
         require: true,
     },
-    description: { 
+    summary: { 
         type: String, 
     },
     published: { 

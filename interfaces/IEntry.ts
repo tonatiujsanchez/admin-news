@@ -5,7 +5,7 @@ export interface IEntry {
     user?       : string
     title       : string
     content     : string
-    description?: string
+    summary?    : string
     publishedAt : string
     banner?     : string
     imageSocial?: string
