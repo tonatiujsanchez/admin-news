@@ -4,12 +4,13 @@ import { useRouter } from 'next/router'
 import { useForm } from 'react-hook-form'
 import slugify from 'slugify'
 
+import { useData } from '../../../hooks/useData'
+
 import { SelectCategories } from './SelectCategories'
 import { SelectAuthors } from './SelectAuthors'
-import { Checkbox, DTPicker, QuillEditor, SelectImage } from '../ui'
+import { Checkbox, DTPicker, QuillEditor, QuillEditorLite, SelectImage } from '../ui'
 import { LoadingCircle } from '../utilities'
 import { IEntry, IEntryCategory, IEntryAuthor } from '../../../interfaces'
-import { QuillEditorLite } from '../ui/QuillEditorLite'
 
 
 interface Props {
@@ -28,12 +29,15 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     const router = useRouter()
 
+    const { addNewEntry } = useData()
+
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset, setError  } = useForm<IEntry>({
         defaultValues: {
             title: '',
             published: true,
             publishedAt: String( new Date() ),
-            inFrontPage: true 
+            inFrontPage: true,
+            tags: [] 
         }
     })
     
@@ -127,15 +131,27 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         router.replace('/admin/articulos')
     }
 
-    const onEntrySubmit = ( data: IEntry ) => {
+    const onEntrySubmit = async( data: IEntry ) => {
 
         if( getValues('content') === '' ){
             return setErrorContent(true)
         }
 
-        
-        // TODO: Comprobar 'content' y otros campos
-        console.log(data);
+        // TODO:
+        if(articleEdit){
+            // Editar
+        }else {
+            // Nuevo
+            setLoadingSubmit(true)
+            const { hasError, entryResp } = await addNewEntry( data )
+            setLoadingSubmit(false)
+
+            if( hasError ){ return }
+
+            router.replace(`/admin/articulos/${ entryResp?._id }`)
+
+        }
+
     }
 
 

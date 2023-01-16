@@ -6,7 +6,7 @@ import { DataContext, dataReducer } from './'
 
 import { useAuth } from '../../hooks'
 
-import { IAuthor, ICategory, IImage, IImages, IUser } from '../../interfaces'
+import { IAuthor, ICategory, IEntry, IImage, IImages, IUser } from '../../interfaces'
 import { notifyError, notifySuccess } from '../../utils/frontend'
 
 
@@ -16,13 +16,15 @@ interface Props {
 
 
 export interface DataState {
-    images: IImages,
+    entries: IEntry[]
+    images: IImages
     categoriesList: ICategory[]
-    authors: IAuthor[];
-    users: IUser[];
+    authors: IAuthor[]
+    users: IUser[]
 }
 
 const DATA_INITIAL_STATE: DataState = {
+    entries: [],
     images: {
         articles: {
             pageCount: 1,
@@ -74,7 +76,48 @@ export const DataProvider: FC<Props> = ({ children }) => {
         )
     }, [state.categoriesList])
 
+    
+    
+    // ===== ===== ===== ===== Entries ===== ===== ===== =====
+    // ===== ===== ===== ===== ====== ===== ===== ===== ======
+    const addNewEntry = async( entry:IEntry ):Promise<{ hasError:boolean; entryResp?: IEntry  }> => {
+        
+        try {
 
+            const { data } = await axios.post<IEntry>('/api/shared/entries', entry)
+            console.log( data );
+
+            if( data.published ){
+                notifySuccess('Artículo publicado')
+            }else {
+                notifySuccess('Artículo guardado')
+            }
+            // TODO: Artículo programado
+
+            return {
+                hasError: false,
+                entryResp:data
+            }
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return {
+                    hasError: true,
+                    entryResp:undefined
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return {
+                hasError: true,
+                entryResp: undefined
+            }
+        }
+    
+        
+    }
 
     // ===== ===== ===== ===== Images ===== ===== ===== =====
     // ===== ===== ===== ===== ===== ===== ===== ===== ======
@@ -546,6 +589,8 @@ export const DataProvider: FC<Props> = ({ children }) => {
             ...state,
             categories,
             
+            // Entry
+            addNewEntry,
             // Images
             refreshImages,
             addNewImage,

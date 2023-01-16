@@ -20,11 +20,12 @@ const entrySchema = new Schema({
     },
     published: { 
         type: Boolean, 
-        default: false 
+        default: true 
     },
     publishedAt: {
         type: Date,
         require: true,
+        default: new Date()
     },
     banner: {
         type: String,
@@ -62,6 +63,9 @@ const entrySchema = new Schema({
         photo: { type: String, require: false },
         occupation: { type: String, require: false },
     },
+    tags: [
+        { type: String }
+    ],
     views: {
         type: Number,
         require: true,

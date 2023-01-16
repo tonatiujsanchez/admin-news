@@ -14,6 +14,7 @@ export interface IEntry {
     category    : IEntryCategory
     subcategory : IEntryCategory | null
     author      : IEntryAuthor
+    tags        : string[]
     views       : number
     
     published  : boolean

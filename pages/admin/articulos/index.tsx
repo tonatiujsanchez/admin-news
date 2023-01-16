@@ -13,7 +13,7 @@ const ArticulosPage: NextPage = () => {
                 <TitlePage title="Artículos" />
                 <button
                     className="text-3xl text-slate-600 hover:bg-slate-200 hover:text-slate-900 py-2 px-3 rounded-full active:scale-95"
-                    // onClick={() => loadCategories()}
+                    // onClick={() => loadEntries()}
                 >
                     <i className='bx bx-revision'></i>
                 </button>

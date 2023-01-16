@@ -1,9 +1,10 @@
 import { createContext } from 'react';
 
-import { IAuthor, ICategory, IImage, IUser } from '../../interfaces';
+import { IAuthor, ICategory, IEntry, IImage, IUser } from '../../interfaces';
 
 
 interface ContextProps {
+    entries: IEntry[],
     images: {
         articles: {
             pageCount: number,
@@ -27,6 +28,8 @@ interface ContextProps {
     users: IUser[],
 
     // Methods
+    addNewEntry: (entry: IEntry) => Promise<{ hasError: boolean; entryResp?: IEntry; }>
+
     refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; imagesResp: IImage[]; }>
     addNewImage: (formData: any) => Promise<{ hasError: boolean; urlImage: string; }>
     deleteImage: (image: IImage) => Promise<{ hasError: boolean; }>

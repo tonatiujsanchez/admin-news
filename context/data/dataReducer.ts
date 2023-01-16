@@ -1,9 +1,11 @@
-import { DataState } from './';
-import { IAuthor } from '../../interfaces/IAuthor';
-import { ICategory, IImage, IImageState, IUser } from '../../interfaces';
+import { DataState } from './'
+import { ICategory, IAuthor, IImage, IImageState, IUser, IEntry } from '../../interfaces'
 
 
 type DataActionType =
+
+    | { type: '[DATA] - Refresh Entries', payload: IEntry[] }
+    | { type: '[DATA] - Add New Entry', payload: IEntry }
 
     | { type: '[DATA] - Refresh Images', payload: IImageState }
     | { type: '[DATA] - Add New Image', payload: IImage }
@@ -30,6 +32,19 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
 
     switch (action.type) {
 
+        // Images
+        case '[DATA] - Refresh Entries':
+            return {
+                ...state,
+                entries: [ ...state.entries ]
+            }
+
+        case '[DATA] - Add New Entry':
+            return {
+                ...state,
+                entries: [ action.payload, ...state.entries ]
+            }        
+        
         // Images
         case '[DATA] - Refresh Images':
             return {
@@ -71,7 +86,7 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
         case '[DATA] - Refresh Categories List':
             return {
                 ...state,
-                categoriesList: [...action.payload]
+                categoriesList: [ ...action.payload ]
             }
 
         case '[DATA] - Add New Category To List':
@@ -96,7 +111,7 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
         case '[DATA] - Refresh Authors':
             return {
                 ...state,
-                authors: [...action.payload]
+                authors: [ ...action.payload ]
             }
             
         case '[DATA] - Add New Author':
@@ -121,7 +136,7 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
         case '[DATA] - Refresh Users':
             return {
                 ...state,
-                users: [...action.payload]
+                users: [ ...action.payload ]
             }
 
         case '[DATA] - Add New User':
