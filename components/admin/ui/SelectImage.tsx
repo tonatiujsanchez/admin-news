@@ -11,13 +11,13 @@ interface Props {
     objetFillImage?: string
     label: string
     handleSetImage: ( imageUrl?: string )=> void
+    processing?: boolean
 }
 
 
-export const SelectImage:FC<Props> = ({ image, heightContentImage='h-80', objetFillImage='cover', label="Foto", handleSetImage }) => {
+export const SelectImage:FC<Props> = ({ image, heightContentImage='h-80', objetFillImage='cover', label="Foto", handleSetImage, processing=false }) => {
 
     const [photo, setPhoto] = useState<string>()
-    const [loadingSubmit, setLoadingSubmit] = useState(false)
 
     const [showImagesModal, setShowImagesModal] = useState(false)
 
@@ -64,7 +64,7 @@ export const SelectImage:FC<Props> = ({ image, heightContentImage='h-80', objetF
                             <button
                                 onClick={removePhoto}
                                 type="button"
-                                disabled={loadingSubmit} 
+                                disabled={processing} 
                                 className="absolute -top-5 -right-5 shadow text-white bg-red-500 rounded-full w-12 h-12 hover:bg-red-600 active:scale-95 hover:shadow-2xl disabled:opacity-0">
                                 <i className='bx bx-trash'></i>
                             </button>
@@ -72,8 +72,8 @@ export const SelectImage:FC<Props> = ({ image, heightContentImage='h-80', objetF
                     ):(
                         <div
                             onClick={ ()=>setShowImagesModal(true) } 
-                            className={`group mx-auto border-dashed border-2 ${heightContentImage} flex justify-center items-center mb-5 rounded w-full ${loadingSubmit ? '' : 'hover:border-slate-800 hover:cursor-pointer'}`}>
-                            <i className={`bx bxs-image-add text-6xl text-slate-800 opacity-50 ${ loadingSubmit ? '' : 'group-hover:opacity-100' }`}></i>
+                            className={`group mx-auto border-dashed border-2 ${heightContentImage} flex justify-center items-center mb-5 rounded w-full ${processing ? 'pointer-events-none' : 'hover:border-slate-800 hover:cursor-pointer'}`}>
+                            <i className={`bx bxs-image-add text-6xl text-slate-800 opacity-50 ${ processing ? '' : 'group-hover:opacity-100' }`}></i>
                         </div>
                     )
                 }

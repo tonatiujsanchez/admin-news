@@ -12,9 +12,10 @@ interface Props {
     value: Date
     onChangePublishedAt: (dateTime: Date) => void
     label: string
+    processing?: boolean
 }
 
-export const DTPicker:FC<Props> = ({ value, onChangePublishedAt, label = "Fecha y hora" }) => {
+export const DTPicker:FC<Props> = ({ value, onChangePublishedAt, label = "Fecha y hora", processing=false }) => {
 
     const [openCalendar, setOpenCalendar] = useState(false)
 
@@ -27,7 +28,7 @@ export const DTPicker:FC<Props> = ({ value, onChangePublishedAt, label = "Fecha 
     return (
         <div>
             <p className="mb-2 block font-bold text-slate-800">{ label }</p>
-            <DateTimePickerContainer className='bg-admin flex justify-between items-center rounded-md border py-4 px-4 w-full'>
+            <DateTimePickerContainer className={`bg-admin flex justify-between items-center rounded-md border py-4 px-4 w-full ${ processing ? '' : 'hover:border-slate-800' }`}>
 
                 <DateTimePicker 
                     onChange={onChangeDateTime} 
@@ -38,13 +39,14 @@ export const DTPicker:FC<Props> = ({ value, onChangePublishedAt, label = "Fecha 
                     disableCalendar={!openCalendar}
                     isCalendarOpen={openCalendar}
                     className="absolute w-full"
+                    disabled={processing}
                 />
 
                 <div className='flex items-center mt-1'>
-                    <button type='button' className='text-5xl mr-2' onClick={()=>onChangePublishedAt(new Date())} >
+                    <button disabled={processing} type='button' className='text-5xl mr-2' onClick={()=>onChangePublishedAt(new Date())} >
                         <i className='bx bx-x' ></i>
                     </button>
-                    <button type='button' className='text-4xl' onClick={()=>setOpenCalendar(!openCalendar)} >
+                    <button disabled={processing} type='button' className='text-4xl' onClick={()=>setOpenCalendar(!openCalendar)} >
                         <i className='bx bx-calendar'></i>
                     </button>
                 </div>
@@ -56,11 +58,6 @@ export const DTPicker:FC<Props> = ({ value, onChangePublishedAt, label = "Fecha 
 
 
 const DateTimePickerContainer = styled.div`
-
-    transition: .3s ease all;
-    &:hover {
-        border: 1px solid #333;
-	}
 
     .react-datetime-picker__wrapper {
         border:none;

@@ -40,6 +40,17 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             tags: [] 
         }
     })
+
+    useEffect(()=>{
+
+        if( !articleEdit ){ return }
+
+        reset( articleEdit )
+        setContentEditor( articleEdit.content )
+        setContentEditorLite( articleEdit.summary || '' )
+
+        
+    },[ articleEdit ])
     
     useEffect(()=>{
 
@@ -132,6 +143,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
     }
 
     const onEntrySubmit = async( data: IEntry ) => {
+        // setLoadingSubmit(true)
+
 
         if( getValues('content') === '' ){
             return setErrorContent(true)
@@ -140,6 +153,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         // TODO:
         if(articleEdit){
             // Editar
+            console.log( data );
+
         }else {
             // Nuevo
             setLoadingSubmit(true)
@@ -154,6 +169,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     }
 
+    // TODO: Desabilitar editor cuando esta guardando en la DB
+
 
     return (
         <form onSubmit={ handleSubmit(onEntrySubmit) } className="bg-white p-5 sm:p-16 rounded-xl">
@@ -165,7 +182,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     <input
                         type="text"
                         id="title"
-                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md ${ !!errors.title ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                        disabled={loadingSubmit}
+                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md ${ !!errors.title ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' } `}
                         { ...register('title', {
                             required: 'El título es requerido',
                             validate: ( value ) => value.trim() === ''? 'El título es requerido' : undefined
@@ -180,7 +198,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     value={ getValues('published') } 
                     name="published" 
                     onCheckChange={handleSetPublished}
-                    label="Publicar"    
+                    label="Publicar"
+                    processing={ loadingSubmit }    
                 />
             </div>
 
@@ -190,28 +209,35 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                         category={ getValues('category') }
                         subcategory={ getValues('subcategory') }
                         handleSelectCategory={handleSetCategory}
+                        processing={ loadingSubmit }
                     />
                     <SelectAuthors
                         author={ getValues('author') }
                         handleSelectAuthor = { handleSetAuthor }
+                        processing={ loadingSubmit }
                     />
                     <DTPicker
                         value={ new Date( getValues('publishedAt') ) }
                         onChangePublishedAt={ handleSetPublishedAt }
                         label="Fecha de publicación"
+                        processing={loadingSubmit}
                     />
                 </div>
                 <div className="flex-1 mb-4 sm:order-1">
                     <div className="flex justify-center flex-col lg:flex-row sm:gap-10">
                         <SelectImage
+                            image={ getValues('banner') }
                             label="Foto principal"
                             objetFillImage='contain'
                             handleSetImage={handleSetImageBanner}
+                            processing={loadingSubmit}
                         />
                         <SelectImage
+                            image={ getValues('imageSocial') }
                             label="Redes sociales"
                             heightContentImage='h-64'
                             handleSetImage={handleSetImageSocial}
+                            processing={ loadingSubmit }
                         />
                     </div>
                 </div>
@@ -222,6 +248,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     onEditorChange={handleSetResumen}
                     content={ getValues('summary') }
                     label='Resúmen'
+                    processing={ loadingSubmit }
                 />    
             </div>
             <div className="mb-10">
@@ -232,6 +259,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     label="Contenido del artículo"
                     error={errorContent}
                     labelError={'El contenido del artículo es requerido'}
+                    processing={ loadingSubmit }
                 />    
             </div>
 
@@ -241,7 +269,8 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     <input
                         type="text"
                         id="slug"
-                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md text-slate-400 focus:text-black ${ !!errors.slug ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                        disabled={loadingSubmit}
+                        className={`bg-admin border mt-2 block w-full p-5 rounded-md text-md text-slate-400 focus:text-black ${ !!errors.slug ? 'outline outline-2 outline-red-500' :'hover:border-slate-800 disabled:border-slate-200' }`}
                         { ...register('slug', {
                             required: 'Este campo es requerido',
                             validate: (val) => val && val.trim().includes(' ') ? 'No puede tener espacios en blanco': undefined
@@ -257,6 +286,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     name="inFrontPage" 
                     onCheckChange={handleSetInFrontPage}
                     label="Destacado" 
+                    processing={ loadingSubmit }
                 />
             </div>
 

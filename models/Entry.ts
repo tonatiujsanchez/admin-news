@@ -1,4 +1,5 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Model, Schema } from 'mongoose'
+import { IEntry } from '../interfaces/IEntry';
 
 
 const entrySchema = new Schema({
@@ -75,6 +76,6 @@ const entrySchema = new Schema({
     timestamps: true
 })
 
-const Entry = mongoose.models.Entry || mongoose.model('Entry', entrySchema)
+const Entry:Model<IEntry> = mongoose.models.Entry || mongoose.model('Entry', entrySchema)
 
 export default Entry

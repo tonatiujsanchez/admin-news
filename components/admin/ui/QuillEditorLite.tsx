@@ -26,10 +26,11 @@ interface Props {
     content?: string, 
     label   : string,
     error?  : boolean
-    labelError?: string
+    labelError?: string,
+    processing?: boolean
 }
 
-export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content, label="Descripción", error=false, labelError="Este campo es requerido" }) => {
+export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content, label="Descripción", error=false, labelError="Este campo es requerido", processing=false }) => {
 
     const { quill , quillRef } = useQuill({modules, formats, placeholder })
        
@@ -57,11 +58,18 @@ export const QuillEditorLite:FC<Props> = ({ placeholder, onEditorChange, content
         }
     }, [quill])
 
+    useEffect(()=>{
+
+        quill?.enable(!processing)
+
+    },[quill, processing])
+
+
 
     return (
         <>
             <p className="mb-2 block font-bold text-slate-800">{ label }</p>
-            <EditorContent className={`pb-32 sm:pb-24 ${ error ? 'outline outline-2 outline-red-500' : 'hover:border-slate-800' }`}>
+            <EditorContent className={`pb-32 sm:pb-24 ${ processing ? 'opacity-75' : error ? 'outline outline-2 outline-red-500' : 'hover:border-slate-800' }`}>
                 <div id="toolbarLite">
                     <button className="ql-bold" />
                     <button className="ql-italic" />

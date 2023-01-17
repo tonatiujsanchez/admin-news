@@ -27,7 +27,7 @@ const DetallesAutorPage:NextPage = () => {
     const { authors, refreshAuthors } = useData()
 
 
-    const LoadAuthorsAndGetById = async() => {
+    const loadAuthorsAndGetById = async() => {
 
         const { hasError, authors: authorsResp  } = await refreshAuthors()
 
@@ -52,7 +52,7 @@ const DetallesAutorPage:NextPage = () => {
 
         if( authors.length === 0 ){
 
-            await LoadAuthorsAndGetById()
+            await loadAuthorsAndGetById()
 
         } else {
 

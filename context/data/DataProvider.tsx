@@ -80,12 +80,42 @@ export const DataProvider: FC<Props> = ({ children }) => {
     
     // ===== ===== ===== ===== Entries ===== ===== ===== =====
     // ===== ===== ===== ===== ====== ===== ===== ===== ======
+
+
+    const refreshEntries = async():Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
+        try {
+            const { data } = await axios.get('/api/shared/entries')
+            dispatch({ type:'[DATA] - Refresh Entries', payload: data })
+        
+            return{
+                hasError: false,
+                entriesResp: data
+            }
+
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return {
+                    hasError: true,
+                    entriesResp:[]
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return {
+                hasError: true,
+                entriesResp: []
+            }
+        }
+    }
+
     const addNewEntry = async( entry:IEntry ):Promise<{ hasError:boolean; entryResp?: IEntry  }> => {
         
         try {
 
             const { data } = await axios.post<IEntry>('/api/shared/entries', entry)
-            console.log( data );
+            dispatch({ type: '[DATA] - Add New Entry', payload: data })         
 
             if( data.published ){
                 notifySuccess('Artículo publicado')
@@ -590,6 +620,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             categories,
             
             // Entry
+            refreshEntries,
             addNewEntry,
             // Images
             refreshImages,

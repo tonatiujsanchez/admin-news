@@ -10,8 +10,8 @@ import { IEntry } from '../../../../interfaces'
 
 type Data = 
     | { message: string }
-    | IEntry[]
     | IEntry
+    | IEntry[]
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     
@@ -35,7 +35,7 @@ const getEntries = async( res: NextApiResponse<Data> ) => {
     try {
         
         await db.connect()
-        const entries = await Entry.find().sort({ createdAt: 'ascending' }).lean()        
+        const entries = await Entry.find().sort({ createdAt: 'desc' }).lean()       
         await db.disconnect()
     
         return res.status(200).json( entries )
@@ -93,7 +93,7 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
     }else {
         slugEntry = slug
     }
-    // TODO: Verificar slug
+    // TODO: Consultar si ya existe el slug
 
     try {
 

@@ -32,9 +32,18 @@ interface Props {
     label  : string
     error? : boolean
     labelError?: string
+    processing?: boolean
 }
 
-export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, label="Contenido", error=false, labelError="Este campo es requerido" }) => {
+export const QuillEditor:FC<Props> = ({ 
+    placeholder, 
+    onEditorChange, 
+    content, 
+    label="Contenido", 
+    error=false, 
+    labelError="Este campo es requerido" ,
+    processing=false
+}) => {
 
     const [showImagesModal, setShowImagesModal] = useState(false)
     const [positionEditor, setPositionEditor] = useState<number>()
@@ -80,6 +89,12 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
         }
     }, [quill])
 
+    useEffect(()=>{
+
+        quill?.enable(!processing)
+
+    },[quill, processing])
+
 
     const hiddenImagesModal = () => {
 
@@ -110,7 +125,7 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
 
     const handleCustomButton = () => {
         console.log('Click custom buttom on editon');
-        
+       
     }
 
     // TODO: Insertar videos de facebook y otras redes sociales. 
@@ -118,7 +133,7 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
     return (
         <>
             <p className="mb-2 block font-bold text-slate-800">{ label }</p>
-            <EditorContent className={`pb-32 sm:pb-24 mb-3 ${ error ? 'outline outline-2 outline-red-500' : 'hover:border-slate-800' }`}>
+            <EditorContent className={`pb-52 sm:pb-24 mb-3 ${ processing ? 'opacity-75' : error ? 'outline outline-2 outline-red-500' : 'hover:border-slate-800' }`}>
                 <div id="toolbar">
                     <select className="ql-header" defaultValue={""} onChange={e => e.persist()}>
                         <option value="2" >Título 2</option>
@@ -163,8 +178,8 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
                     <button className="ql-list" value="bullet" />
                     <button className="ql-list" value="ordered" />
   
-                    <button className="ql-image"/>
-                    <button className="ql-video" />
+                    <button className="ql-image" disabled={ processing }/>
+                    <button className="ql-video" disabled={ processing } />
 
                     <button className="ql-link" />
                     <button className="ql-code-block bx bx-code-block" />
@@ -211,7 +226,7 @@ export const QuillEditor:FC<Props> = ({ placeholder, onEditorChange, content, la
 
 const EditorContent = styled.div`
     width: 100%;
-    height: 52rem;
+    height: 80rem;
     border-radius: 0.8rem;
     border: 1.5px solid rgba(229, 231, 235, 1);
 

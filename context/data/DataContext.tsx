@@ -28,6 +28,7 @@ interface ContextProps {
     users: IUser[],
 
     // Methods
+    refreshEntries: () => Promise<{ hasError: boolean; entriesResp: IEntry[]; }>
     addNewEntry: (entry: IEntry) => Promise<{ hasError: boolean; entryResp?: IEntry; }>
 
     refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; imagesResp: IImage[]; }>

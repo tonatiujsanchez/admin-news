@@ -8,9 +8,10 @@ import { IEntryAuthor } from '../../../interfaces/IEntry';
 interface Props {
     author?: IEntryAuthor
     handleSelectAuthor: (author: IEntryAuthor) => void
+    processing?: boolean
 }
 
-export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor }) => {
+export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing=false }) => {
 
     const [loadingAuthors, setLoadingAuthors] = useState(false)
     const [showSelect, setShowSelect] = useState(false)
@@ -63,8 +64,10 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor }) => {
                 <label htmlFor="author" className="mb-1 block font-bold text-slate-800">Autor</label>
                 <button
                     type="button"
-                    className="text-xl text-slate-600 hover:bg-slate-200 hover:text-slate-900 py-2 px-2 rounded-full grid place-content-center active:scale-95"
-                    onClick={() => LoadAuthors()}>
+                    className={`text-xl text-slate-600 py-2 px-2 rounded-full grid place-content-center ${ processing ? '' : 'hover:bg-slate-200 hover:text-slate-900 active:scale-95' }`}
+                    onClick={() => LoadAuthors()}
+                    disabled={ processing }
+                >
                     <i className='bx bx-revision'></i>
                 </button>
             </div>
@@ -73,7 +76,7 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor }) => {
                     ? <div className="animate-pulse space-x-4 rounded-md bg-slate-300 h-20 w-full"></div>
                     : <ContenedorSelect
                         onClick={() => setShowSelect(!showSelect)}
-                        className="border border-gray-200"
+                        className={`border border-gray-200 ${ processing ? 'pointer-events-none' : 'hover:border-slate-800' }`}
                     >
                         <OpcionSeleccionada>
                             {authorActive.name} <i className={`bx bxs-down-arrow transition-all duration-300 ${showSelect ? 'rotate-180' : ''}`}></i>
@@ -118,9 +121,6 @@ const ContenedorSelect = styled.div`
 	align-items: center;
 	transition: .3s ease all;
     /* z-index: 10; */
-	&:hover {
-        border: 1px solid #333;
-	}
 `;
 
 const OpcionSeleccionada = styled.div`
