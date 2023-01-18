@@ -149,6 +149,37 @@ export const DataProvider: FC<Props> = ({ children }) => {
         
     }
 
+    const deleteEntry = async( idEntry: string ):Promise<{ hasError: boolean }>=> {
+        
+        try {
+            const { data } = await axios.delete('/api/shared/entries', { 
+                data: {
+                    idEntry
+                }
+            })
+            dispatch({ type: '[DATA] - Delete Entry', payload: data.message })
+
+            notifySuccess('Categoría eliminada')
+            return{
+                hasError: false
+            }
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return {
+                    hasError: true
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return {
+                hasError: true
+            }
+        }
+    }
+
     // ===== ===== ===== ===== Images ===== ===== ===== =====
     // ===== ===== ===== ===== ===== ===== ===== ===== ======
     const refreshImages = async( section:string,  page = 0 ):Promise<{ hasError: boolean, imagesResp: IImage[] }> => {        
@@ -622,6 +653,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Entry
             refreshEntries,
             addNewEntry,
+            deleteEntry,
             // Images
             refreshImages,
             addNewImage,

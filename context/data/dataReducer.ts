@@ -6,6 +6,7 @@ type DataActionType =
 
     | { type: '[DATA] - Refresh Entries', payload: IEntry[] }
     | { type: '[DATA] - Add New Entry', payload: IEntry }
+    | { type: '[DATA] - Delete Entry', payload: string }
 
     | { type: '[DATA] - Refresh Images', payload: IImageState }
     | { type: '[DATA] - Add New Image', payload: IImage }
@@ -36,13 +37,19 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
         case '[DATA] - Refresh Entries':
             return {
                 ...state,
-                entries: [ ...state.entries ]
+                entries: [ ...action.payload ]
             }
 
         case '[DATA] - Add New Entry':
             return {
                 ...state,
                 entries: [ action.payload, ...state.entries ]
+            }   
+
+        case '[DATA] - Delete Entry':
+            return {
+                ...state,
+                entries: state.entries.filter( entry => entry._id !== action.payload )
             }        
         
         // Images

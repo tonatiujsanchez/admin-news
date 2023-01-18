@@ -143,9 +143,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
     }
 
     const onEntrySubmit = async( data: IEntry ) => {
-        // setLoadingSubmit(true)
-
-
+  
         if( getValues('content') === '' ){
             return setErrorContent(true)
         }
@@ -159,17 +157,14 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             // Nuevo
             setLoadingSubmit(true)
             const { hasError, entryResp } = await addNewEntry( data )
-            setLoadingSubmit(false)
 
-            if( hasError ){ return }
+            if( hasError ){ return setLoadingSubmit(false) }
 
             router.replace(`/admin/articulos/${ entryResp?._id }`)
 
         }
 
     }
-
-    // TODO: Desabilitar editor cuando esta guardando en la DB
 
 
     return (

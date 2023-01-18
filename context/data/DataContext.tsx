@@ -30,6 +30,7 @@ interface ContextProps {
     // Methods
     refreshEntries: () => Promise<{ hasError: boolean; entriesResp: IEntry[]; }>
     addNewEntry: (entry: IEntry) => Promise<{ hasError: boolean; entryResp?: IEntry; }>
+    deleteEntry: (idEntry: string) => Promise<{ hasError: boolean; }>
 
     refreshImages: (section: string, page?: number) => Promise<{ hasError: boolean; imagesResp: IImage[]; }>
     addNewImage: (formData: any) => Promise<{ hasError: boolean; urlImage: string; }>

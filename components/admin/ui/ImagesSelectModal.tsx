@@ -66,9 +66,17 @@ export const ImagesSelectModal:FC<Props> = ({ sectionImages, handleSelectedImage
 
     return (
         <div className="flex flex-col h-screen sm:max-h-[75vh] md:w-[600px] lg:w-[750px]">
-            <header className="relative bg-white z-50 w-full py-3 sm:py-5 px-3 sm:px-5 border-b">
-                <p className="text-3xl font-bold py-3 flex-1 text-center">Seleccionar foto</p>
+            <header className="relative bg-white z-50 w-full py-3 sm:py-5 px-3 sm:px-5 border-b flex justify-center items-center gap-2">
+                <p className="text-3xl font-bold py-3 text-center">Seleccionar foto</p>
                 <button
+                    type="button"
+                    className="text-2xl text-slate-600 hover:bg-slate-200 hover:text-slate-900 py-1 px-2 rounded-full active:scale-95 mt-1"
+                    onClick={() => loadImages()}
+                >
+                    <i className='bx bx-revision'></i>
+                </button>
+                <button
+                    type="button"
                     onClick={ ()=> handleSelectedImage(onSelectedImage)}
                     className="absolute right-5 top-5 rounded-full w-12 h-12 sm:w-14 sm:h-14 text-gray-500 flex items-center justify-center hover:text-gray-700 hover:bg-slate-200 transition-all"
                 >

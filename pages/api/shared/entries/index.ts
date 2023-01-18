@@ -6,6 +6,7 @@ import * as jose from 'jose'
 import { db } from '../../../../database'
 import { Entry } from '../../../../models'
 import { IEntry } from '../../../../interfaces'
+import { isValidObjectId } from 'mongoose'
 
 
 type Data = 
@@ -23,6 +24,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
     
         case 'POST':
             return addNewEntry(req, res)
+
+        case 'DELETE':
+            return deleteEntry(req, res)
     
         default:
             return res.status(400).json({ message: 'Bad request' })
@@ -49,8 +53,6 @@ const getEntries = async( res: NextApiResponse<Data> ) => {
 
 
 }
-
-
 
 
 const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
@@ -130,5 +132,43 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         console.log(error)
         return res.status(500).json({ message: 'Algo salio mal, revisar la consola del servidor' })
     }
+}
+
+
+
+const deleteEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
+
+    const { idEntry } = req.body
+
+    if( !isValidObjectId( idEntry ) ){
+        return res.status(400).json({ message: 'ID de Entrada no válido' })
+    }
+
+    try {
+        
+        await db.connect()
+        const entry = await Entry.findById( idEntry )
+
+        if( !entry ){
+            await db.disconnect()
+            return res.status(400).json({ message: 'Entrada no encontrada'})
+        }
+
+        await entry.deleteOne()
+        await db.disconnect()
+
+        return res.status(200).json({ message: idEntry })
+
+        
+    } catch (error) {
+        await db.disconnect()
+        console.log( error )
+        return res.status(400).json({ message: 'Algo salio mal, revisar la consola del servidor' })
+    }
+
+
+
+
+    
 }
 
