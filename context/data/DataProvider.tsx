@@ -149,6 +149,34 @@ export const DataProvider: FC<Props> = ({ children }) => {
         
     }
 
+    const updateEntry = async( entry: IEntry ):Promise<{ hasError: boolean }>=> {
+
+        try {
+
+            const { data } = await axios.put('/api/shared/entries', entry)
+            dispatch({ type: '[DATA] - Update Entry', payload: data })
+            console.log(data)
+            notifySuccess('Artículo actualizado')
+            return { 
+                hasError: false
+            }
+
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return {
+                    hasError: true
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return {
+                hasError: true
+            }
+        }
+    }
+
     const deleteEntry = async( idEntry: string ):Promise<{ hasError: boolean }>=> {
         
         try {
@@ -352,7 +380,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
-    const updateCategory = async(category:ICategory) => {
+    const updateCategory = async(category:ICategory):Promise<{ hasError: boolean }> => {
 
         try {
 
@@ -653,6 +681,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             // Entry
             refreshEntries,
             addNewEntry,
+            updateEntry,
             deleteEntry,
             // Images
             refreshImages,

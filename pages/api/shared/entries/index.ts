@@ -25,6 +25,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
         case 'POST':
             return addNewEntry(req, res)
 
+        case 'PUT':
+            return updateEntry(req, res)
+
         case 'DELETE':
             return deleteEntry(req, res)
     
@@ -136,6 +139,73 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
 
 
 
+const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
+
+    const { _id = '', } = req.body
+
+    if( !isValidObjectId( _id ) ){
+        return res.status(400).json({ message: 'ID de Entrada no válido' })
+    }
+
+
+    
+    
+    try {
+
+        await db.connect()
+        const entry = await Entry.findById( _id )
+    
+        if( !entry ){
+            await db.disconnect()
+            return res.status(400).json({ message: 'No hay ninguna entrada con ese ID' })
+        }
+    
+        const {         
+            title       = entry.title,
+            content     = entry.content,
+            summary     = entry.summary,
+            published   = entry.published,
+            publishedAt = entry.publishedAt,
+            banner      = entry.banner,
+            imageSocial = entry.imageSocial,
+            inFrontPage = entry.inFrontPage,
+            slug        = entry.slug,
+            category    = entry.category,
+            subcategory = entry.subcategory,
+            author      = entry.author,
+            tags        = entry.tags 
+        } = req.body 
+    
+        entry.title       = title
+        entry.content     = content
+        entry.summary     = summary
+        entry.published   = published
+        entry.publishedAt = publishedAt
+        entry.banner      = banner
+        entry.imageSocial = imageSocial
+        entry.inFrontPage = inFrontPage
+        entry.slug        = slug
+        entry.category    = category
+        entry.subcategory = subcategory
+        entry.author      = author
+        entry.tags        = tags
+
+        await entry.save()
+        await db.disconnect()
+
+        return res.status(200).json( entry )
+
+    } catch (error) {
+        await db.disconnect()
+        console.log(error)
+        return res.status(500).json({ message: 'Algo salio mal, revisar la consola del servidor' })
+    }
+
+
+}
+
+
+
 const deleteEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     const { idEntry } = req.body
@@ -159,16 +229,12 @@ const deleteEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
 
         return res.status(200).json({ message: idEntry })
 
-        
+
     } catch (error) {
         await db.disconnect()
         console.log( error )
         return res.status(400).json({ message: 'Algo salio mal, revisar la consola del servidor' })
     }
-
-
-
-
     
 }
 

@@ -41,6 +41,18 @@ export const ArticleItem: FC<Props> = ({ article }) => {
     return (
         <>
             <tr className='border-b'>
+                <td className='px-6 font-semibold'>
+                    <p className='flex justify-center'>
+                        {
+                            article.inFrontPage
+                                ?(
+                                    <i className='bx bxs-star text-yellow-400' ></i>
+                                ):(
+                                    <i className='bx bx-star text-gray-600' ></i>
+                                )
+                        }
+                    </p>
+                </td>
                 <td className='py-4 flex justify-center'>
                     <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border">
                         {
@@ -65,6 +77,7 @@ export const ArticleItem: FC<Props> = ({ article }) => {
                 <td className='text-left px-6 text-xl min-w-[260px] overflow-x-hidden'>{ article.title }</td>
                 <td className='text-left px-6 text-xl font-semibold'>{ article.category.title }</td>
                 <td className='text-left px-6 text-xl min-w-[112px]'><span className='block'>{dateFormatter( article.createdAt! )}</span> <span>{timeFormatter( article.createdAt! )}</span></td>
+                <td className='text-left px-6 text-xl min-w-[112px]'><span className='block'>{dateFormatter( article.publishedAt )}</span> <span>{timeFormatter( article.publishedAt )}</span></td>
                 <td className='text-left px-6 min-w-[112px]'>
                     {
                         article.published

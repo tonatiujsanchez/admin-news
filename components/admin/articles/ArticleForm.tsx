@@ -29,7 +29,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     const router = useRouter()
 
-    const { addNewEntry } = useData()
+    const { addNewEntry, updateEntry } = useData()
 
     const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset, setError  } = useForm<IEntry>({
         defaultValues: {
@@ -148,10 +148,15 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
             return setErrorContent(true)
         }
 
-        // TODO:
         if(articleEdit){
             // Editar
-            console.log( data );
+            const newEntry = {
+                ...articleEdit,
+                ...data
+            }
+            setLoadingSubmit(true)
+            await updateEntry( newEntry )
+            setLoadingSubmit(false)
 
         }else {
             // Nuevo
@@ -308,7 +313,6 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                             )
                         )
                     }
-                    
                 </button>
             </div>
         </form>
