@@ -44,6 +44,7 @@ const entrySchema = new Schema({
     slug: {
         type: String,
         require: true,
+        unique: true,
     },
     category: {
         _id  : { type: mongoose.Types.ObjectId, ref: 'Category' },
@@ -75,6 +76,8 @@ const entrySchema = new Schema({
 },{
     timestamps: true
 })
+
+entrySchema.index({ title:'text', slug:'text', tags:'text' })
 
 const Entry:Model<IEntry> = mongoose.models.Entry || mongoose.model('Entry', entrySchema)
 

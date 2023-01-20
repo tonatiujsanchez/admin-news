@@ -98,9 +98,28 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
     }else {
         slugEntry = slug
     }
-    // TODO: Consultar si ya existe el slug
 
     try {
+        await db.connect()
+
+        const entries = await Entry
+            .find({ $text: { $search: `\"${ slugEntry }\"` } })
+            .select('title slug')
+            .sort({ createdAt: 'desc' })
+            .lean()
+        
+        if(entries.length > 0){
+
+            const entryLast = entries[0]
+            const lastCaracterSlug = entryLast.slug!.substring(entryLast.slug!.length - 1, entryLast.slug!.length)
+            
+            if( !Number(lastCaracterSlug) ){
+                slugEntry = `${slugEntry}-1`
+            }else{
+                slugEntry = `${slugEntry}-${ Number(lastCaracterSlug) + 1 }`
+            }
+            
+        }
 
         const { 'news_session_ed4c1de1770480153a06fa2349f501f0':token } = req.cookies  
         const { payload } = await jose.jwtVerify(String( token ), new TextEncoder().encode(process.env.JWT_SECRET_SEED))
@@ -123,7 +142,6 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             tags
         })
 
-        await db.connect()
         await newEntry.save()
         await db.disconnect()
 

@@ -7,7 +7,8 @@ export const categorySchema = new Schema({
         type: String,
     },
     slug: {
-        type: String
+        type: String,
+        unique: true
     },
     tag: {
         type: String,

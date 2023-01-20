@@ -11,6 +11,7 @@ export const authorSchema = new Schema({
     slug: {
         type: String,
         require: true,
+        unique: true,
     },
     facebook: {
         type: String,
