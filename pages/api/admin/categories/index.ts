@@ -56,21 +56,27 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         return res.status(400).json({ message: 'La categoria es requerida' })
     }
 
-    const slug = slugify(title, { replacement: '-', lower: true })
-
-    const newCategory = new Category({
-        title: title.trim(),
-        tag: tag.trim(),
-        position,
-        slug,
-        type,
-        category,
-        active
-    })
+    const slug = slugify(title, { replacement: '-', lower: true })   
 
     try {
-
         await db.connect()
+
+        const category = await Category.findOne({slug})        
+
+        if(category){
+            return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
+        }
+
+        const newCategory = new Category({
+            title: title.trim(),
+            tag: tag.trim(),
+            position,
+            slug,
+            type,
+            category,
+            active
+        })
+    
         await newCategory.save()
         await db.disconnect()
 
@@ -115,6 +121,14 @@ const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         if (title !== categoryToUpdate.title) {
             categoryToUpdate.slug = slugify(title, { replacement: '-', lower: true })
         }
+
+        
+        const categoryBySlug = await Category.findOne({slug: categoryToUpdate.slug}) 
+               
+        if(categoryBySlug && JSON.parse(JSON.stringify(categoryBySlug._id)) !== JSON.parse(JSON.stringify(categoryToUpdate._id)) ){            
+            return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
+        }
+
 
         if (type === 'subcategory') {
             categoryToUpdate.category = category
