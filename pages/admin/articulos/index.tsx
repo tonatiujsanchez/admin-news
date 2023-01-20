@@ -1,12 +1,12 @@
+import { useEffect, useState } from 'react'
 
 import { NextPage } from 'next'
 
+import { useAuth, useData } from '../../../hooks'
 import { LayoutAdmin } from '../../../components/layouts'
-import { LinkPrimary, TitlePage } from '../../../components/admin/ui'
-import { useData } from '../../../hooks'
-import { useEffect, useState } from 'react';
-import { LoadingAdmin } from '../../../components/admin/utilities';
 import { ArticleList } from '../../../components/admin/articles';
+import { LinkPrimary, TitlePage } from '../../../components/admin/ui'
+import { LoadingAdmin } from '../../../components/admin/utilities'
 
 
 
@@ -15,6 +15,8 @@ const ArticulosPage: NextPage = () => {
     const [loading, setLoading] = useState(false)
     
     const { entries, refreshEntries } = useData()
+    const { user: userSession } = useAuth()
+
 
     const loadEntries = async() => {
         setLoading(true)
@@ -23,10 +25,15 @@ const ArticulosPage: NextPage = () => {
     }
     
     useEffect(()=>{
+
+        if( !userSession ){
+            return
+        }
+
         if( entries.length <= 0 ){
             loadEntries()   
         }
-    },[])
+    },[userSession])
 
 
 

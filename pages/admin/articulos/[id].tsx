@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 
-import { useData } from '../../../hooks'
+import { useAuth, useData } from '../../../hooks'
 
 import { LayoutAdmin } from '../../../components/layouts'
 import { ArticleForm } from '../../../components/admin/articles'
@@ -23,6 +23,7 @@ const ArticuloPage: NextPage = () => {
 
 
     const { entries, refreshEntries } = useData()
+    const { user:userSession } = useAuth()
 
 
     const loadEntryAndGetById = async() => {
@@ -68,10 +69,10 @@ const ArticuloPage: NextPage = () => {
 
     useEffect(()=>{
 
-        if(!id){ return }    
+        if(!id || !userSession){ return }    
         getEntryById()
 
-    },[id])
+    },[id, userSession])
 
     
 

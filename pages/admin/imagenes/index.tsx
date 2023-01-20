@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, Fragment, use, useEffect, useRef, useState } from 'react'
 import { NextPage } from 'next'
 
 import ReactPaginate from 'react-paginate'
@@ -84,7 +84,7 @@ const ImagenesPage:NextPage = () => {
     },[])
 
     useEffect(() => {
-        if(!sectionActive || (!actualPage && actualPage !== 0)){ return }
+        if(!sectionActive || (!actualPage && actualPage !== 0) || !user){ return }
         
         if (images[sectionActive].data.length <= 0) {
             loadImages()
@@ -94,7 +94,7 @@ const ImagenesPage:NextPage = () => {
             localStorage.setItem(`section_page_storage_${sectionActive}_ed4c1de1770480153a06fa2349f501f0`, String( actualPage ) )
     
         }
-    }, [sectionActive, images])
+    }, [sectionActive, images, user])
 
 
     // Change section images

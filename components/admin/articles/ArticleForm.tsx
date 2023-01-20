@@ -31,7 +31,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     const { addNewEntry, updateEntry } = useData()
 
-    const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset, setError  } = useForm<IEntry>({
+    const { register, handleSubmit, formState:{ errors }, getValues, setValue, watch, reset  } = useForm<IEntry>({
         defaultValues: {
             title: '',
             published: true,
@@ -71,8 +71,9 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
             if( name === 'title' && value.title){
 
-                const slug = slugify(value.title, { replacement: '-', lower: true })
-                setValue('slug', slug)
+                if( articleEdit ){ return }
+            
+                handleSetSlug()
             }
 
             if( name === 'content'){
@@ -88,13 +89,12 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         return () => {
             subscription.unsubscribe()
         }
-     },[watch, setValue])
+     },[watch, setValue, articleEdit])
 
 
      const handleSetPublished = () => {
         setValue('published', !getValues('published'), { shouldValidate: true })
      }
-
 
     const handleSetCategory = ( category:IEntryCategory, subcategory?:IEntryCategory ) => {
 
@@ -121,6 +121,11 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
     const handleSetPublishedAt = ( dateTime:Date ) => {
         setValue('publishedAt', String(dateTime), { shouldValidate: true })
+    }
+
+    const handleSetSlug = () => {
+        const slug = slugify(getValues('title'), { replacement: '-', lower: true })
+        setValue('slug', slug, { shouldValidate: true })
     }
 
     const handleSetInFrontPage = () => {
@@ -155,17 +160,20 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                 ...data
             }
             setLoadingSubmit(true)
-            await updateEntry( newEntry )
-            setLoadingSubmit(false)
+            const { hasError } = await updateEntry( newEntry )
+
+            if( hasError ){ return setLoadingSubmit(false) }
+
+            router.replace(`/admin/articulos`)
 
         }else {
             // Nuevo
             setLoadingSubmit(true)
-            const { hasError, entryResp } = await addNewEntry( data )
+            const { hasError } = await addNewEntry( data )
 
             if( hasError ){ return setLoadingSubmit(false) }
 
-            router.replace(`/admin/articulos/${ entryResp?._id }`)
+            router.replace(`/admin/articulos`)
 
         }
 
@@ -265,7 +273,17 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
 
             <div className="flex items-start gap-4">
                 <div className="flex-1 flex flex-col mb-4">
-                    <label htmlFor="slug" className="mb-1 block font-bold text-slate-800">Url</label>
+                    <div className="flex items-end gap-1 mb-1">
+                        <label htmlFor="slug" className="mb-1 block font-bold text-slate-800">Url</label>
+                        <button
+                            type="button"
+                            className={`text-xl text-slate-600 py-2 px-2 mb-1 rounded-full grid place-content-center ${ loadingSubmit ? '' : 'hover:bg-slate-200 hover:text-slate-900 active:scale-95' }`}
+                            onClick={handleSetSlug}
+                            disabled={ loadingSubmit }
+                        >
+                            <i className='bx bx-revision'></i>
+                        </button>
+                    </div>
                     <input
                         type="text"
                         id="slug"
@@ -301,7 +319,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                 <button
                     type="submit"
                     disabled={loadingSubmit}
-                    className="border border-sky-500 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
+                    className={`border border-sky-500 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors ${ articleEdit ? 'min-w-[170px]' : 'min-w-[120px]' } flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300`}>
                     {
                         loadingSubmit
                         ? <LoadingCircle />

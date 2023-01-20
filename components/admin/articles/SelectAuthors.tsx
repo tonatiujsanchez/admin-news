@@ -60,7 +60,7 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
 
     return (
         <div className="flex-1 flex flex-col gap-1">
-            <div className="flex items-end gap-2 mb-1">
+            <div className="flex items-end gap-1 mb-1">
                 <label htmlFor="author" className="mb-1 block font-bold text-slate-800">Autor</label>
                 <button
                     type="button"

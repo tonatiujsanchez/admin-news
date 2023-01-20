@@ -100,7 +100,7 @@ const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
 
         if (!categoryToUpdate) {
             await db.disconnect()
-            return res.status(400).json({ message: 'No hay ninguna categoria con ese ID' })
+            return res.status(400).json({ message: 'Categoría no encontrada' })
         }
     
         const {

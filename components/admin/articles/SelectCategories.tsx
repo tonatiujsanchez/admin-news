@@ -65,7 +65,7 @@ export const SelectCategories:FC<Props> = ({ category, subcategory, handleSelect
 
     return (
         <div className="flex-1 flex flex-col gap-1">
-            <div className="flex items-end gap-2 mb-1">
+            <div className="flex items-end gap-1 mb-1">
                 <label htmlFor="category" className="mb-1 block font-bold text-slate-800">Categoría</label>
                 <button
                     type="button"

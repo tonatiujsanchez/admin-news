@@ -12,7 +12,6 @@ export async function middleware( req: NextRequest ) {
     const { protocol, host } = req.nextUrl 
 
     
-    
     // ===== ===== ===== Frontend ===== ===== =====
 
     if (
@@ -44,6 +43,7 @@ export async function middleware( req: NextRequest ) {
 
 
     if( req.nextUrl.pathname.startsWith('/admin') ){
+       
 
         if( !token ){
             return NextResponse.redirect(`${protocol}//${host}/iniciar-sesion`)
@@ -82,6 +82,24 @@ export async function middleware( req: NextRequest ) {
 
     // ===== ===== ===== API ===== ===== =====
 
+    if (req.nextUrl.pathname.startsWith('/api/shared')) {
+
+        if (!token) {            
+            return NextResponse.redirect(new URL('/api/unauthorized', req.url))
+        }
+
+        try {
+            
+            await jose.jwtVerify(String(token.value), new TextEncoder().encode(process.env.JWT_SECRET_SEED))
+            return NextResponse.next()
+
+        } catch (error) {
+
+            return NextResponse.redirect(new URL('/api/unauthorized', req.url))
+        }
+    }
+
+    
     if (req.nextUrl.pathname.startsWith('/api/admin')) {
 
         if (!token) {            
@@ -104,6 +122,7 @@ export async function middleware( req: NextRequest ) {
         }
     }
 
+    
 
 
 }
@@ -120,5 +139,6 @@ export const config = {
 
         // Api
         '/api/admin/:path*',
+        '/api/shared/:path*',
     ]
 }

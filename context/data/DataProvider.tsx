@@ -78,11 +78,13 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
     
     
+
+
+    
     // ===== ===== ===== ===== Entries ===== ===== ===== =====
     // ===== ===== ===== ===== ====== ===== ===== ===== ======
-
-
     const refreshEntries = async():Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
+        
         try {
             const { data } = await axios.get('/api/shared/entries')
             dispatch({ type:'[DATA] - Refresh Entries', payload: data })
@@ -115,11 +117,14 @@ export const DataProvider: FC<Props> = ({ children }) => {
         try {
 
             const { data } = await axios.post<IEntry>('/api/shared/entries', entry)
-            dispatch({ type: '[DATA] - Add New Entry', payload: data })         
+
+            if( state.entries.length > 0 ){
+                dispatch({ type: '[DATA] - Add New Entry', payload: data })         
+            }
 
             if( data.published ){
                 notifySuccess('Artículo publicado')
-            }else {
+            } else {
                 notifySuccess('Artículo guardado')
             }
             // TODO: Artículo programado
@@ -155,7 +160,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
             const { data } = await axios.put('/api/shared/entries', entry)
             dispatch({ type: '[DATA] - Update Entry', payload: data })
-            console.log(data)
+
             notifySuccess('Artículo actualizado')
             return { 
                 hasError: false

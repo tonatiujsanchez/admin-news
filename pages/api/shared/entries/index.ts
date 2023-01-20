@@ -147,9 +147,6 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         return res.status(400).json({ message: 'ID de Entrada no válido' })
     }
 
-
-    
-    
     try {
 
         await db.connect()
@@ -157,7 +154,7 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
     
         if( !entry ){
             await db.disconnect()
-            return res.status(400).json({ message: 'No hay ninguna entrada con ese ID' })
+            return res.status(400).json({ message: 'Artículo no encontrado' })
         }
     
         const {         
