@@ -199,7 +199,7 @@ const ImagenesPage:NextPage = () => {
                                                 <span className="ml-2">Subiendo...</span>
                                             </>
                                             : <>
-                                                <i className='bx bx-plus text-4xl'></i>
+                                                <i className='bx bx-cloud-upload text-4xl mr-1'></i>
                                                 Subir imagenes
                                             </>
                                     }
