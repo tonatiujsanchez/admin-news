@@ -1,14 +1,14 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/router"
 import Image from "next/image"
 import NextLink from "next/link"
 
 import { useForm } from "react-hook-form"
-import { toast } from 'react-toastify'
 
 import { useData } from "../../../hooks"
-import { validations } from "../../../utils/shared"
+import { ImagesSelectModal, ModalContainer } from "../ui"
 import { LoadingCircle } from "../utilities"
+import { validations } from "../../../utils/shared"
 import { IUser } from "../../../interfaces"
 
 
@@ -34,18 +34,16 @@ interface Props {
 
 export const UserForm:FC<Props> = ({ userEdit }) => {
 
-    const router = useRouter()
     const [loadingSubmit, setLoadingSubmit] = useState(false)
+    const [showImagesModal, setShowImagesModal] = useState(false)
 
+    const [photo, setPhotoAuthor] = useState<string>()
     
-    // file of images
-    const [photo, setPhoto] = useState<string>()
-    const [file, setFile] = useState<File>()
-    const [fileDataURL, setFileDataURL] = useState(null)
+    const router = useRouter()
 
+    const { addNewUser, updateUser } = useData()
 
-
-    const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<IUserForm>({
+    const { register, handleSubmit, watch, reset, formState: { errors }, setValue } = useForm<IUserForm>({
         defaultValues: {
             role: 'editor',
             name: '',
@@ -55,7 +53,6 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
         }
     })
 
-    const { addNewUser, updateUser, addNewImage } = useData()
 
     const password = useRef({})
     password.current = watch("password", "")
@@ -70,7 +67,7 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 password: '',
                 repitePassword: '',
             })
-            setPhoto(userEdit.photo)
+            setPhotoAuthor(userEdit.photo)
         }
     },[userEdit])
 
@@ -80,81 +77,29 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
     }
 
     // Image select and preview 
-    const fileInputRef = useRef<HTMLInputElement>(null)
-
-
-    const handleFileChange = (e:ChangeEvent<HTMLInputElement>) => {
-        if( !e.target.files || e.target.files.length === 0 ){
-            return
-        }
-
-        const fileSelected = e.target.files[0]
-
-        if (!fileSelected.type.match(imageMimeType)) {
-            toast.error('Formato no válido', {
-                theme: "colored",
-                autoClose: 1000
-            })
-            return
-        }
-        setFile(fileSelected)
-    }
-
-    useEffect(() => {
-        let fileReader:FileReader
-        let isCancel:boolean = false;
-
-        if (file) {
-            fileReader = new FileReader()
-            fileReader.onload = (e:ProgressEvent<any>) => {
-                const { result } = e.target
-                if (result && !isCancel) {
-                    setFile(file)
-                    setFileDataURL(result)
-                }
-            }
-            fileReader.readAsDataURL(file)
-        }
-
-        return () => {
-            isCancel = true
-            if (fileReader && fileReader.readyState === 1) {
-                fileReader.abort()
-            }
-        }
-    }, [file])
 
     const removePhoto = () => {
-        setPhoto(undefined)
-        setFile(undefined)
-        setFileDataURL(null)
-        if(fileInputRef.current?.value){
-            fileInputRef.current.value = ''
+        setPhotoAuthor(undefined)
+        setValue('photo', undefined, { shouldValidate: true })
+    }
+
+    const handleSelectedImage = async( fnSelectedImage:()=> Promise<string | undefined> ) => {
+
+        const image = await fnSelectedImage()
+
+        if(image) {
+            setValue('photo', image, { shouldValidate: true })
+            setPhotoAuthor(image)
         }
+
+        setShowImagesModal(false)
     }
 
 
-    const onUserSubmit = async ({ role, name, email, password }:IUserForm) => {
+
+    const onUserSubmit = async ({ role, name, email, password, photo }:IUserForm) => {
 
         setLoadingSubmit(true)
-        // Subir foto
-        let newImageUrl =  null
-        if(file){
-
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('section', 'users')
-    
-            const { hasError, urlImage } = await addNewImage(formData)
-            
-            if(hasError){
-                setLoadingSubmit(false)
-                return
-            }
-            
-            newImageUrl = urlImage
-        }
-        
 
         if( userEdit ){
             // Editar
@@ -163,7 +108,7 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 role,
                 name,
                 email,
-                photo : newImageUrl ? newImageUrl : photo
+                photo
             }
             const { hasError } = await updateUser(newUser)
             if(hasError){
@@ -178,7 +123,7 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 name, 
                 email, 
                 password, 
-                photo: newImageUrl ? newImageUrl : photo
+                photo
             })
 
             if(hasError){
@@ -195,14 +140,14 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
     return (
         <div className="py-5 mx-auto">
             <div className="max-w-[260px] h-72 mx-auto">
-                { fileDataURL || photo
+                { photo
                     ? (
                         <div className="relative group mb-5 flex justify-center w-full h-full border-white border-8 shadow-lg">
                             <Image
                                 priority
                                 fill
                                 sizes="(max-width: 100%) 100%"
-                                src={ fileDataURL || photo || '' }
+                                src={ photo || '' }
                                 alt={'Nombre de pagina'}
                                 className='cover' 
                             />
@@ -217,22 +162,13 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
 
                     ):(
                         <div
-                            onClick={()=> fileInputRef.current?.click()} 
+                            onClick={()=> setShowImagesModal(true)} 
                             className={`w-full h-full group border-dashed border-2 border-gray-300 flex justify-center items-center mb-5 ${loadingSubmit ? '' : 'hover:border-slate-800 hover:cursor-pointer'}`}
                         >
                             <i className={`bx bxs-image-add text-6xl text-slate-800 opacity-60 ${ loadingSubmit ? '' : 'group-hover:opacity-100' }`}></i>
                         </div>
                     )
                 }
-                <input
-                    type="file"
-                    style={{ display: 'none' }}
-                    disabled={loadingSubmit}
-                    ref={ fileInputRef }
-                    accept="image/png, image/jpg, image/jpeg, image/gif, image/webp"
-                    onChange={handleFileChange}
-                />
-
             </div>
             <form onSubmit={handleSubmit(onUserSubmit)} className="max-w-[500px] mx-auto">
                 <div className="my-6">
@@ -368,6 +304,16 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                     </button>
                 </div>
             </form>
+            {
+                showImagesModal && (
+                    <ModalContainer heightFull={true} widthLg={true}>
+                        <ImagesSelectModal
+                            sectionImages="users" 
+                            handleSelectedImage={handleSelectedImage}
+                        />
+                    </ModalContainer>
+                )
+            }
         </div>
     )
 }

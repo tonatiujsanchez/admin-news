@@ -4,12 +4,9 @@ import { isValidObjectId } from 'mongoose'
 import bcryptjs from 'bcryptjs'
 
 import { db } from '../../../../database'
-import { Image, User } from '../../../../models'
+import { User } from '../../../../models'
 import { validations } from '../../../../utils/shared'
 import { IUser } from '../../../../interfaces'
-
-import { v2 as cloudinary } from 'cloudinary'
-cloudinary.config( process.env.CLOUDINARY_URL || '' )
 
 
 type Data = 
@@ -120,6 +117,10 @@ const updateUser = async ( req:NextApiRequest, res:NextApiResponse<Data> ) => {
 
     const { _id } = req.body
 
+    if( !isValidObjectId( _id ) ){
+        return res.status(400).json({ message: 'ID de Autor no válido' })
+    }
+
     await db.connect()
     const userUpdate = await User.findById(_id).select('-password')
 
@@ -136,14 +137,6 @@ const updateUser = async ( req:NextApiRequest, res:NextApiResponse<Data> ) => {
         active = userUpdate.active, 
     } = req.body
 
-    
-    if( userUpdate.photo && userUpdate.photo !== photo ){
-        const [ fileId, extencion ] = (userUpdate.photo).substring( (userUpdate.photo).lastIndexOf('/') + 1 ).split('.')
-        await Promise.all([
-            Image.deleteOne({ name: fileId }),
-            cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
-        ])
-    }
 
     try {
         userUpdate.role = role
@@ -180,14 +173,6 @@ const deleteUser = async ( req:NextApiRequest, res:NextApiResponse<Data> ) => {
 
         if( !user ){
             return res.status(400).json({ message: 'No hay ningun usuario con ese ID' })
-        }
-
-        if( user.photo ){
-            const [ fileId, extencion ] = (user.photo).substring( (user.photo).lastIndexOf('/') + 1 ).split('.')
-            await Promise.all([
-                Image.deleteOne({ name:  fileId}),
-                cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
-            ])
         }
         
         await user.deleteOne()

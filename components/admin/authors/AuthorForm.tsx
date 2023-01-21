@@ -1,20 +1,17 @@
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useState } from "react"
 
 import Image from "next/image"
 import { useRouter } from 'next/router'
 
 import { useForm } from "react-hook-form"
 
-import { useUI } from "../../../hooks/useUI"
-import { useData } from "../../../hooks/useData"
+import { useUI, useData } from "../../../hooks"
 
+import { ImagesSelectModal, ModalContainer } from "../ui"
 import { LoadingCircle } from "../utilities"
-import { IAuthor } from "../../../interfaces"
 import { validations } from "../../../utils/shared"
-import { notifyError } from "../../../utils/frontend"
+import { IAuthor } from "../../../interfaces"
 
-
-const imageMimeType = /image\/(png|jpg|jpeg|gif|webp)/i;
 
 interface Props {
     authorEdit?: IAuthor
@@ -23,22 +20,17 @@ interface Props {
 export const AuthorForm:FC<Props> = ({ authorEdit }) => {
 
     const [loadingSubmit, setLoadingSubmit] = useState(false)
-
+    const [showImagesModal, setShowImagesModal] = useState(false)
+    // Photo
+    const [photoAuthor, setPhotoAuthor] = useState<string>()
+    
     const router = useRouter()
 
-    // Photo
-    const [file, setFile] = useState(null);
-    const [fileDataURL, setFileDataURL] = useState(null);
-    const [photo, setPhoto] = useState<string>()
-
-
-    const fileInputRef = useRef<HTMLInputElement>(null)
-
     const { showSideMenu } = useUI()
+    const { addNewAuthor, updateAuthor } = useData()
+    
 
-    const { addNewImage, addNewAuthor, updateAuthor } = useData()
-
-    const { register, handleSubmit, formState:{ errors }, getValues, reset } = useForm<IAuthor>({
+    const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset } = useForm<IAuthor>({
         defaultValues: {
             name: '',
             facebook: '',
@@ -66,88 +58,36 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                 occupation: authorEdit.occupation,
                 description: authorEdit.description,
             })
-            setPhoto( authorEdit.photo )
+            setPhotoAuthor( authorEdit.photo )
         }
     }, [authorEdit, reset])
 
 
     // Photo
-    const handleFileChange = (e:any) => {
-
-        if( !e.target.files || e.target.files.length === 0 ){
-            return
-        }
-       
-        const fileSelected = e.target.files[0]
-
-        if (!fileSelected.type.match(imageMimeType)) {
-            notifyError('Formato no válido')
-            return
-        }
-        
-        setFile(fileSelected)
-    }
-
-    useEffect(() => {
-        let fileReader:any;
-        let isCancel: boolean = false;
-
-        if (file) {
-            fileReader = new FileReader()
-            fileReader.onload = (e:any) => {
-                const { result } = e.target
-                if (result && !isCancel) {
-                    setFile(file)
-                    setFileDataURL(result)
-                }
-            }
-            fileReader.readAsDataURL(file)
-        }
-
-        return () => {
-            isCancel = true
-            if (fileReader && fileReader.readyState === 1) {
-                fileReader.abort()
-            }
-        }
-    }, [file])
-
     const removePhoto = () => {
-        setPhoto(undefined)
-        setFile(null)
-        setFileDataURL(null)
-        if(fileInputRef.current?.value){
-            fileInputRef.current.value = ''
-        }
+        setPhotoAuthor(undefined)
+        setValue('photo', undefined, { shouldValidate: true })
     }
+
+    const handleSelectedImage = async( fnSelectedImage:()=> Promise<string | undefined> ) => {
+
+        const image = await fnSelectedImage()
+
+        if(image) {
+            setValue('photo', image, { shouldValidate: true })
+            setPhotoAuthor(image)
+        }
+
+        setShowImagesModal(false)
+    }
+
 
 
     const onCalcel = () => {
         router.replace('/admin/autores')
     }
-
     
-    const onSave = async({ name, facebook, twitter, instagram, email, phone, web, occupation, description}:IAuthor) => {
-
-
-        setLoadingSubmit(true)
-
-        let newImageUrl =  null
-        if(file){
-
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('section', 'authors')
-
-            const { hasError, urlImage } = await addNewImage(formData)
-            
-            if(hasError){
-                setLoadingSubmit(false)
-                return
-            }
-            
-            newImageUrl = urlImage
-        }
+    const onSave = async({ name, facebook, twitter, instagram, email, phone, web, occupation, description, photo}:IAuthor) => {
 
         const newAuthor:IAuthor = {
             ...authorEdit,
@@ -160,12 +100,11 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
             web,
             occupation,
             description,
-            photo: newImageUrl 
-                ? newImageUrl 
-                : photo
+            photo
         }
 
-        
+        setLoadingSubmit(true)
+
         if (authorEdit) {
             const { hasError } = await updateAuthor(newAuthor)
             if(hasError){
@@ -194,14 +133,14 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
             >
                 <section className={`bg-white p-5 sm:p-10 rounded-md lg:order-2 min-w-[300px] ${showSideMenu ? 'w-full' : 'sm:w-[300px]'} lg:w-[320px]`}>
                     {
-                        fileDataURL || photo
+                        photoAuthor
                             ? (
                                 <div className="relative group mb-5 flex justify-center w-full h-80 shadow mx-auto">
                                     <Image
                                         priority
                                         fill
                                         sizes="(max-width: 100%) 100%"
-                                        src={ fileDataURL || photo || 'profilePic'}
+                                        src={ photoAuthor || 'profilePic'}
                                         alt={'Nombre de pagina'}
                                         className='cover p-3' 
                                     />
@@ -217,7 +156,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             ):(
                                 <div className="p-5">
                                     <div
-                                        onClick={()=> fileInputRef.current?.click()} 
+                                        onClick={()=> setShowImagesModal(true)} 
                                         className={`group mx-auto border-dashed border-2 py-28 flex justify-center mb-5 rounded ${loadingSubmit ? '' : 'hover:border-slate-800 hover:cursor-pointer'}`}>
                                         <i className={`bx bxs-image-add text-6xl text-slate-800 opacity-50 ${ loadingSubmit ? '' : 'group-hover:opacity-100' }`}></i>
                                     </div>
@@ -303,14 +242,6 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             }
                         </div>
                     </div>
-                    <input
-                        type="file"
-                        style={{ display: 'none' }}
-                        disabled={loadingSubmit}
-                        ref={ fileInputRef }
-                        accept="image/png, image/jpg, image/jpeg, image/gif, image/webp"
-                        onChange={handleFileChange}
-                    />
                 </section>
                 <section className="bg-white p-5 sm:p-10 rounded-md sm:order-1 flex-1">
                     <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between">
@@ -407,6 +338,16 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                     </div>
                 </section>
             </form>
+            {
+                showImagesModal && (
+                    <ModalContainer heightFull={true} widthLg={true}>
+                        <ImagesSelectModal
+                            sectionImages="authors" 
+                            handleSelectedImage={handleSelectedImage}
+                        />
+                    </ModalContainer>
+                )
+            }
         </>
     )
 }

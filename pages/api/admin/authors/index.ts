@@ -4,11 +4,8 @@ import { isValidObjectId } from 'mongoose'
 import slugify from "slugify"
 
 import { db } from '../../../../database'
-import { Author, Image } from '../../../../models'
+import { Author } from '../../../../models'
 import { IAuthor } from '../../../../interfaces'
-
-import { v2 as cloudinary } from 'cloudinary'
-cloudinary.config( process.env.CLOUDINARY_URL || '' )
 
 
 type Data = 
@@ -123,15 +120,6 @@ const updateAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
             authorToUpdate.slug = slugify(name, { replacement: '-', lower: true })
         }
 
-        if( authorToUpdate.photo && authorToUpdate.photo !== photo ){
-            const [ fileId, extencion ] = (authorToUpdate.photo).substring( (authorToUpdate.photo).lastIndexOf('/') + 1 ).split('.')
-            await Promise.all([
-                Image.deleteOne({ name:  fileId}),
-                cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
-            ])
-
-        }
-
         authorToUpdate.name = name
         authorToUpdate.email = email
         authorToUpdate.occupation = occupation
@@ -172,14 +160,6 @@ const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         if( !author ){
             await db.disconnect()
             return res.status(400).json({ message: 'Autor no encontrado' })
-        }
-
-        if( author.photo ){
-            const [ fileId, extencion ] = (author.photo).substring( (author.photo).lastIndexOf('/') + 1 ).split('.')
-            await Promise.all([
-                Image.deleteOne({ name:  fileId}),
-                cloudinary.uploader.destroy( `${process.env.CLOUDINARY_FOLDER}/${fileId}` )
-            ])
         }
 
         await author.deleteOne()
