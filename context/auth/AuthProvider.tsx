@@ -50,7 +50,8 @@ export const AuthProvider: FC<Props> = ({ children }) => {
             
         } catch (error) {
 
-            Cookies.remove(cookieAuthKey)
+            logout()
+        
         }
     }
 

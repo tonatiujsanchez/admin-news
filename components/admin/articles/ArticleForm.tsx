@@ -10,7 +10,7 @@ import { SelectCategories } from './SelectCategories'
 import { SelectAuthors } from './SelectAuthors'
 import { Checkbox, DTPicker, QuillEditor, QuillEditorLite, SelectImage } from '../ui'
 import { LoadingCircle } from '../utilities'
-import { IEntry, IEntryCategory, IEntryAuthor } from '../../../interfaces'
+import { IEntry, ICategory, IAuthor } from '../../../interfaces'
 
 
 interface Props {
@@ -96,7 +96,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         setValue('published', !getValues('published'), { shouldValidate: true })
      }
 
-    const handleSetCategory = ( category:IEntryCategory, subcategory?:IEntryCategory ) => {
+    const handleSetCategory = ( category:ICategory, subcategory?:ICategory ) => {
 
         setValue('category', category, { shouldValidate: true })
         
@@ -107,7 +107,7 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         }
     }
 
-    const handleSetAuthor = ( author:IEntryAuthor ) => {
+    const handleSetAuthor = ( author:IAuthor ) => {
         setValue('author', author, { shouldValidate: true })
     }
 

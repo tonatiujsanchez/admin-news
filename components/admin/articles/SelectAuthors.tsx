@@ -1,13 +1,15 @@
 import { FC, Fragment, useEffect, useState } from "react"
+import Image from "next/image"
 
 import styled from "@emotion/styled"
 
 import { useData } from "../../../hooks/useData"
-import { IEntryAuthor } from '../../../interfaces/IEntry';
+import { IAuthor } from "../../../interfaces"
+
 
 interface Props {
-    author?: IEntryAuthor
-    handleSelectAuthor: (author: IEntryAuthor) => void
+    author?: IAuthor
+    handleSelectAuthor: (author: IAuthor) => void
     processing?: boolean
 }
 
@@ -15,7 +17,7 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
 
     const [loadingAuthors, setLoadingAuthors] = useState(false)
     const [showSelect, setShowSelect] = useState(false)
-    const [authorActive, setAuthorActive] = useState<IEntryAuthor>()
+    const [authorActive, setAuthorActive] = useState<IAuthor>()
     
 
     const { authors, refreshAuthors } = useData()
@@ -37,20 +39,8 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
         if( authors.length === 0 ){ return }
 
         if(!author){
-            setAuthorActive({
-                _id: authors[0]._id!,
-                name: authors[0].name,
-                photo: authors[0].photo!,
-                occupation: authors[0].occupation!,
-                slug: authors[0].occupation!,
-            })
-            handleSelectAuthor({
-                _id: authors[0]._id!,
-                name: authors[0].name,
-                photo: authors[0].photo!,
-                occupation: authors[0].occupation!,
-                slug: authors[0].occupation!,
-            })
+            setAuthorActive(authors[0])
+            handleSelectAuthor(authors[0])
             return
         }
 
@@ -79,25 +69,64 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
                         className={`border border-gray-200 ${ processing ? 'pointer-events-none' : 'hover:border-slate-800' }`}
                     >
                         <OpcionSeleccionada>
-                            {authorActive.name} <i className={`bx bxs-down-arrow transition-all duration-300 ${showSelect ? 'rotate-180' : ''}`}></i>
+                            <div className="flex items-center gap-4">
+                                <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border">
+                                    {
+                                        authorActive.photo 
+                                        ?(
+                                            <Image
+                                                priority
+                                                fill
+                                                sizes="(max-width: 100px) 100px"
+                                                src={authorActive.photo!}
+                                                alt={authorActive.name}
+                                                className='cover bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'
+                                            />
+                                        ):(
+                                            <div className='w-full h-full flex justify-center items-center bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'>
+                                                <p className="font-bold text-4xl text-slate-800 uppercase">{authorActive.name.slice(0, 1)}</p>
+                                            </div>
+                                        )
+                                    }
+                                </div>
+                                <p>{authorActive.name}</p>
+                            </div>
+                            <i className={`bx bxs-down-arrow transition-all duration-300 ${showSelect ? 'rotate-180' : ''}`}></i>
                         </OpcionSeleccionada>
                         {showSelect &&
                             <Opciones className={`border border-gray-200 shadow-lg`}>
-                                {authors.map(author => (
+                                {authors.map(author => {
+
+                                    if( !author.active || author._id === authorActive._id){ return <div key={author._id} className="hidden"></div> }
+                                    
+                                    return (
                                         <Opcion
                                             key={author._id}
-                                            onClick={() => handleSelectAuthor({
-                                                _id: author._id!,
-                                                name: author.name,
-                                                photo: author.photo,
-                                                occupation: author.occupation,
-                                                slug: author.slug!,
-                                            })}
-                                        >
-                                            {author.name}
+                                            onClick={() => handleSelectAuthor(author)}
+                                        >   
+                                            <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border">
+                                                {
+                                                    author.photo 
+                                                    ?(
+                                                        <Image
+                                                            priority
+                                                            fill
+                                                            sizes="(max-width: 100px) 100px"
+                                                            src={author.photo}
+                                                            alt={author.name}
+                                                            className='cover bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'
+                                                        />
+                                                    ):(
+                                                        <div className='w-full h-full flex justify-center items-center bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'>
+                                                            <p className="font-bold text-4xl text-slate-800 uppercase">{author.name.slice(0, 1)}</p>
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                            <p>{author.name}</p>
                                         </Opcion>
-                                ))
-                                }
+                                    )
+                                })}
                             </Opciones>
                         }
                     </ContenedorSelect>
@@ -145,6 +174,8 @@ const Opciones = styled.div`
 
 const Opcion = styled.div<{ subcategory?: boolean }>`
 	display: flex;
+    align-items: center;
+    gap: 1rem;
     padding: ${(props) => props.subcategory ? '1rem 1.25rem 1rem 3rem' : '1.25rem'};
     font-weight: ${(props) => props.subcategory ? 'normal' : 'bold'};
     /* z-index: 10; */

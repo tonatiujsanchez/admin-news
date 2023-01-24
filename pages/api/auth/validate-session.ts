@@ -54,8 +54,13 @@ const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     await db.disconnect()
 
     if (!user) {
-        return res.status(400).json({ message: 'No existe ningun usuario con ese id' })
+        return res.status(400).json({ message: 'Usuario no encontrado' })
     }
+
+    if(!user.active){
+        return res.status(400).json({ message: 'Usuario no encontrado' })
+    }
+    
 
     const { _id, email, name, role, photo } = user
 

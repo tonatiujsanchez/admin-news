@@ -48,8 +48,8 @@ export const UserItem:FC<Props> = ({ user }) => {
 
     return (
         <>
-            <div className="flex flex-col sm:flex-row sm:justify-between gap-5 sm:gap-20 sm:items-center shadow p-5 sm:p-10 bg-white rounded-lg w-full">
-                <div className="flex flex-wrap gap-5 items-center">
+            <div className={`flex flex-col sm:flex-row sm:justify-between gap-5 sm:gap-20 sm:items-center shadow p-5 sm:p-10 bg-white rounded-lg w-full`}>
+                <div className={`flex flex-wrap gap-5 items-center`}>
                     <div className="relative">
                         <div className="relative w-24 h-24 rounded-full overflow-hidden cursor-pointer group border">
                             {
@@ -71,9 +71,18 @@ export const UserItem:FC<Props> = ({ user }) => {
                             }
 
                         </div>
-                        <RoleTag className={`text-lg px-2 rounded-md ${user.role === 'admin' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200'}`}>
-                            {user.role === 'admin' ? 'Administrador' : 'Editor'}
-                        </RoleTag>
+                        {
+                            !user.active
+                            ?(
+                                <RoleTag className={`font-semibold text-lg px-2 rounded-md bg-red-100 text-red-600`}>
+                                    Inactivo
+                                </RoleTag>
+                            ):(
+                                <RoleTag className={`text-lg px-2 rounded-md ${user.role === 'admin' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200'}`}>
+                                    {user.role === 'admin' ? 'Administrador' : 'Editor'}
+                                </RoleTag>
+                            )
+                        }
                     </div>
                     <div className="flex-1">
                         <p className="font-bold">{user.name}</p>

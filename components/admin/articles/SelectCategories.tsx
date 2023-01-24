@@ -3,12 +3,12 @@ import { FC, Fragment, useEffect, useMemo, useState } from "react"
 import styled from "@emotion/styled"
 
 import { useData } from "../../../hooks/useData"
-import { IEntryCategory } from "../../../interfaces"
+import { ICategory } from "../../../interfaces"
 
 interface Props {
-    category?: IEntryCategory
-    subcategory?: IEntryCategory | null
-    handleSelectCategory: (category: IEntryCategory, subcategory?: IEntryCategory) => void
+    category?: ICategory
+    subcategory?: ICategory | null
+    handleSelectCategory: (category: ICategory, subcategory?: ICategory) => void
     processing?: boolean
 }
 
@@ -17,7 +17,7 @@ export const SelectCategories:FC<Props> = ({ category, subcategory, handleSelect
 
     const [loadingCategories, setLoadingCategories] = useState(false)
     const [showSelect, setShowSelect] = useState(false)
-    const [categoryActive, setCategoryActive] = useState<IEntryCategory>()
+    const [categoryActive, setCategoryActive] = useState<ICategory>()
 
     const { categories, refreshCategories } = useData()
 
@@ -43,18 +43,8 @@ export const SelectCategories:FC<Props> = ({ category, subcategory, handleSelect
         }else{
             
             if(!category){
-                setCategoryActive({
-                    _id: categories[0]._id!,
-                    title: categories[0].title,
-                    slug: categories[0].slug!,
-                    tag: categories[0].tag!,
-                })
-                handleSelectCategory({
-                    _id: categories[0]._id!,
-                    title: categories[0].title,
-                    slug: categories[0].slug!,
-                    tag: categories[0].tag!,
-                })
+                setCategoryActive(categories[0])
+                handleSelectCategory(categories[0])
                 return
             }
             setCategoryActive(category)            
@@ -88,50 +78,42 @@ export const SelectCategories:FC<Props> = ({ category, subcategory, handleSelect
                     </OpcionSeleccionada>
                     {showSelect &&
                         <Opciones className={`border border-gray-200 shadow-lg custom-scroll`}>
-                            {categories.map(category => (
-                                <Fragment key={category._id}>
-                                    <Opcion
-                                        onClick={() => handleSelectCategory({
-                                            _id: category._id!,
-                                            title: category.title,
-                                            slug: category.slug!,
-                                            tag: category.tag!,
-                                        })}
-                                    >
-                                        {category.title}
-                                    </Opcion>
-                                    {
-                                        category.subcategories &&
-                                        <div>
-                                            {
-                                                category.subcategories.map(subcategory => (
+                            {categories.map(category => {
 
-                                                    <Opcion
-                                                        subcategory
-                                                        key={subcategory._id}
-                                                        onClick={() => handleSelectCategory({
-                                                            _id: category._id!,
-                                                            title: category.title,
-                                                            slug: category.slug!,
-                                                            tag: category.tag!,
-                                                        },{
-                                                            _id: subcategory._id!,
-                                                            title: subcategory.title,
-                                                            slug: subcategory.slug!,
-                                                            tag: subcategory.tag!,
-                                                        })}
+                                if( !category.active){ return <div key={category._id} className="hidden"></div> }
+                                
+                                return(
+                                    <Fragment key={category._id}>
+                                        <Opcion
+                                            onClick={() => handleSelectCategory(category)}
+                                        >
+                                            {category.title}
+                                        </Opcion>
+                                        {
+                                            category.subcategories &&
+                                            <div>
+                                                {
+                                                    category.subcategories.map(subcategory => {
+                                                        
+                                                        if( !subcategory.active){ return <div key={subcategory._id} className="hidden"></div> }
 
-                                                    >
-                                                        - {subcategory.title}
-                                                    </Opcion>
-                                                ))
-
-                                            }
-                                        </div>
-                                    }
-                                </Fragment>
-                            ))
-                            }
+                                                        return(
+                                                            <Opcion
+                                                                subcategory
+                                                                key={subcategory._id}
+                                                                onClick={() => handleSelectCategory(category,subcategory)}
+        
+                                                            >
+                                                                - {subcategory.title}
+                                                            </Opcion>
+                                                            )
+                                                        })
+                                                }
+                                            </div>
+                                        }
+                                    </Fragment>
+                                )
+                            })}
                         </Opciones>
                     }
                 </ContenedorSelect>

@@ -3,6 +3,9 @@ import { IImage } from '../interfaces'
 
 
 export const imageSchema = new Schema({
+    publicId: { 
+        type: String
+    },
     name: {
         type: String,
         required: true
@@ -10,6 +13,15 @@ export const imageSchema = new Schema({
     url: {
         type: String,
         required: true
+    },
+    alt: {
+        type: String
+    },
+    width: {
+        type: Number
+    },
+    height: {
+        type: Number
     },
     size: {
         type: Number

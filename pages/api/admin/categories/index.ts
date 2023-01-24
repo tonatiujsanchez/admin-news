@@ -61,9 +61,9 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
     try {
         await db.connect()
 
-        const category = await Category.findOne({slug})        
+        const categoryDB = await Category.findOne({slug, type, category})        
 
-        if(category){
+        if(categoryDB){
             return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
         }
 
@@ -123,9 +123,9 @@ const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         }
 
         
-        const categoryBySlug = await Category.findOne({slug: categoryToUpdate.slug}) 
+        const categoryBySlug = await Category.findOne({slug: categoryToUpdate.slug, type: categoryToUpdate.type, category})
                
-        if(categoryBySlug && JSON.parse(JSON.stringify(categoryBySlug._id)) !== JSON.parse(JSON.stringify(categoryToUpdate._id)) ){            
+        if( categoryBySlug && JSON.parse(JSON.stringify(categoryBySlug._id)) !== JSON.parse(JSON.stringify(categoryToUpdate._id)) ){
             return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
         }
 

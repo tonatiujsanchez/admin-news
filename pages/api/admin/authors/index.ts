@@ -45,6 +45,7 @@ const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         occupation = '',
         description = '',
         photo = null,
+        active = true
     } = req.body  
 
     if([name.trim()].includes('')){
@@ -65,6 +66,7 @@ const addNewAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         occupation: occupation.trim(),
         description: description.trim(),
         photo,
+        active
     })
 
 
@@ -97,7 +99,8 @@ const updateAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         web = '',
         occupation = '',
         description = '', 
-        photo = null
+        photo = null,
+        active
     } = req.body
 
     if( !isValidObjectId( _id ) ){
@@ -130,6 +133,7 @@ const updateAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
         authorToUpdate.twitter = twitter
         authorToUpdate.instagram = instagram
         authorToUpdate.web = web
+        authorToUpdate.active = active
 
         await authorToUpdate.save()
         await db.disconnect()
@@ -155,6 +159,13 @@ const deleteAuthor = async (req:NextApiRequest, res:NextApiResponse<Data>) => {
     try {
 
         await db.connect()
+
+        const count = await Author.find().count() 
+        
+        if( count <= 1 ){
+            return res.status(400).json({ message: 'Es necesario al menos un autor' })
+        }
+
         const author = await Author.findById( idAuthor )
 
         if( !author ){

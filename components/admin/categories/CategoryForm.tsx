@@ -6,6 +6,7 @@ import { useData } from '../../../hooks'
 
 import { ICategory, ITypeCategory } from '../../../interfaces'
 import { notifyError } from '../../../utils/frontend'
+import { Checkbox } from '../ui'
 import { LoadingCircle } from '../utilities'
 
 
@@ -27,6 +28,7 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
             category: categories[0]._id || '',
             title: '',
             tag: '',
+            active: true,
         }
     })
 
@@ -37,7 +39,8 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
                 type: categoryEdit.type,
                 category: categoryEdit.category || categories[0]._id,
                 title: categoryEdit.title,
-                tag: categoryEdit.tag
+                tag: categoryEdit.tag,
+                active: categoryEdit.active,
             })
         }
     }, [])
@@ -50,8 +53,12 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
         setValue('category', target.value, { shouldValidate: true } )
     }
 
+    const handleSetActive = () => {
+        setValue('active', !getValues('active'), { shouldValidate: true })
+    }
 
-    const onSubmitCategory = async({ type, category, title, tag, position }: ICategory) => {
+
+    const onSubmitCategory = async({ type, category, title, tag, position, active }: ICategory) => {
         
 
         if (type === 'subcategory' && !category) {
@@ -71,7 +78,7 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
         if(categoryEdit) {
 
-            const { hasError } = await updateCategory({ _id:categoryEdit._id, type, category, title, tag })
+            const { hasError } = await updateCategory({ _id:categoryEdit._id, type, category, title, tag, active })
             setLoading(false)
             
             if(hasError){ return }
@@ -81,7 +88,7 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
             position = categories.length + 1
 
-            const { hasError } = await addNewCategory({ type, category, title, tag, position  })
+            const { hasError } = await addNewCategory({ type, category, title, tag, position, active })
             setLoading(false)
 
             if(hasError){ return }
@@ -92,7 +99,7 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
 
 
     return (
-        <div className="h-full flex flex-col sm:w-[600px] overflow-y-scroll">
+        <div className="h-full flex flex-col sm:w-[600px] overflow-y-scroll custom-scroll">
             <header className="py-10 px-8 sm:px-10">
                 <h3 className="text-center font-bold text-4xl">{categoryEdit ? `Editando: ${ categoryEdit.title }` : 'Nueva Categoría'}</h3>
             </header>
@@ -170,6 +177,13 @@ export const CategoryForm:FC<Props> = ({ setShowCategoryForm, categoryEdit }) =>
                             { ...register('tag') }
                         />
                     </div>
+                    <Checkbox 
+                        value={ getValues('active') } 
+                        name="active-category" 
+                        onCheckChange={handleSetActive}
+                        label="Activo" 
+                        processing={ loading }
+                    />
                 </div>
 
                 <div className="px-8 py-6 sm:px-10 mt-10 flex flex-col items-center justify-end gap-4 sm:flex sm:flex-row">

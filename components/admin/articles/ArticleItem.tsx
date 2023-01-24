@@ -14,7 +14,7 @@ interface Props {
     article: IEntry
 }
 
-export const ArticleItem: FC<Props> = ({ article }) => {
+export const ArticleItem: FC<Props> = ({ article }) => {   
 
     const [showModalDelete, setShowModalDelete] = useState(false)
     const [loading, setLoading] = useState(false)

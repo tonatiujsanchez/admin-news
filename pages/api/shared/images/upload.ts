@@ -44,11 +44,15 @@ const saveFile = async( file: formidable.File, section:ISectionImage,  user:stri
 
     const image = await cloudinary.uploader.upload( file.filepath, { folder: process.env.CLOUDINARY_FOLDER  } )
     
-     const { public_id, secure_url, bytes, format } = image
+    const { public_id, secure_url, bytes, format, width, height } = image
         
     return {
+        publicId: public_id,
         name: public_id.split('/')[1],
         url : secure_url,
+        alt: "",
+        width,
+        height,
         size: bytes,
         format,
         section,

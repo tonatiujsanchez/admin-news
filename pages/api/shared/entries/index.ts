@@ -42,7 +42,12 @@ const getEntries = async( res: NextApiResponse<Data> ) => {
     try {
         
         await db.connect()
-        const entries = await Entry.find().sort({ createdAt: 'desc' }).lean()       
+        const entries = await Entry.find()
+            .sort({ createdAt: 'desc' })
+            .populate({ path: 'category', model: 'Category' })
+            .populate({ path: 'subcategory', model: 'Category' })
+            .populate({ path: 'author', model: 'Author' })     
+
         await db.disconnect()
     
         return res.status(200).json( entries )
@@ -136,16 +141,24 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             imageSocial,
             inFrontPage,
             slug: slugEntry,
-            category,
-            subcategory,
-            author,
+            category: category._id,
+            subcategory: subcategory ? subcategory._id : null,
+            author: author._id,
             tags
         })
 
         await newEntry.save()
         await db.disconnect()
+        
+        
+        const entry = {
+            ...JSON.parse( JSON.stringify( newEntry ) ),
+            category,
+            subcategory,
+            author
+        }
 
-        return res.status(200).json( newEntry )
+        return res.status(200).json(entry)
 
         
     } catch (error) {
@@ -169,6 +182,9 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
 
         await db.connect()
         const entry = await Entry.findById( _id )
+            .populate({ path: 'category', model: 'Category' })
+            .populate({ path: 'subcategory', model: 'Category' })
+            .populate({ path: 'author', model: 'Author' })    
     
         if( !entry ){
             await db.disconnect()
@@ -190,7 +206,7 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             author      = entry.author,
             tags        = entry.tags 
         } = req.body 
-    
+
         entry.title       = title
         entry.content     = content
         entry.summary     = summary
@@ -205,10 +221,19 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         entry.author      = author
         entry.tags        = tags
 
+
+
         await entry.save()
         await db.disconnect()
 
-        return res.status(200).json( entry )
+        const entryUpdate = {
+            ...JSON.parse( JSON.stringify( entry ) ),
+            category,
+            subcategory,
+            author
+        }
+        
+        return res.status(200).json( entryUpdate )
 
     } catch (error) {
         await db.disconnect()

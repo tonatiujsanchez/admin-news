@@ -6,7 +6,7 @@ import NextLink from "next/link"
 import { useForm } from "react-hook-form"
 
 import { useData } from "../../../hooks"
-import { ImagesSelectModal, ModalContainer } from "../ui"
+import { Checkbox, ImagesSelectModal, ModalContainer } from "../ui"
 import { LoadingCircle } from "../utilities"
 import { validations } from "../../../utils/shared"
 import { IUser } from "../../../interfaces"
@@ -24,7 +24,7 @@ interface IUserForm {
     repitePassword: string
     role    : string
     photo?  :   string
-    active? :   boolean
+    active :   boolean
 }
 
 interface Props {
@@ -43,13 +43,14 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
 
     const { addNewUser, updateUser } = useData()
 
-    const { register, handleSubmit, watch, reset, formState: { errors }, setValue } = useForm<IUserForm>({
+    const { register, handleSubmit, watch, reset, formState: { errors }, setValue, getValues } = useForm<IUserForm>({
         defaultValues: {
             role: 'editor',
             name: '',
             email: '',
             password: '',
             repitePassword: '',
+            active: true
         }
     })
 
@@ -64,8 +65,10 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 role: userEdit.role,
                 name: userEdit.name,
                 email: userEdit.email,
+                photo: userEdit.photo,
                 password: '',
                 repitePassword: '',
+                active: userEdit.active
             })
             setPhotoAuthor(userEdit.photo)
         }
@@ -95,9 +98,12 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
         setShowImagesModal(false)
     }
 
+    const handleSetActive = () => {
+        setValue('active', !getValues('active'), { shouldValidate: true })
+    }
 
 
-    const onUserSubmit = async ({ role, name, email, password, photo }:IUserForm) => {
+    const onUserSubmit = async ({ role, name, email, password, photo, active }:IUserForm) => {
 
         setLoadingSubmit(true)
 
@@ -108,7 +114,8 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 role,
                 name,
                 email,
-                photo
+                photo,
+                active
             }
             const { hasError } = await updateUser(newUser)
             if(hasError){
@@ -123,7 +130,8 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                 name, 
                 email, 
                 password, 
-                photo
+                photo,
+                active
             })
 
             if(hasError){
@@ -281,6 +289,15 @@ export const UserForm:FC<Props> = ({ userEdit }) => {
                         </div>
                     </>
                 }
+                <div className="mt-5">
+                    <Checkbox 
+                        value={ getValues('active') } 
+                        name="active-user" 
+                        onCheckChange={handleSetActive}
+                        label="Activo" 
+                        processing={ loadingSubmit }
+                    />
+                </div>
                 <div className="flex flex-col items-center justify-end gap-4 sm:flex sm:flex-row mt-10">
                     <button
                         type="button"

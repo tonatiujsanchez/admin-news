@@ -4,8 +4,13 @@ export type ISectionImage = 'articles'|'authors'|'users';
 export interface IImage {
     _id?   : string
 
+    publicId: string
     name    : string
     url     : string
+    alt?    : string | null
+    width   : number
+    height  : number
+
     size?   : number
     format? : string
     section : ISectionImage

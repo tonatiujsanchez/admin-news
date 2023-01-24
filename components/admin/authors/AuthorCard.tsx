@@ -76,6 +76,15 @@ export const AuthorCard:FC<Props> = ({ author }) => {
                             { author.name }
                         </NextLink>
                         <p className='text-slate-500 font-semibold'>{author.occupation}</p>
+                        <p className='mt-2'>
+                            { author.active
+                                ?(
+                                    <span className='bg-emerald-100 text-emerald-600 text-xl px-4 py-1 rounded-md font-semibold'>Activo</span>
+                                ):(
+                                    <span className='bg-slate-100 text-slate-600 text-xl px-4 py-1 rounded-md font-semibold'>Inactivo</span>
+                                )
+                            }
+                        </p>
                     </div>
                 </div>
                 <div className='flex items-center justify-center gap-7 mt-10'>

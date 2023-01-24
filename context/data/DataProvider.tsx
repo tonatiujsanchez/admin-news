@@ -116,7 +116,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
         
         try {
 
-            const { data } = await axios.post<IEntry>('/api/shared/entries', entry)
+            const { data } = await axios.post<IEntry>('/api/shared/entries', entry)            
 
             if( state.entries.length > 0 ){
                 dispatch({ type: '[DATA] - Add New Entry', payload: data })         
@@ -219,7 +219,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
         try {
 
-            const skipStart = page * 10
+            const skipStart = page * 20
 
             const { data } = await axios.get(`/api/shared/images`, { params: { section, skipStart } })
 

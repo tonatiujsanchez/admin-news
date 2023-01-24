@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 
 import { useUI, useData } from "../../../hooks"
 
-import { ImagesSelectModal, ModalContainer } from "../ui"
+import { Checkbox, ImagesSelectModal, ModalContainer } from "../ui"
 import { LoadingCircle } from "../utilities"
 import { validations } from "../../../utils/shared"
 import { IAuthor } from "../../../interfaces"
@@ -41,6 +41,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
             web: '',
             occupation: '',
             description: '',
+            active: true
         }
     })
 
@@ -49,6 +50,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
         if (authorEdit) {
             reset({
                 name: authorEdit.name,
+                photo: authorEdit.photo,
                 facebook: authorEdit.facebook,
                 twitter: authorEdit.twitter,
                 instagram: authorEdit.instagram,
@@ -57,6 +59,7 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                 web: authorEdit.web,
                 occupation: authorEdit.occupation,
                 description: authorEdit.description,
+                active: authorEdit.active
             })
             setPhotoAuthor( authorEdit.photo )
         }
@@ -81,13 +84,17 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
         setShowImagesModal(false)
     }
 
+    const handleSetActive = () => {
+        setValue('active', !getValues('active'), { shouldValidate: true })
+    }
+
 
 
     const onCalcel = () => {
         router.replace('/admin/autores')
     }
     
-    const onSave = async({ name, facebook, twitter, instagram, email, phone, web, occupation, description, photo}:IAuthor) => {
+    const onSave = async({ name, facebook, twitter, instagram, email, phone, web, occupation, description, photo, active}:IAuthor) => {
 
         const newAuthor:IAuthor = {
             ...authorEdit,
@@ -100,7 +107,8 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
             web,
             occupation,
             description,
-            photo
+            photo,
+            active
         }
 
         setLoadingSubmit(true)
@@ -315,26 +323,34 @@ export const AuthorForm:FC<Props> = ({ authorEdit }) => {
                             </textarea>
                         </div>
                     </div>
-
-                    <div className="flex flex-col items-center justify-end gap-4 mt-5 sm:flex sm:flex-row">
-                        <button
-                            type="button"
-                            onClick={onCalcel}
-                            disabled={loadingSubmit}
-                            className="py-4 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-white">
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={loadingSubmit}
-                            className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
-                            {
-                                loadingSubmit
-                                ? <LoadingCircle />
-                                : <span>Guardar</span>
-                            }
-                            
-                        </button>
+                    <div className="flex flex-col gap-5 sm:flex-row justify-between">
+                        <Checkbox 
+                            value={ getValues('active') } 
+                            name="active-author" 
+                            onCheckChange={handleSetActive}
+                            label="Activo" 
+                            processing={ loadingSubmit }
+                        />
+                        <div className="flex flex-col items-end justify-end gap-4 mt-5 mb-2 sm:flex sm:flex-row">
+                            <button
+                                type="button"
+                                onClick={onCalcel}
+                                disabled={loadingSubmit}
+                                className="py-4 px-6 border border-gray-300 w-full sm:w-auto rounded-md cursor-pointer transition-colors hover:bg-slate-100 active:scale-95 disabled:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-white">
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loadingSubmit}
+                                className="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-4 px-8 w-full sm:w-auto rounded-md cursor-pointer transition-colors min-w-[120px] flex justify-center disabled:bg-sky-300 disabled:cursor-not-allowed disabled:hover:bg-sky-300">
+                                {
+                                    loadingSubmit
+                                    ? <LoadingCircle />
+                                    : <span>Guardar</span>
+                                }
+                                
+                            </button>
+                        </div>
                     </div>
                 </section>
             </form>

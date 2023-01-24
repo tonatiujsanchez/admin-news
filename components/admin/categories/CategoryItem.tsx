@@ -1,11 +1,11 @@
 
 import { FC, useState } from 'react'
 
-import { useData } from '../../../hooks/useData'
-import { ICategory } from '../../../interfaces'
-import { ModalContainer, ModalDelete } from '../ui'
-import { CategoryForm } from './CategoryForm'
+import { useData } from '../../../hooks'
 
+import { CategoryForm } from './CategoryForm'
+import { ModalContainer, ModalDelete } from '../ui'
+import { ICategory } from '../../../interfaces'
 
 interface Props {
     category: ICategory
@@ -65,11 +65,11 @@ export const CategoryItem:FC<Props> = ({ category }) => {
                         <button
                             onClick={() => setOpenSubcategories(!openSubcategories)}
                             className={`text-5xl p-2 ${category.subcategories?.length ? 'opacity-100' : 'opacity-10'}`}>
-                            <i className={`bx bx-chevron-down transition-all ${openSubcategories && category.subcategories?.length ? 'rotate-180' : ''}`}></i>
+                            <i className={`bx bx-chevron-down transition-all ${openSubcategories && category.subcategories?.length ? 'rotate-180' : ''} ${ category.active ? 'opacity-100' : 'opacity-10' }`}></i>
                         </button>
                         <p
                             onClick={() => setOpenSubcategories(!openSubcategories)}
-                            className={`font-bold ${category.subcategories ? 'cursor-pointer' : 'cursor-text'}`}>
+                            className={`font-bold ${category.subcategories ? 'cursor-pointer' : 'cursor-text'} ${ category.active ? 'opacity-100' : 'opacity-30' }`}>
                             {category.title}
                         </p>
                     </div>
@@ -96,7 +96,7 @@ export const CategoryItem:FC<Props> = ({ category }) => {
                                 if (subcategory.category === category._id) {
                                     return (
                                         <div key={subcategory._id} className={`pl-10 pr-10 my-1 py-4 justify-between items-center even:bg-gray-100 ${openSubcategories ? 'opacity-100 flex' : 'opacity-0 hidden'}`}>
-                                            <p><i className='bx bx-minus'></i> {subcategory.title}</p>
+                                            <p className={`${ !category.active || !subcategory.active ? 'opacity-30' : 'opacity-100' }`}><i className='bx bx-minus'></i> {subcategory.title}</p>
                                             <div className="flex gap-5">
                                                 <button
                                                     className='text-sky-700 hover:text-sky-800'

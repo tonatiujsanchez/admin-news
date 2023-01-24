@@ -1,3 +1,5 @@
+import { IAuthor } from "./IAuthor"
+import { ICategory, ISubcategory } from "./ICategory"
 
 export interface IEntry {
     _id?        : string
@@ -11,9 +13,9 @@ export interface IEntry {
     imageSocial?: string
     inFrontPage : boolean
     slug?       : string
-    category    : IEntryCategory
-    subcategory : IEntryCategory | null
-    author      : IEntryAuthor
+    category    : ICategory
+    subcategory : ISubcategory | null
+    author      : IAuthor
     tags        : string[]
     views       : number
     
@@ -24,18 +26,18 @@ export interface IEntry {
 }
 
 
-export interface IEntryCategory {
-    _id  : string
-    title: string
-    slug : string
-    tag  : string
-}
+// export interface IEntryCategory {
+//     _id  : string
+//     title: string
+//     slug : string
+//     tag  : string
+// }
 
-export interface IEntryAuthor {
-    _id        : string
-    name       : string
-    slug       : string
-    photo?     : string
-    occupation?: string
-}
+// export interface IEntryAuthor {
+//     _id        : string
+//     name       : string
+//     slug       : string
+//     photo?     : string
+//     occupation?: string
+// }
 

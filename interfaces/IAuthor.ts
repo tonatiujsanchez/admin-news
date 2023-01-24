@@ -13,6 +13,8 @@ export interface IAuthor{
     description? : string
     photo?   : string
     
+    active   : boolean
+    
     createdAt?: string
     updatedAt?: string
 }

@@ -46,7 +46,7 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     }
 
     await db.connect()
-    const user = await User.findOne({ email: email.toLowerCase() })
+    const user = await User.findOne({ email: email.toLowerCase()})
     await db.disconnect()
 
 
@@ -56,6 +56,11 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     }
 
     if (!(bcryptjs.compareSync(password, user.password))) {
+        await db.disconnect()
+        return res.status(400).json({ message: 'Correo o Contaseña no válidos' })
+    }
+
+    if(!user.active){
         await db.disconnect()
         return res.status(400).json({ message: 'Correo o Contaseña no válidos' })
     }

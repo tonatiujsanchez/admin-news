@@ -54,7 +54,7 @@ const getImages = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         return res.status(400).json({ message: 'Sección de la imagen NO valida' })
     }
 
-    const imagesPerPage = 10
+    const imagesPerPage = 20
     let skipImages = Number(skipStart)
 
     const { 'news_session_ed4c1de1770480153a06fa2349f501f0':token } = req.cookies    
@@ -88,7 +88,7 @@ const getImages = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             images = await Image.find({ section, user: payload._id })
                                 .skip(skipImages)
                                 .limit(imagesPerPage)
-                                .select('name url size format section')
+                                // .select('name url size format section')
                                 .sort({ createdAt: 'descending' })
                                 .lean()
         
@@ -97,7 +97,7 @@ const getImages = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             images = await Image.find({ section })
                                 .skip(skipImages)
                                 .limit(imagesPerPage)
-                                .select('name url size format section')
+                                // .select('name url size format section')
                                 .sort({ createdAt: 'descending' })
                                 .lean()
 

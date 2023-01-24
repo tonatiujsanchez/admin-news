@@ -47,24 +47,36 @@ const entrySchema = new Schema({
         unique: true,
     },
     category: {
-        _id  : { type: mongoose.Types.ObjectId, ref: 'Category' },
-        title: { type: String, require: true },
-        slug : { type: String, require: true },
-        tag  : { type: String, require: true },        
+        type: mongoose.Types.ObjectId,
+        ref: 'Category'    
     },
     subcategory: {
-        _id  : { type: mongoose.Types.ObjectId, ref: 'Category' },
-        title: { type: String, require: true },
-        slug : { type: String, require: true },
-        tag  : { type: String, require: true },     
+        type: mongoose.Types.ObjectId, 
+        ref: 'Category'
     },
+    // category: {
+    //     _id  : { type: mongoose.Types.ObjectId, ref: 'Category' },
+    //     title: { type: String, require: true },
+    //     slug : { type: String, require: true },
+    //     tag  : { type: String, require: true },        
+    // },
+    // subcategory: {
+    //     _id  : { type: mongoose.Types.ObjectId, ref: 'Category' },
+    //     title: { type: String, require: true },
+    //     slug : { type: String, require: true },
+    //     tag  : { type: String, require: true },     
+    // },
     author: {
-        _id  : { type: mongoose.Types.ObjectId, ref: 'Author' },
-        name : { type: String, require: true },
-        slug : { type: String, require: true },
-        photo: { type: String, require: false },
-        occupation: { type: String, require: false },
+        type: mongoose.Types.ObjectId,
+        ref: 'Author'
     },
+    // author: {
+    //     _id  : { type: mongoose.Types.ObjectId, ref: 'Author' },
+    //     name : { type: String, require: true },
+    //     slug : { type: String, require: true },
+    //     photo: { type: String, require: false },
+    //     occupation: { type: String, require: false },
+    // },
     tags: [
         { type: String }
     ],

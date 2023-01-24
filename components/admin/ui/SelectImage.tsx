@@ -29,7 +29,7 @@ export const SelectImage:FC<Props> = ({ image, heightContentImage='h-80', objetF
 
     const removePhoto = () => {
         setPhoto(undefined)
-        handleSetImage(undefined)
+        handleSetImage("")
     }
 
 
