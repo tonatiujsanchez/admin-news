@@ -16,16 +16,8 @@ interface Props {
 export const LayoutAdmin:FC<Props> = ({ children, title='', isMain=false }) => {
 
     const { showSideMenu } = useUI()
-    const { user, isLoggedIn } = useAuth()
+    const { user } = useAuth()
 
-    // if(!isLoggedIn){
-    //     return(
-    //         <div className="h-screen w-full flex justify-center items-center">
-    //             <LoadingLetters />
-    //             <p className="ml-3">Cargando...</p>
-    //         </div>
-    //     )
-    // }
 
     return (
         <>

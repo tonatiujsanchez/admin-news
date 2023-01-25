@@ -51,7 +51,7 @@ export const ImageItem:FC<Props> = ({ image }) => {
         <>
             <div className="relative w-[48%] sm:w-[165px]">
                 <div className="rounded-lg overflow-hidden border">
-                    <Image
+                    {/* <Image
                         priority={true}
                         placeholder="blur"
                         blurDataURL={image.url}
@@ -61,7 +61,17 @@ export const ImageItem:FC<Props> = ({ image }) => {
                         alt={`Imagen ${image.name}`}
                         title={`Imagen ${image.name}`}
                         className='w-full h-auto'
-                    />
+                    /> */}
+                    <div className="relative h-48 w-full">
+                        <Image
+                            fill
+                            sizes="(max-width: 100%) 100%"
+                            src={image.url}
+                            alt={`Imagen ${image.name}`}
+                            title={`Imagen ${image.name}`}
+                            className="contain bg-slate-100"
+                        />
+                    </div>
                     <div className="pl-2 pt-2">
                         <p className="font-bold text-xl mb-2">{ image.name }</p>
                         <div className="flex justify-between items-center">

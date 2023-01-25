@@ -64,7 +64,12 @@ const addNewCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         const categoryDB = await Category.findOne({slug, type, category})        
 
         if(categoryDB){
-            return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
+            if( categoryDB.type === 'subcategory' ){
+                return res.status(400).json({ message: 'Ya exite una subcategoría con ese nombre en la misma categoría' })
+                
+            } else {
+                return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
+            }
         }
 
         const newCategory = new Category({
@@ -126,7 +131,14 @@ const updateCategory = async (req:NextApiRequest, res:NextApiResponse<Data>) => 
         const categoryBySlug = await Category.findOne({slug: categoryToUpdate.slug, type: categoryToUpdate.type, category})
                
         if( categoryBySlug && JSON.parse(JSON.stringify(categoryBySlug._id)) !== JSON.parse(JSON.stringify(categoryToUpdate._id)) ){
-            return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
+
+            if( categoryBySlug.type === 'subcategory' ){
+                return res.status(400).json({ message: 'Ya exite una subcategoría con ese nombre en la misma categoría' })
+                
+            } else {
+                return res.status(400).json({ message: 'Ya exite una categoría con ese nombre' })
+            }
+
         }
 
 

@@ -39,8 +39,8 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
         if( authors.length === 0 ){ return }
 
         if(!author){
-            setAuthorActive(authors[0])
-            handleSelectAuthor(authors[0])
+            setAuthorActive( authors.find( a => a.active ) )
+            handleSelectAuthor( authors.find( a => a.active )! )           
             return
         }
 
@@ -70,7 +70,7 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
                     >
                         <OpcionSeleccionada>
                             <div className="flex items-center gap-4">
-                                <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border">
+                                <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border-2 border-white">
                                     {
                                         authorActive.photo 
                                         ?(
@@ -176,7 +176,7 @@ const Opcion = styled.div<{ subcategory?: boolean }>`
 	display: flex;
     align-items: center;
     gap: 1rem;
-    padding: ${(props) => props.subcategory ? '1rem 1.25rem 1rem 3rem' : '1.25rem'};
+    padding: ${(props) => props.subcategory ? '1rem 1.25rem 1rem 3rem' : '0.5rem 1.25rem'};
     font-weight: ${(props) => props.subcategory ? 'normal' : 'bold'};
     /* z-index: 10; */
 	&:hover {

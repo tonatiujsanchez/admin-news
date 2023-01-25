@@ -234,16 +234,17 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                 <div className="flex-1 mb-4 sm:order-1">
                     <div className="flex justify-center flex-col lg:flex-row sm:gap-10">
                         <SelectImage
-                            image={ getValues('banner') }
+                            image={ getValues("banner") }
                             label="Foto principal"
-                            objetFillImage='contain'
+                            objetFillImage="contain"
                             handleSetImage={handleSetImageBanner}
                             processing={loadingSubmit}
                         />
                         <SelectImage
-                            image={ getValues('imageSocial') }
+                            image={ getValues("imageSocial") }
                             label="Redes sociales"
-                            heightContentImage='h-64'
+                            objetFillImage="contain"
+                            heightContentImage="h-64"
                             handleSetImage={handleSetImageSocial}
                             processing={ loadingSubmit }
                         />

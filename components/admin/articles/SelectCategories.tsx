@@ -43,8 +43,8 @@ export const SelectCategories:FC<Props> = ({ category, subcategory, handleSelect
         }else{
             
             if(!category){
-                setCategoryActive(categories[0])
-                handleSelectCategory(categories[0])
+                setCategoryActive(categories.find( c => c.active ) )
+                handleSelectCategory(categories.find( c => c.active )!)
                 return
             }
             setCategoryActive(category)            
