@@ -4,7 +4,7 @@ import { ICategory, IAuthor, IImage, IImageState, IUser, IEntry } from '../../in
 
 type DataActionType =
 
-    | { type: '[DATA] - Refresh Entries', payload: IEntry[] }
+    | { type: '[DATA] - Refresh Entries', payload: { pageCount: number, length: number, page: number, data: IEntry[] }}
     | { type: '[DATA] - Add New Entry', payload: IEntry }
     | { type: '[DATA] - Update Entry', payload: IEntry }
     | { type: '[DATA] - Delete Entry', payload: string }
@@ -38,25 +38,34 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
         case '[DATA] - Refresh Entries':
             return {
                 ...state,
-                entries: [ ...action.payload ]
+                entries: { ...action.payload }
             }
 
         case '[DATA] - Add New Entry':
             return {
                 ...state,
-                entries: [ action.payload, ...state.entries ]
+                entries: {
+                    ...state.entries,
+                    data: [ action.payload, ...state.entries.data ]
+                }
             }   
 
         case '[DATA] - Update Entry':
             return {
                 ...state,
-                entries: state.entries.map( entry => entry._id === action.payload._id ? action.payload : entry )
+                entries: {
+                    ...state.entries,
+                    data: state.entries.data.map( entry => entry._id === action.payload._id ? action.payload : entry )
+                }
             }      
 
         case '[DATA] - Delete Entry':
             return {
                 ...state,
-                entries: state.entries.filter( entry => entry._id !== action.payload )
+                entries: {
+                    ...state.entries,
+                    data: state.entries.data.filter( entry => entry._id !== action.payload )
+                }
             }        
         
         // Images

@@ -4,15 +4,22 @@ import slugify from "slugify"
 import * as jose from 'jose'
 
 import { db } from '../../../../database'
-import { Entry } from '../../../../models'
-import { IEntry } from '../../../../interfaces'
 import { isValidObjectId } from 'mongoose'
+import { Entry } from '../../../../models'
+
+import { IEntry } from '../../../../interfaces'
 
 
 type Data = 
     | { message: string }
     | IEntry
     | IEntry[]
+    | {
+        length : number
+        totalOfPages: number
+        page: number,
+        entries : IEntry[]
+    }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     
@@ -20,7 +27,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
     switch (req.method) {
 
         case 'GET':
-            return getEntries( res )
+            return getEntries( req, res )
     
         case 'POST':
             return addNewEntry(req, res)
@@ -37,20 +44,39 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 }
 
-const getEntries = async( res: NextApiResponse<Data> ) => {
+const getEntries = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
+
+    const { page = 0, entriesPerPage = 10 } = req.query
+
+    let skipStart = Number(page) * Number(entriesPerPage)
 
     try {
         
         await db.connect()
+
+        const entriesLengthDB = await Entry.find().count() 
+
+        if( skipStart >= entriesLengthDB || skipStart < 0 ){
+            skipStart = 0
+        }
+
         const entries = await Entry.find()
-            .sort({ createdAt: 'desc' })
             .populate({ path: 'category', model: 'Category' })
             .populate({ path: 'subcategory', model: 'Category' })
             .populate({ path: 'author', model: 'Author' })     
+            .sort({ createdAt: 'desc' })
+            .skip( Number(skipStart) )
+            .limit( Number(entriesPerPage) )
 
         await db.disconnect()
+
     
-        return res.status(200).json( entries )
+        return res.status(200).json({
+            length: entriesLengthDB,
+            totalOfPages: Math.ceil(entriesLengthDB / Number( entriesPerPage )),
+            page: skipStart === 0 ? 0 : Number(page),
+            entries,
+        } )
         
     } catch (error) {
 

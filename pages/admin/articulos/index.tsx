@@ -7,6 +7,8 @@ import { LayoutAdmin } from '../../../components/layouts'
 import { ArticleList } from '../../../components/admin/articles';
 import { LinkPrimary, TitlePage } from '../../../components/admin/ui'
 import { LoadingAdmin } from '../../../components/admin/utilities'
+import ReactPaginate from 'react-paginate';
+import { useRouter } from 'next/router';
 
 
 
@@ -14,26 +16,55 @@ const ArticulosPage: NextPage = () => {
 
     const [loading, setLoading] = useState(false)
     
+    const router = useRouter()
+
     const { entries, refreshEntries } = useData()
     const { user: userSession } = useAuth()
 
 
     const loadEntries = async() => {
+        
+        const { page } = router.query as { page?: string }
+        
+        let actualPage = 0
+
+        if( page && Number( page ) >= 1 ){
+            actualPage = Number( page ) - 1
+        }
+
         setLoading(true)
-        await refreshEntries()       
+        await refreshEntries(actualPage)        
+
+        if((entries.page + 1) !== Number( page )){
+            router.push(`/admin/articulos?page=${ entries.page }`)
+        }
         setLoading(false)
     }
     
-    useEffect(()=>{
-
+    useEffect(()=>{        
+        
         if( !userSession ){
             return
+        }     
+        
+        if( entries.data.length <= 0 ){
+            loadEntries()   
+        } else {
+            router.push(`/admin/articulos?page=${ entries.page + 1}`)
         }
 
-        if( entries.length <= 0 ){
-            loadEntries()   
-        }
     },[userSession])
+       
+
+
+    const handlePageClick = async(event: {selected: number}) => {
+        
+        setLoading(true)
+        await refreshEntries( event.selected )
+        setLoading(false)
+
+        router.push(`/admin/articulos?page=${event.selected + 1}`)
+    }
 
 
 
@@ -49,6 +80,9 @@ const ArticulosPage: NextPage = () => {
                     <i className='bx bx-revision'></i>
                 </button>
             </div>
+            <div className="flex w-full mb-10">
+                <LinkPrimary link="/admin/nuevo" text="Nuevo artìculo" disabled={ loading } />
+            </div>
             {
                 loading
                     ?(
@@ -57,12 +91,27 @@ const ArticulosPage: NextPage = () => {
                         </div>
                     ):(
                         <section>
-                            <div className="flex w-full mb-10">
-                                <LinkPrimary link="/admin/nuevo" text="Nuevo artìculo" />
-                            </div>
                             <div className='overflow-x-auto custom-scroll max-w-[1440px] mx-auto'>
-                                <ArticleList articles={entries} />
+                                <ArticleList articles={entries.data} />
                             </div>
+                            
+                            <div className="flex justify-end mt-16">
+                                {
+                                    entries.pageCount > 1 &&
+                                    <ReactPaginate
+                                        previousLabel={ <i className={`bx bx-chevron-left text-4xl opacity-50 ${entries.page === 0 ?'cursor-default':'hover:opacity-100' }`}></i> }
+                                        breakLabel="..."
+                                        nextLabel={ <i className={`bx bx-chevron-right text-4xl opacity-50 ${(entries.page + 1) === entries.pageCount ?'cursor-default':'hover:opacity-100' }`}></i> }
+                                        onPageChange={handlePageClick}
+                                        pageCount={ entries.pageCount }
+                                        forcePage={ entries.page }
+                                        className="flex justify-end gap-2"
+                                        pageLinkClassName="border-2 border-transparent opacity-50 px-5 hover:border-b-sky-500 hover:opacity-100 py-2 font-semibold"
+                                        activeLinkClassName="border-2 border-sky-500 opacity-100 py-2 rounded"
+                                    />
+                                }
+                            </div>
+                                
                         </section>
                     )
             }

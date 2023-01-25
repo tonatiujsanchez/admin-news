@@ -16,7 +16,12 @@ interface Props {
 
 
 export interface DataState {
-    entries: IEntry[]
+    entries: {
+        pageCount: number,
+        length: number,
+        page: number,
+        data: IEntry[]
+    },
     images: IImages
     categoriesList: ICategory[]
     authors: IAuthor[]
@@ -24,7 +29,12 @@ export interface DataState {
 }
 
 const DATA_INITIAL_STATE: DataState = {
-    entries: [],
+    entries: {
+        pageCount: 1,
+        length: 0,
+        page: 1,
+        data: [],
+    },
     images: {
         articles: {
             pageCount: 1,
@@ -62,6 +72,10 @@ export const DataProvider: FC<Props> = ({ children }) => {
         localStorage.setItem(`section_page_storage_${section}_ed4c1de1770480153a06fa2349f501f0`, String( page ) )
     }
 
+    const updateArticlesPageInStorage = ( page: number ) => {
+        localStorage.setItem(`articles_page_storage_ed4c1de1770480153a06fa2349f501f0`, String( page ) )
+    }
+
     const categories:ICategory[] = useMemo(() => {
         return (
             state.categoriesList.filter(category => {
@@ -76,22 +90,28 @@ export const DataProvider: FC<Props> = ({ children }) => {
         )
     }, [state.categoriesList])
 
-    
-    
 
 
     
     // ===== ===== ===== ===== Entries ===== ===== ===== =====
     // ===== ===== ===== ===== ====== ===== ===== ===== ======
-    const refreshEntries = async():Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
-        
+    const refreshEntries = async( page:number = 0 ):Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
+
+
         try {
-            const { data } = await axios.get('/api/shared/entries')
-            dispatch({ type:'[DATA] - Refresh Entries', payload: data })
+            const { data } = await axios.get('/api/shared/entries', { params: { page } })
+            dispatch({ type:'[DATA] - Refresh Entries', payload: {
+                data: data.entries,
+                length: data.length,
+                page: data.page,
+                pageCount: data.totalOfPages
+            }})
+
+            updateArticlesPageInStorage( page )
         
             return{
                 hasError: false,
-                entriesResp: data
+                entriesResp: data.entries
             }
 
         } catch (error) {
@@ -226,7 +246,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             if(data.images.length === 0){
                 return { 
                     hasError: false,
-                    imagesResp: data  
+                    imagesResp: data
                 }
             }
 
