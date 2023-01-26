@@ -29,7 +29,7 @@ const ArticuloPage: NextPage = () => {
     const getEntryById = async() => {
         
         setLoading(true)
-
+ 
         if( entries.length === 0 ){
 
             const { hasError, entryResp } = await getEntry( id! )
@@ -56,11 +56,12 @@ const ArticuloPage: NextPage = () => {
     }
 
     useEffect(()=>{
-
-        if(!id || !userSession){ return }    
-        getEntryById()
-
-    },[id, userSession])
+        
+        if( id && userSession && !entry?._id ){
+            getEntryById()
+        }
+        
+    },[id, userSession, entry])
 
     
 

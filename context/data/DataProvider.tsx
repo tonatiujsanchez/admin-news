@@ -96,8 +96,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
     // ===== ===== ===== ===== Entries ===== ===== ===== =====
     // ===== ===== ===== ===== ====== ===== ===== ===== ======
     const refreshEntries = async( page:number = 0 ):Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
-
-
+        
         try {
             const { data } = await axios.get('/api/shared/entries', { params: { page } })
             dispatch({ type:'[DATA] - Refresh Entries', payload: {
@@ -137,7 +136,6 @@ export const DataProvider: FC<Props> = ({ children }) => {
         try {
             
             const { data } = await axios.get<IEntry>(`/api/shared/entries/${ idEntry }`)            
-
             return {
                 hasError: false,
                 entryResp: data

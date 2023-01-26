@@ -46,7 +46,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 const getEntries = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
 
-    const { page = 0, entriesPerPage = 10 } = req.query
+    const { page = 0, entriesPerPage = 15 } = req.query
 
     let skipStart = Number(page) * Number(entriesPerPage)
 

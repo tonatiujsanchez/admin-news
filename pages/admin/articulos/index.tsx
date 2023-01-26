@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
-
 import { NextPage } from 'next'
+import { useRouter } from 'next/router';
+
+import ReactPaginate from 'react-paginate';
 
 import { useAuth, useData } from '../../../hooks'
+
 import { LayoutAdmin } from '../../../components/layouts'
 import { ArticleList } from '../../../components/admin/articles';
 import { LinkPrimary, TitlePage } from '../../../components/admin/ui'
 import { LoadingAdmin } from '../../../components/admin/utilities'
-import ReactPaginate from 'react-paginate';
-import { useRouter } from 'next/router';
 
 
 
@@ -90,12 +91,12 @@ const ArticulosPage: NextPage = () => {
                             <LoadingAdmin />
                         </div>
                     ):(
-                        <section>
-                            <div className='overflow-x-auto custom-scroll max-w-[1440px] mx-auto'>
+                        <section className='max-w-[1440px] mx-auto'>
+                            <div className='overflow-x-auto custom-scroll'>
                                 <ArticleList articles={entries.data} />
                             </div>
                             
-                            <div className="flex justify-end mt-16">
+                            <div className="flex justify-center sm:justify-end py-16 pb-10">
                                 {
                                     entries.pageCount > 1 &&
                                     <ReactPaginate
@@ -105,7 +106,8 @@ const ArticulosPage: NextPage = () => {
                                         onPageChange={handlePageClick}
                                         pageCount={ entries.pageCount }
                                         forcePage={ entries.page }
-                                        className="flex justify-end gap-2"
+                                        marginPagesDisplayed={2}
+                                        className="flex justify-end gap-1 sm:gap-2"
                                         pageLinkClassName="border-2 border-transparent opacity-50 px-5 hover:border-b-sky-500 hover:opacity-100 py-2 font-semibold"
                                         activeLinkClassName="border-2 border-sky-500 opacity-100 py-2 rounded"
                                     />
