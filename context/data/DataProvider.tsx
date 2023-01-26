@@ -132,6 +132,35 @@ export const DataProvider: FC<Props> = ({ children }) => {
         }
     }
 
+    const getEntry = async( idEntry:string ):Promise<{ hasError:boolean; entryResp?: IEntry  }> => {
+
+        try {
+            
+            const { data } = await axios.get<IEntry>(`/api/shared/entries/${ idEntry }`)            
+
+            return {
+                hasError: false,
+                entryResp: data
+            }
+        } catch (error) {
+            
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as { message: string }
+                notifyError(message)
+                return {
+                    hasError: true,
+                    entryResp:undefined
+                }
+            }
+            
+            notifyError('Artículo no encontrado')
+            return {
+                hasError: true,
+                entryResp: undefined
+            }
+        }
+    }
+    
     const addNewEntry = async( entry:IEntry ):Promise<{ hasError:boolean; entryResp?: IEntry  }> => {
         
         try {
@@ -705,6 +734,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             
             // Entry
             refreshEntries,
+            getEntry,
             addNewEntry,
             updateEntry,
             deleteEntry,

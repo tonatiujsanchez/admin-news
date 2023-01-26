@@ -16,34 +16,15 @@ const ArticuloPage: NextPage = () => {
 
 
     const [entry, setEntry] = useState<IEntry>()
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     const router = useRouter()
-    const { id } = router.query
+    const { id } = router.query as { id?:string }
 
 
-    const { entries, refreshEntries } = useData()
+    const { entries, getEntry } = useData()
     const { user:userSession } = useAuth()
 
-
-    const loadEntryAndGetById = async() => {
-
-        const { hasError, entriesResp } = await refreshEntries()
-        
-        if(hasError){
-            return router.replace('/admin/articulos')
-        }
-
-        const entryResp = entriesResp.find( entry => entry._id === id )
-        
-        if(!entryResp){
-            return router.replace('/admin/articulos')
-        }
-
-        setEntry( entryResp )
-        setLoading( false )
-
-    }
 
     const getEntryById = async() => {
         
@@ -51,14 +32,21 @@ const ArticuloPage: NextPage = () => {
 
         if( entries.length === 0 ){
 
-            await loadEntryAndGetById()
+            const { hasError, entryResp } = await getEntry( id! )
+
+            if(hasError){
+                return router.replace('/admin/articulos')
+            }
+
+            setEntry( entryResp )
+            setLoading(false)
 
         } else {
 
-            const entryView = entries.find( entry => entry._id === id )
+            const entryView = entries.data.find( entry => entry._id === id )
 
             if(!entryView){
-                router.replace('/admin/articulos')
+                return router.replace('/admin/articulos')
             }
 
             setEntry( entryView )

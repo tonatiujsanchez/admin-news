@@ -33,7 +33,8 @@ interface ContextProps {
     users: IUser[],
 
     // Methods
-    refreshEntries: ( page:number ) => Promise<{ hasError: boolean; entriesResp: IEntry[]; }>
+    refreshEntries: ( page?:number ) => Promise<{ hasError: boolean; entriesResp: IEntry[]; }>
+    getEntry: (idEntry: string) => Promise<{ hasError: boolean; entryResp?: IEntry; }>
     addNewEntry: (entry: IEntry) => Promise<{ hasError: boolean; entryResp?: IEntry; }>
     updateEntry: (entry: IEntry) => Promise<{ hasError: boolean; }>
     deleteEntry: (idEntry: string) => Promise<{ hasError: boolean; }>
