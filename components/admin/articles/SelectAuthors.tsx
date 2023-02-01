@@ -70,25 +70,6 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
                     >
                         <OpcionSeleccionada>
                             <div className="flex items-center gap-4">
-                                <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border-2 border-white">
-                                    {
-                                        authorActive.photo 
-                                        ?(
-                                            <Image
-                                                priority
-                                                fill
-                                                sizes="(max-width: 100px) 100px"
-                                                src={authorActive.photo!}
-                                                alt={authorActive.name}
-                                                className='cover bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'
-                                            />
-                                        ):(
-                                            <div className='w-full h-full flex justify-center items-center bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'>
-                                                <p className="font-bold text-4xl text-slate-800 uppercase">{authorActive.name.slice(0, 1)}</p>
-                                            </div>
-                                        )
-                                    }
-                                </div>
                                 <p>{authorActive.name}</p>
                             </div>
                             <i className={`bx bxs-down-arrow transition-all duration-300 ${showSelect ? 'rotate-180' : ''}`}></i>
@@ -103,26 +84,7 @@ export const SelectAuthors:FC<Props> = ({ author, handleSelectAuthor, processing
                                         <Opcion
                                             key={author._id}
                                             onClick={() => handleSelectAuthor(author)}
-                                        >   
-                                            <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border">
-                                                {
-                                                    author.photo 
-                                                    ?(
-                                                        <Image
-                                                            priority
-                                                            fill
-                                                            sizes="(max-width: 100px) 100px"
-                                                            src={author.photo}
-                                                            alt={author.name}
-                                                            className='cover bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'
-                                                        />
-                                                    ):(
-                                                        <div className='w-full h-full flex justify-center items-center bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:aspect-none'>
-                                                            <p className="font-bold text-4xl text-slate-800 uppercase">{author.name.slice(0, 1)}</p>
-                                                        </div>
-                                                    )
-                                                }
-                                            </div>
+                                        > 
                                             <p>{author.name}</p>
                                         </Opcion>
                                     )
@@ -176,7 +138,7 @@ const Opcion = styled.div<{ subcategory?: boolean }>`
 	display: flex;
     align-items: center;
     gap: 1rem;
-    padding: ${(props) => props.subcategory ? '1rem 1.25rem 1rem 3rem' : '0.5rem 1.25rem'};
+    padding: ${(props) => props.subcategory ? '1rem 1.25rem 1rem 3rem' : '1.25rem'};
     font-weight: ${(props) => props.subcategory ? 'normal' : 'bold'};
     /* z-index: 10; */
 	&:hover {

@@ -11,17 +11,17 @@ interface Props {
 export const ArticleList:FC<Props> = ({ articles }) => {
     return (
         <table className="table-auto w-full bg-white rounded overflow-hidden">
-            <thead className='bg-slate-100 border-b'>
+            <thead className='bg-slate-100'>
                 <tr>
-                    <th className='text-slate-800 text-left px-6 py-2 w-20'>Destacado</th>
-                    <th className='text-slate-800 text-left px-6 py-2 w-20'>Imagen</th>
-                    <th className='text-slate-800 text-left px-6 py-2'>Título</th>
-                    <th className='text-slate-800 text-left px-6 py-2'>Categoría</th>
-                    <th className='text-slate-800 text-left px-6 py-2 min-w-[144px]'>Fecha creación</th>
-                    <th className='text-slate-800 text-left px-6 py-2 min-w-[144px] leading-8'>Fecha publicación</th>
-                    <th className='text-slate-800 text-left px-6 py-2'>Estado</th>
-                    <th className='text-slate-800 text-left px-6 py-2'>Visitas</th>
-                    <th className='text-slate-800 text-left px-6 py-2'>Acciones</th>
+                    <th className='text-slate-800 text-center px-8 py-2'><i className='bx bxs-bookmarks'></i></th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4 w-20'>Foto</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Título</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Categoría</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4 min-w-[144px]'>Fecha creación</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4 min-w-[144px] leading-8'>Fecha publicación</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Estado</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Visitas</th>
+                    <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Acciones</th>
                 </tr>
             </thead>
             <tbody>
