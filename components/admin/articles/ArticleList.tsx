@@ -11,9 +11,9 @@ interface Props {
 export const ArticleList:FC<Props> = ({ articles }) => {
     return (
         <table className="table-auto w-full bg-white rounded overflow-hidden">
-            <thead className='bg-sky-50 border'>
+            <thead className='bg-slate-100'>
                 <tr>
-                    <th className='text-slate-800 text-center px-6 py-2 w-20'><i className='bx bxs-bookmarks'></i></th>
+                    <th className='text-slate-800 text-center px-8 py-2'><i className='bx bxs-bookmarks'></i></th>
                     <th className='text-slate-800 text-left px-6 py-2 sm:py-4 w-20'>Foto</th>
                     <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Título</th>
                     <th className='text-slate-800 text-left px-6 py-2 sm:py-4'>Categoría</th>
