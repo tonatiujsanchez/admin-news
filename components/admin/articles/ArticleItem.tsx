@@ -40,7 +40,7 @@ export const ArticleItem: FC<Props> = ({ article }) => {
 
     return (
         <>
-            <tr className='border-b'>
+            <tr className='border-b hover:bg-slate-100'>
                 <td className='px-6 font-semibold'>
                     <p className='flex justify-center'>
                         {
@@ -53,7 +53,7 @@ export const ArticleItem: FC<Props> = ({ article }) => {
                         }
                     </p>
                 </td>
-                <td className='py-4 flex justify-center'>
+                <td className='py-6 flex justify-center'>
                     <div className="relative w-16 h-16 rounded-full overflow-hidden cursor-pointer group border">
                         {
                             article.banner 
@@ -74,10 +74,10 @@ export const ArticleItem: FC<Props> = ({ article }) => {
                         }
                     </div>
                 </td>
-                <td className='text-left px-6 text-xl min-w-[260px] overflow-x-hidden'>{ article.title }</td>
-                <td className='text-left px-6 text-xl font-semibold'>{ article.category.title }</td>
-                <td className='text-left px-6 text-xl min-w-[112px]'><span className='block'>{dateFormatter( article.createdAt! )}</span> <span>{timeFormatter( article.createdAt! )}</span></td>
-                <td className='text-left px-6 text-xl min-w-[112px]'><span className='block'>{dateFormatter( article.publishedAt )}</span> <span>{timeFormatter( article.publishedAt )}</span></td>
+                <td className='text-left px-6 text-[1.4rem] sm:text-[1.5rem] min-w-[260px] overflow-x-hidden font-bold text-slate-800 py-4'>{ article.title }</td>
+                <td className='text-left px-6 text-[1.3rem] sm:text-[1.4rem] text-slate-600'>{ article.category.title }</td>
+                <td className='text-left px-6 text-[1.3rem] sm:text-[1.4rem] min-w-[112px] text-slate-600'><span className='block'>{dateFormatter( article.createdAt! )}</span> <span>{timeFormatter( article.createdAt! )}</span></td>
+                <td className='text-left px-6 text-[1.3rem] sm:text-[1.4rem] min-w-[112px] text-slate-600'><span className='block'>{dateFormatter( article.publishedAt )}</span> <span>{timeFormatter( article.publishedAt )}</span></td>
                 <td className='text-left px-6 min-w-[112px]'>
                     {
                         article.published
@@ -88,7 +88,7 @@ export const ArticleItem: FC<Props> = ({ article }) => {
                             )
                     }
                 </td>
-                <td className='text-center px-6 text-xl font-semibold'>{ article.views }</td>
+                <td className='text-center px-6 text-[1.3rem] text-slate-600'>{ article.views }</td>
                 <td className='text-left px-6'>
                     <div className='flex justify-center gap-4'>
                         <button
