@@ -1,5 +1,5 @@
 import { DataState } from './'
-import { ICategory, IAuthor, IImage, IImageState, IUser, IEntry } from '../../interfaces'
+import { ICategory, IAuthor, IImage, IImageState, IUser, IEntry, ITag } from '../../interfaces'
 
 
 type DataActionType =
@@ -22,6 +22,11 @@ type DataActionType =
     | { type: '[DATA] - Add New Author', payload: IAuthor }
     | { type: '[DATA] - Update Author', payload: IAuthor }
     | { type: '[DATA] - Delete Author', payload: string }
+
+    | { type: '[DATA] - Refresh Tags', payload: ITag[] }
+    | { type: '[DATA] - Add New Tag', payload: ITag }
+    | { type: '[DATA] - Update Tag', payload: ITag }
+    | { type: '[DATA] - Delete Tag', payload: string }
     
     | { type: '[DATA] - Refresh Users', payload: IUser[] }
     | { type: '[DATA] - Add New User', payload: IUser }
@@ -153,6 +158,31 @@ export const dataReducer = (state: DataState, action: DataActionType): DataState
             return {
                 ...state,
                 authors: state.authors.filter( author => author._id !== action.payload )
+            }
+
+        // Tags
+
+        case '[DATA] - Refresh Tags':
+            return {
+                ...state,
+                tags: [ ...action.payload ]
+            }
+
+        case '[DATA] - Add New Tag':
+            return {
+                ...state,
+                tags: [ ...state.tags, action.payload ]
+            }
+        case '[DATA] - Update Tag':
+            return {
+                ...state,
+                tags: state.tags.map( tag => tag._id === action.payload._id ? action.payload : tag )
+            } 
+
+        case '[DATA] - Delete Tag':
+            return {
+                ...state,
+                tags: state.tags.filter( tag => tag._id !== action.payload )
             }
         
         // Users

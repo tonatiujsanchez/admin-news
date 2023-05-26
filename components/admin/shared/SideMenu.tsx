@@ -79,6 +79,10 @@ export const SideMenu = () => {
                                         </NextLink>
                                     </>
                                 }
+                                <NextLink href="/admin/etiquetas" className={`nav__link ${(pathname.split('/')[2]) === ('/admin/etiquetas').split('/')[2] ? 'active-link' : ''}`}>
+                                    <i className='bx bx-purchase-tag-alt'></i>
+                                    <span className="nav__name">Etiquetas</span>
+                                </NextLink>
                             </div>
                         </nav>
                     </div>
