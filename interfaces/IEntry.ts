@@ -1,5 +1,6 @@
 import { IAuthor } from "./IAuthor"
 import { ICategory, ISubcategory } from "./ICategory"
+import { ITag } from "./ITag"
 
 export interface IEntry {
     _id?        : string
@@ -16,7 +17,7 @@ export interface IEntry {
     category    : ICategory
     subcategory : ISubcategory | null
     author      : IAuthor
-    tags        : string[]
+    tags        : ITag[]
     views       : number
     
     published  : boolean

@@ -38,7 +38,8 @@ const getEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
         const entry = await Entry.findById( id )
             .populate({ path: 'category', model: 'Category' })
             .populate({ path: 'subcategory', model: 'Category' })
-            .populate({ path: 'author', model: 'Author' })  
+            .populate({ path: 'author', model: 'Author' })
+            .populate({ path: 'tags', model: 'Tag' })    
             .lean()
         await db.disconnect()
 

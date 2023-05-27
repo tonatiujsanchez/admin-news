@@ -1,6 +1,5 @@
-
-
 import Head from 'next/head'
+import NextLink from 'next/link'
 
 
 export default function Home() {
@@ -12,8 +11,13 @@ export default function Home() {
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <main>
-                <h1>Hola mundo</h1>
+            <main className="bg-slate-100 h-screen flex justify-center items-center">
+                <NextLink
+                href={"/admin"}
+                    className="flex items-center text-sky-600 hover:text-white bg-sky-100 hover:bg-sky-500 py-4 px-8 rounded-md font-medium transition-all duration-300"
+                >
+                    Iniciar Sesión
+                </NextLink>
             </main>
         </>
     )

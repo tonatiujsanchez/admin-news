@@ -7,7 +7,7 @@ import { db } from '../../../../database'
 import { isValidObjectId } from 'mongoose'
 import { Entry } from '../../../../models'
 
-import { IEntry } from '../../../../interfaces'
+import { IEntry, ITag } from '../../../../interfaces'
 
 
 type Data = 
@@ -63,7 +63,8 @@ const getEntries = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
         const entries = await Entry.find()
             .populate({ path: 'category', model: 'Category' })
             .populate({ path: 'subcategory', model: 'Category' })
-            .populate({ path: 'author', model: 'Author' })     
+            .populate({ path: 'author', model: 'Author' })
+            .populate({ path: 'tags', model: 'Tag' })     
             .sort({ createdAt: 'desc' })
             .skip( Number(skipStart) )
             .limit( Number(entriesPerPage) )
@@ -155,7 +156,8 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         const { 'news_session_ed4c1de1770480153a06fa2349f501f0':token } = req.cookies  
         const { payload } = await jose.jwtVerify(String( token ), new TextEncoder().encode(process.env.JWT_SECRET_SEED))
 
-        
+        const tagIds = tags.map( (tag:ITag) => tag._id )
+
         const newEntry = await new Entry({
             user: payload._id,
             title,
@@ -170,7 +172,7 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             category: category._id,
             subcategory: subcategory ? subcategory._id : null,
             author: author._id,
-            tags
+            tags: tagIds
         })
 
         await newEntry.save()
@@ -181,7 +183,8 @@ const addNewEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             ...JSON.parse( JSON.stringify( newEntry ) ),
             category,
             subcategory,
-            author
+            author,
+            tags
         }
 
         return res.status(200).json(entry)
@@ -210,7 +213,8 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         const entry = await Entry.findById( _id )
             .populate({ path: 'category', model: 'Category' })
             .populate({ path: 'subcategory', model: 'Category' })
-            .populate({ path: 'author', model: 'Author' })    
+            .populate({ path: 'author', model: 'Author' })
+            .populate({ path: 'tags', model: 'Tag' })       
     
         if( !entry ){
             await db.disconnect()
@@ -233,6 +237,8 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             tags        = entry.tags 
         } = req.body 
 
+        const tagIds = tags.map( (tag:ITag) => tag._id )    
+
         entry.title       = title
         entry.content     = content
         entry.summary     = summary
@@ -245,7 +251,7 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
         entry.category    = category
         entry.subcategory = subcategory
         entry.author      = author
-        entry.tags        = tags
+        entry.tags        = tagIds
 
 
 
@@ -256,7 +262,8 @@ const updateEntry = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
             ...JSON.parse( JSON.stringify( entry ) ),
             category,
             subcategory,
-            author
+            author,
+            tags
         }
         
         return res.status(200).json( entryUpdate )

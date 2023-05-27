@@ -6,7 +6,7 @@ import { DataContext, dataReducer } from './'
 
 import { useAuth } from '../../hooks'
 
-import { IAuthor, ICategory, IEntry, IImage, IImages, IUser } from '../../interfaces'
+import { IAuthor, ICategory, IEntry, IImage, IImages, ITag, IUser } from '../../interfaces'
 import { notifyError, notifySuccess } from '../../utils/frontend'
 
 
@@ -25,6 +25,7 @@ export interface DataState {
     images: IImages
     categoriesList: ICategory[]
     authors: IAuthor[]
+    tags   : ITag[]
     users: IUser[]
 }
 
@@ -54,6 +55,7 @@ const DATA_INITIAL_STATE: DataState = {
     },
     categoriesList: [],
     authors: [],
+    tags   : [],
     users: [],
 }
 
@@ -596,6 +598,118 @@ export const DataProvider: FC<Props> = ({ children }) => {
 
     }
 
+    // ===== ===== ===== ===== Tags ===== ===== ===== ======
+    // ===== ===== ===== ===== ===== ===== ===== ===== ======
+    const refreshTags = async(): Promise<{ hasError:boolean; tagsResp: ITag[] }> => {
+        
+        try {
+
+            const { data } = await axios.get<ITag[]>('/api/public/tags')
+            dispatch({ type:'[DATA] - Refresh Tags', payload: data })
+
+            return {
+                hasError: false,
+                tagsResp: data
+            }  
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+
+                notifyError(message)
+                return {
+                    hasError: true,
+                    tagsResp: []
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return {
+                hasError: true,
+                tagsResp: []
+            }  
+        }
+    }
+
+
+    const addNewTag = async( tag: ITag ):Promise<{ hasError: boolean }>  => {
+
+        try {
+
+            const { data } = await axios.post<ITag>('/api/shared/tags', tag)
+
+            dispatch({ type: '[DATA] - Add New Tag', payload: data })
+            notifySuccess('Etiqueta agregada')
+            
+            return { 
+                hasError: false
+            }
+        } catch (error) {
+
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { 
+                    hasError: true,
+                }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { 
+                hasError: true,
+            }
+        }
+    }
+
+    const updateTag = async( tag:ITag ):Promise<{ hasError: boolean }> => {
+    
+        try {
+            const { data } = await axios.put('/api/shared/tags', tag)
+            dispatch({ type: '[DATA] - Update Tag', payload: data })
+
+            notifySuccess('Etiqueta actualizada')
+            return { hasError: false }
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+
+    }
+
+    const deleteTag = async( idTag:string ):Promise<{ hasError: boolean }> => {
+
+        try {
+
+            const { data } = await axios.delete('/api/shared/tags', { 
+                data: {
+                    idTag
+                }
+            })
+            dispatch({ type: '[DATA] - Delete Tag', payload: data.message })
+
+            notifySuccess('Etiqueta eliminada')
+            return { hasError: false }
+            
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                const { message } = error.response?.data as {message : string}
+                notifyError(message)
+                return { hasError: true }
+            }
+
+            notifyError('Hubo un error inesperado')
+            return { hasError: true }
+        }
+    }
+
+
 
     // ===== ===== ===== ===== users ===== ===== ===== ======
     // ===== ===== ===== ===== ===== ===== ===== ===== ======
@@ -750,6 +864,11 @@ export const DataProvider: FC<Props> = ({ children }) => {
             addNewAuthor,
             updateAuthor,
             deleteAuthor,
+            // Tags
+            refreshTags,
+            addNewTag,
+            updateTag,
+            deleteTag,
             // Users
             refreshUsers,
             addNewUser,
