@@ -8,9 +8,9 @@ import { useData } from '../../../hooks/useData'
 
 import { SelectCategories } from './SelectCategories'
 import { SelectAuthors } from './SelectAuthors'
-import { Checkbox, DTPicker, QuillEditor, QuillEditorLite, SelectImage } from '../ui'
+import { Checkbox, DTPicker, QuillEditor, QuillEditorLite, SelectImage, SelectTags } from '../ui'
 import { LoadingCircle } from '../utilities'
-import { IEntry, ICategory, IAuthor } from '../../../interfaces'
+import { IEntry, ICategory, IAuthor, ITag } from '../../../interfaces'
 
 
 interface Props {
@@ -141,6 +141,11 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
         setContentEditor(html)
     } 
 
+    
+    const handleSetTags = ( tags: ITag[] ) => {
+        setValue('tags', tags, { shouldValidate: true })
+    }
+
 
     // 
     const onCalcel = () => {
@@ -270,6 +275,13 @@ export const ArticleForm:FC<Props> = ({ articleEdit }) => {
                     labelError={'El contenido del artículo es requerido'}
                     processing={ loadingSubmit }
                 />    
+            </div>
+            <div className='mb-10'>
+                <SelectTags
+                    articleTags={ getValues('tags') }
+                    onSetTags={ handleSetTags }
+                    processing={loadingSubmit}
+                />
             </div>
 
             <div className="flex items-start gap-4">

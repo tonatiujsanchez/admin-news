@@ -17,3 +17,7 @@ export * from './QuillEditor'
 export * from './QuillEditorLite'
 
 export * from './Checkbox'
+
+export * from './SelectTags'
+export * from './SelectTagsModal'
+export * from './SelectTagsModalItem'
