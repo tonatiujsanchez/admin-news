@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form"
 import { LoadingCircle } from "../components/admin/utilities"
 import { useRouter } from "next/router"
 import { useAuth } from "../hooks"
+import Image from "next/image"
 
 
 interface UserAuthentication {
@@ -49,10 +50,17 @@ const IniciarSesionPage:NextPage = () => {
     return (
         <main className="bg-admin h-screen flex justify-center items-center">
             <article className="sm:bg-white rounded-lg sm:shadow-lg px-5 sm:px-16 py-20 flex flex-col items-center w-[320px] md:w-[400px] mb-36">
-                <img
+                {/* <img
                     src="https://res.cloudinary.com/ton/image/upload/v1661840375/jurrdmthg3uih7hxxbht.jpg"
                     alt="Logo admin"
                     className="w-32 mb-10"
+                /> */}
+                <Image
+                    src="/images/innovagen-logotipo.png"
+                    alt="Logo de InnovaGen Solutions"
+                    width={132}
+                    height={132}
+                    className="w-56 mb-10"
                 />
                 <form
                     onSubmit={handleSubmit(onLoginUser)}
@@ -96,7 +104,7 @@ const IniciarSesionPage:NextPage = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-sky-500 hover:bg-sky-600 px-8 py-5 font-semibold rounded-md color-admin w-full ml-auto uppercase disabled:bg-sky-300">
+                        className="bg-primary-600 hover:bg-primary-500 px-8 py-5 font-semibold rounded-md color-admin w-full ml-auto uppercase disabled:bg-primary-300">
                         {
                             loading
                             ? <div className="flex justify-center text-center"> <LoadingCircle /> </div>
