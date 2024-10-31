@@ -21,7 +21,7 @@ export const ProfileBar = () => {
                     </div>
                 ):
                 (
-                    <div className="flex items-center justify-between sm:justify-end bg-white py-5 px-5 shadow">
+                    <div className="flex items-center justify-between sm:justify-end bg-white py-2 sm:py-5 px-5 shadow">
                         <NextLink href="/admin" className="mt-2 sm:hidden">
                             <i className='bx bxs-dashboard text-4xl'></i>
                         </NextLink>

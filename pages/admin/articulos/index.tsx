@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { NextPage } from 'next'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
-import ReactPaginate from 'react-paginate';
+import { useForm } from 'react-hook-form'
+import ReactPaginate from 'react-paginate'
 
 import { useAuth, useData } from '../../../hooks'
 
@@ -19,11 +20,19 @@ const ArticulosPage: NextPage = () => {
     
     const router = useRouter()
 
-    const { entries, refreshEntries } = useData()
+    const { register, handleSubmit, formState:{ errors }, getValues, setValue, reset } = useForm({
+        defaultValues: {
+            searchTerm: '',
+            category: '',
+            status: ''
+        }
+    })
+        
+    const { entries, refreshEntries, categories } = useData()
     const { user: userSession } = useAuth()
 
 
-    const loadEntries = async() => {
+    const loadEntries = async(searchTerm?:string, category?:string, status?:string) => {
         
         const { page } = router.query as { page?: string }
         
@@ -34,7 +43,7 @@ const ArticulosPage: NextPage = () => {
         }
 
         setLoading(true)
-        await refreshEntries(actualPage)        
+        await refreshEntries(actualPage, searchTerm, category, status)        
 
         if((entries.page + 1) !== Number( page )){
             router.push(`/admin/articulos?page=${ entries.page }`)
@@ -56,6 +65,18 @@ const ArticulosPage: NextPage = () => {
 
     },[userSession])
        
+
+    const onChangeCategory = ( { target }:ChangeEvent<HTMLSelectElement> ) => {
+        setValue('category', target.value, { shouldValidate: true } )
+    }
+
+    const onFilterSubmit = async( data ) => {
+        await loadEntries(
+            data.searchTerm,
+            data.category,
+            data.status,
+        )
+    }
 
 
     const handlePageClick = async(event: {selected: number}) => {
@@ -92,6 +113,66 @@ const ArticulosPage: NextPage = () => {
                         </div>
                     ):(
                         <section className='max-w-[1440px] mx-auto'>
+                            <form 
+                                onSubmit={ handleSubmit( onFilterSubmit ) } 
+                                className="py-6 px-5 md:px-10 bg-white rounded-md mb-5 sm:mb-10 flex flex-col md:flex-row md:items-end flex-wrap gap-5 lg:gap-10"
+                            >
+                                <div className="flex flex-col md:flex-row flex-wrap gap-5 lg:gap-10">
+                                    <div className="min-w-full md:min-w-[260px] lg:min-w-[300px]">
+                                        <label htmlFor="title" className="block text-md mb-3 font-bold text-slate-800 ">
+                                            Título
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="title"
+                                            placeholder="Buscar por título"
+                                            disabled={loading}
+                                            className={`bg-admin w-full rounded-md flex-1 border px-5 py-3 disabled:border-slate-200 ${ !!errors.searchTerm ? 'outline outline-2 outline-red-500' :'hover:border-slate-800' }`}
+                                            { ...register('searchTerm')}
+                                        />
+                                    </div>
+                                    <div className="min-w-full md:min-w-[260px] lg:min-w-[300px]">
+                                        <label htmlFor="category" className="block text-md mb-3 font-bold text-slate-800">
+                                            Categoría
+                                        </label>
+                                        <select
+                                            id="category"
+                                            name="category"
+                                            value={getValues('category')!}
+                                            onChange={onChangeCategory}
+                                            className="bg-admin w-full rounded-md flex-1 border px-5 py-3 hover:border-slate-800 disabled:border-slate-200"
+                                            disabled={loading}
+                                        >
+                                            <option value="" key="0" className="text-gray-400">--- Todas ---</option>
+                                            {
+                                                categories.map(category => (
+                                                    <option key={category._id} value={category._id} >
+                                                        {category.title}
+                                                    </option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                    <div className="min-w-full md:min-w-[260px] lg:min-w-[300px]">
+                                        <label htmlFor="category" className="block text-md mb-3 font-bold text-slate-800">
+                                            Estado
+                                        </label>
+                                        <select
+                                            id="status"
+                                            className="bg-admin w-full rounded-md flex-1 border px-5 py-3 hover:border-slate-800 disabled:border-slate-200"
+                                            disabled={loading}
+                                            { ...register('status') }
+                                        >
+                                            <option value="" className="text-gray-400">--- Todos ---</option>
+                                            <option value={'published'} > Publicado </option>
+                                            <option value={'unpublished'} > Sin publicar </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button className="border-2 border-sky-600 text-sky-700 hover:bg-sky-600 hover:text-white transition-all rounded-md py-[0.65rem] px-7 w-full md:w-auto font-semibold">
+                                    Filtrar
+                                </button>
+                            </form>
                             <div className='overflow-x-auto custom-scroll'>
                                 <ArticleList articles={entries.data} />
                             </div>

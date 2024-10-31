@@ -97,10 +97,10 @@ export const DataProvider: FC<Props> = ({ children }) => {
     
     // ===== ===== ===== ===== Entries ===== ===== ===== =====
     // ===== ===== ===== ===== ====== ===== ===== ===== ======
-    const refreshEntries = async( page:number = 0 ):Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
-        
+    const refreshEntries = async( page:number = 0, searchTerm?:string, category?:string, status?:string ):Promise<{ hasError: boolean; entriesResp: IEntry[] }> => {
+
         try {
-            const { data } = await axios.get('/api/shared/entries', { params: { page } })
+            const { data } = await axios.get('/api/shared/entries', { params: { page, searchTerm, category, status } })
             dispatch({ type:'[DATA] - Refresh Entries', payload: {
                 data: data.entries,
                 length: data.length,
@@ -176,7 +176,7 @@ export const DataProvider: FC<Props> = ({ children }) => {
             } else {
                 notifySuccess('Artículo guardado')
             }
-            // TODO: Artículo programado
+            // Añadir Mensaje de Artículo programado
 
             return {
                 hasError: false,

@@ -46,21 +46,52 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 const getEntries = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {
 
-    const { page = 0, entriesPerPage = 15 } = req.query
+    const { page = 0, entriesPerPage = 15, searchTerm="", category="", status="" } = req.query
+
+    console.log({status})
 
     let skipStart = Number(page) * Number(entriesPerPage)
+
+    let query = {}
+
+    if( (searchTerm as string).trim() !== '' ){
+        const q = searchTerm.toString().toLowerCase()
+        query = {
+            $and: [
+                {
+                    $or: [
+                        { title: { $regex: new RegExp(q, "i") } },
+                        { slug: { $regex: new RegExp(q, "i") } },
+                    ] 
+                }
+            ]
+        }
+    }
+    if( (category as string).trim() !== '' ){
+        query = {
+            ...query,
+            category
+        }
+    }
+
+    if( (status as string).trim() !== '' ){
+        query = {
+            ...query,
+            published: status === 'published'
+        }
+    }
 
     try {
         
         await db.connect()
 
-        const entriesLengthDB = await Entry.find().count() 
+        const entriesLengthDB = await Entry.find(query).count() 
 
         if( skipStart >= entriesLengthDB || skipStart < 0 ){
             skipStart = 0
         }
 
-        const entries = await Entry.find()
+        const entries = await Entry.find(query)
             .populate({ path: 'category', model: 'Category' })
             .populate({ path: 'subcategory', model: 'Category' })
             .populate({ path: 'author', model: 'Author' })
