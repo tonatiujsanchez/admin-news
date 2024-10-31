@@ -43,7 +43,8 @@ const IniciarSesionPage:NextPage = () => {
             return
         }
 
-        router.replace('/admin')
+        // router.replace('/admin')
+        router.reload()
     }
 
 
