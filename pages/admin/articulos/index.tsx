@@ -28,7 +28,7 @@ const ArticulosPage: NextPage = () => {
         }
     })
         
-    const { entries, refreshEntries, categories } = useData()
+    const { entries, refreshEntries, categories, refreshCategories } = useData()
     const { user: userSession } = useAuth()
 
 
@@ -63,6 +63,21 @@ const ArticulosPage: NextPage = () => {
             router.push(`/admin/articulos?page=${ entries.page + 1}`)
         }
 
+    },[userSession])
+
+
+    const loadCategories = async()=> {
+        await refreshCategories()
+    }
+
+    useEffect(()=>{
+        if( !userSession ){
+            return
+        }     
+        
+        if(categories.length === 0){
+            loadCategories()
+        }
     },[userSession])
        
 
